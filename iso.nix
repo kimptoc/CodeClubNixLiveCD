@@ -12,10 +12,12 @@
     # Add Firefox and other tools useful for installation to the launcher
     favoriteAppsOverride = ''
       [org.gnome.shell]
-      favorite-apps=[ 'google-chrome.desktop', 'gnome-system-monitor', 'firefox.desktop', 'nixos-manual.desktop', 'org.gnome.Terminal.desktop', 'org.gnome.Nautilus.desktop' ]
+      favorite-apps=[ 'google-chrome.desktop', 'gnome-system-monitor-kde.desktop', 'firefox.desktop', 'nixos-manual.desktop', 'org.gnome.Terminal.desktop', 'org.gnome.Nautilus.desktop' ]
     '';
     enable = true;
   };
+
+  services.locate.enable = true;
  
   boot.extraModulePackages = [ config.boot.kernelPackages.broadcom_sta ];
  
@@ -29,5 +31,8 @@
   vim
   git
   wget
+  nmap
+  pkgs.gnome-tweaks
+  findutils
   ];
 }

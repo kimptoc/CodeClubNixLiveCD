@@ -11,8 +11,9 @@ Steps
 * sudo dd bs=4M if={path to generated ISO} of=/dev/sd{flash drive} status=progress oflag=sync
 
 Useful links
-* https://nixos.wiki/wiki/Creating_a_NixOS_live_CD
-* https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/installer/cd-dvd/installation-cd-graphical-gnome.nix
+* LiveCD how to - https://nixos.wiki/wiki/Creating_a_NixOS_live_CD
+* Live CD variations - https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/installer/cd-dvd/installation-cd-graphical-gnome.nix
+* packages - https://search.nixos.org/
 
 TODO
 * wrong keymap: " (quote), hash and @ sign in wrong places
@@ -21,8 +22,8 @@ TODO
 * disable tour
 * resolution ok - test on CC PCs?
 * startup sound on boot? Nice to have, might be annoying...
-* install nmap for investigations
-* pin gnome-system-monitor
+* pin gnome-system-monitor - tried but not working
 
 DONE
+* install nmap for investigations
 * chrome installed/pinned
