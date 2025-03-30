@@ -14,3 +14,15 @@ Useful links
 * https://nixos.wiki/wiki/Creating_a_NixOS_live_CD
 * https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/installer/cd-dvd/installation-cd-graphical-gnome.nix
 
+TODO
+* wrong keymap, hash and @ sign in wrong places
+* no wifi on mac, not issue for CC, just me.
+* skip chrome intro, max window, etc, start on boot, open scratch page and maybe others
+* disable tour
+* resolution ok - test on CC PCs?
+* startup sound on boot? Nice to have, might be annoying...
+* install nmap for investigations
+* pin gnome-system-monitor
+
+DONE
+* chrome installed/pinned
