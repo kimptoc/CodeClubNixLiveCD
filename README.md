@@ -19,11 +19,11 @@ TODO
 * wrong keymap: " (quote), hash and @ sign in wrong places
 * no wifi on mac, not issue for CC, just me.
 * skip chrome intro, max window, etc, start on boot, open scratch page and maybe others
-* disable tour
 * resolution ok - test on CC PCs?
 * startup sound on boot? Nice to have, might be annoying...
 * pin gnome-system-monitor - tried but not working
 
 DONE
+* disable gnome tour
 * install nmap for investigations
 * chrome installed/pinned

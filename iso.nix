@@ -35,4 +35,6 @@
   pkgs.gnome-tweaks
   findutils
   ];
+
+  environment.gnome.excludePackages = [ pkgs.gnome-tour ];
 }
