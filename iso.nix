@@ -28,6 +28,8 @@
   zsh
   nettools
   google-chrome
+  microsoft-edge
+  opera
   vim
   git
   wget

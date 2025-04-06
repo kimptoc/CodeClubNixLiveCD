@@ -24,6 +24,7 @@ TODO
 * pin gnome-system-monitor - tried but not working
 
 DONE
+* add other browsers - opera, edge
 * disable gnome tour
 * install nmap for investigations
 * chrome installed/pinned
