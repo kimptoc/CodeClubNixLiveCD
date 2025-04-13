@@ -27,6 +27,7 @@
   terminator
   zsh
   nettools
+  python3
   google-chrome
   microsoft-edge
   opera
