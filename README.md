@@ -16,8 +16,7 @@ Useful links
 * packages - https://search.nixos.org/
 
 TODO
-* python
-* wrong keymap: " (quote), hash and @ sign in wrong places
+* wrong keymap: " (quote), hash and @ sign in wrong places - maybe just a mac issue?
 * no wifi on mac, not issue for CC, just me.
 * skip chrome intro, max window, etc, start on boot, open scratch page and maybe others
 * resolution ok - test on CC PCs?
@@ -25,6 +24,7 @@ TODO
 * pin gnome-system-monitor - tried but not working
 
 DONE
+* python
 * add other browsers - opera, edge
 * disable gnome tour
 * install nmap for investigations
