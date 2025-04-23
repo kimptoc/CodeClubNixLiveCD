@@ -16,6 +16,7 @@ Useful links
 * packages - https://search.nixos.org/
 
 TODO
+* add printer support
 * system monitor not starting on boot
 * set timezone. Europe London not utc
 * wrong keymap: " (quote), hash and @ sign in wrong places - maybe just a mac issue?
