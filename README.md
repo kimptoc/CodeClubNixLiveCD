@@ -16,6 +16,7 @@ Useful links
 * packages - https://search.nixos.org/
 
 TODO
+* browser home pages. scratch, CC projects etc
 * add printer support
 * system monitor not starting on boot
 * set timezone. Europe London not utc
