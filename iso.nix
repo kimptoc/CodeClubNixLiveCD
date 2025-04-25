@@ -17,14 +17,18 @@
     enable = true;
   };
 
+
+  time.timeZone = "Europe/London";
+
   services.locate.enable = true;
- 
+
   boot.extraModulePackages = [ config.boot.kernelPackages.broadcom_sta ];
  
   nixpkgs.config.allowUnfree = true;
 
   environment.systemPackages = with pkgs; [  
   terminator
+  ghostty
   zsh
   nettools
   python3
