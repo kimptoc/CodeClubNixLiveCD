@@ -28,6 +28,8 @@
   zsh
   nettools
   python3
+  temurin-bin
+  prismlauncher
   google-chrome
   microsoft-edge
   opera
