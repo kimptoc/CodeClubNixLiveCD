@@ -8,7 +8,11 @@ Steps
 * follow NixOS Live CD link below to create the ISO
 * remember to switch to using the graphical gnome template.
 * copy generated ISO to your USB using this command:
-* sudo dd bs=4M if={path to generated ISO} of=/dev/sd{flash drive} status=progress oflag=sync
+* $ sudo dd bs=4M if={path to generated ISO} of=/dev/sd{flash drive} status=progress oflag=sync
+
+Test locally in a VM
+* $ nixos-rebuild build-vm -I nixos-config=./iso.nix
+* $ ./result/bin/run-nixos-vm
 
 Useful links
 * LiveCD how to - https://nixos.wiki/wiki/Creating_a_NixOS_live_CD
