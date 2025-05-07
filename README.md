@@ -21,7 +21,8 @@ Useful links
 
 TODO
 * skip chrome intro, max window, etc, start on boot, open scratch page and maybe others
-* * https://discourse.nixos.org/t/automatic-program-start-up-on-login-with-xorg/34261/2
+  * https://discourse.nixos.org/t/automatic-program-start-up-on-login-with-xorg/34261/2
+  * https://www.reddit.com/r/NixOS/comments/rezf0s/how_to_run_script_on_startup/
 * browser home pages. scratch, CC projects etc. public start me page? https://bit.ly/Codeclubck  (eg xdg-open)
 * wrong keymap: " (quote), hash and @ sign in wrong places - maybe just a mac issue? SEEMS fixed, checkin keymap changes.
 * add printer support
