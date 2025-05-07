@@ -20,16 +20,16 @@ Useful links
 * packages - https://search.nixos.org/
 
 TODO
-* browser home pages. scratch, CC projects etc. public start me page? https://bit.ly/Codeclubck  (eg xdg-open)
-* add printer support
-* system monitor not starting on boot
-* set timezone. Europe London not utc
-* wrong keymap: " (quote), hash and @ sign in wrong places - maybe just a mac issue?
-* no wifi on mac, not issue for CC, just me.
 * skip chrome intro, max window, etc, start on boot, open scratch page and maybe others
-* resolution ok - test on CC PCs?
+* * https://discourse.nixos.org/t/automatic-program-start-up-on-login-with-xorg/34261/2
+* browser home pages. scratch, CC projects etc. public start me page? https://bit.ly/Codeclubck  (eg xdg-open)
+* wrong keymap: " (quote), hash and @ sign in wrong places - maybe just a mac issue? SEEMS fixed, checkin keymap changes.
+* add printer support
+* resolution ok - test on CC PCs?  seems ok
 * startup sound on boot? Nice to have, might be annoying...
+* system monitor not starting on boot
 * pin gnome-system-monitor - tried but not working
+* no wifi on mac, not issue for CC, just me.
 
 DONE
 * python
@@ -37,3 +37,4 @@ DONE
 * disable gnome tour
 * install nmap for investigations
 * chrome installed/pinned
+* set timezone. Europe London not utc
