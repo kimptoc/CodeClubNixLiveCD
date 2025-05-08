@@ -24,7 +24,6 @@ TODO
   * https://discourse.nixos.org/t/automatic-program-start-up-on-login-with-xorg/34261/2
   * https://www.reddit.com/r/NixOS/comments/rezf0s/how_to_run_script_on_startup/
 * browser home pages. scratch, CC projects etc. public start me page? https://bit.ly/Codeclubck  (eg xdg-open) use git hub pages
-* wrong keymap: " (quote), hash and @ sign in wrong places - maybe just a mac issue? SEEMS fixed, checkin keymap changes.
 * turn off suspend
 * add printer support
 * resolution ok - test on CC PCs?  seems ok
@@ -40,3 +39,4 @@ DONE
 * install nmap for investigations
 * chrome installed/pinned
 * set timezone. Europe London not utc
+* wrong keymap: " (quote), hash and @ sign in wrong places - maybe just a mac issue? SEEMS fixed, checkin keymap changes.
