@@ -17,6 +17,7 @@
     enable = true;
   };
 
+  services.xserver.displayManager.gdm.autoSuspend = false;
 
   time.timeZone = "Europe/London";
 
