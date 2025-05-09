@@ -71,4 +71,33 @@
   ];
 
   environment.gnome.excludePackages = [ pkgs.gnome-tour ];
+
+  systemd.user.services.myautostart = {
+    description = "myautostart";
+    serviceConfig.PassEnvironment = "DISPLAY";
+    script = ''
+      export MYLOG=$HOME/myautostart.log
+      echo "MYAUTOSTART" > $MYLOG
+      date > $MYLOG
+      mkdir -p $HOME/.config/autostart >> $MYLOG
+    
+      export CHRDESK=$HOME/.config/autostart/chrome.desktop
+      echo "[Desktop Entry]" > $CHRDESK
+      echo "Name=Google Chrome" >> $CHRDESK
+
+      echo "Exec=${pkgs.google-chrome}/bin/google-chrome-stable --disable-fre --no-default-browser-check --no-first-run --hide-crash-restore-bubble https://bit.ly/Codeclubck" >> $CHRDESK
+      echo "StartupNotify=true" >> $CHRDESK
+      echo "Terminal=false" >> $CHRDESK
+      echo "Icon=google-chrome" >> $CHRDESK
+      echo "Type=Application" >> $CHRDESK
+
+      cat $CHRDESK >> $MYLOG
+    '';
+    wantedBy = [ "graphical-session.target" ]; # starts after login
+    partOf = [ "graphical-session.target" ];
+    serviceConfig = {
+       RemainAfterExit = true;
+    };
+
+  };
 }

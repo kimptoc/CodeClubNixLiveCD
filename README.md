@@ -20,10 +20,11 @@ Useful links
 * packages - https://search.nixos.org/
 
 TODO
-* skip chrome intro, max window, etc, start on boot, open scratch page and maybe others
+* focus gnome on chrome app, not in overview view (or whatever its called)
+* skip chrome intro, max window, etc, start on boot, open scratch page and maybe others - done, I think
   * https://discourse.nixos.org/t/automatic-program-start-up-on-login-with-xorg/34261/2
   * https://www.reddit.com/r/NixOS/comments/rezf0s/how_to_run_script_on_startup/
-* browser home pages. scratch, CC projects etc. public start me page? https://bit.ly/Codeclubck  (eg xdg-open) use git hub pages
+* browser home pages. scratch, CC projects etc. public start me page? https://bit.ly/Codeclubck  (eg xdg-open)  or use git hub pages or even a local file
 * add printer support
 * resolution ok - test on CC PCs?  seems ok
 * startup sound on boot? Nice to have, might be annoying...
