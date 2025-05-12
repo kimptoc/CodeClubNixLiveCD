@@ -33,6 +33,7 @@ TODO
 * pin gnome-system-monitor - tried but not working
 * no wifi on mac, not issue for CC, just me.
 
+
 DONE
 * python
 * add other browsers - opera, edge
