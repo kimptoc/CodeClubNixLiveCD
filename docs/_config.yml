@@ -28,9 +28,16 @@ twitter_username: kimptoc
 github_username:  kimptoc
 
 # Build settings
-theme: minima
+# theme: minima
+# theme: jekyll-theme-minimal
+# remote_theme: pages-themes/tactile
+remote_theme: pages-themes/leap-day
+# remote_theme: pages-themes/architect
+# remote_theme: pages-themes/midnight
+
 plugins:
   - jekyll-feed
+  - jekyll-remote-theme # add this line to the plugins list if you already have one
 
 # Exclude from processing.
 # The following items will not be processed, by default.

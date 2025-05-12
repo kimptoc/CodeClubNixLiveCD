@@ -1,0 +1,12 @@
+- name: Scratch
+  url: https://scratch.mit.edu/
+- name: Scratch Projects
+  url: https://projects.raspberrypi.org/en/collections/scratch
+- name: Hour of Code Activities
+  url: https://hourofcode.com/uk/learn
+- name: Trinket
+  url: https://trinket.io/
+- name: Astro Pi 
+  url: https://astro-pi.org/
+- name: MS MakeCode for Micro:bit
+  url: https://makecode.microbit.org/

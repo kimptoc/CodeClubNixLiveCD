@@ -42,3 +42,10 @@ DONE
 * set timezone. Europe London not utc
 * wrong keymap: " (quote), hash and @ sign in wrong places - maybe just a mac issue? SEEMS fixed, checkin keymap changes.
 * turn off auto suspend
+
+
+
+
+Jekyll site/notes
+* bundle exec jekyll serve --baseurl="" --livereload 
+* bundle info --path jekyll-theme-minimal
