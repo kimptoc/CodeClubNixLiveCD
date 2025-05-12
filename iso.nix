@@ -12,7 +12,7 @@
     # Add Firefox and other tools useful for installation to the launcher
     favoriteAppsOverride = ''
       [org.gnome.shell]
-      favorite-apps=[ 'google-chrome.desktop', 'gnome-system-monitor-kde.desktop', 'firefox.desktop', 'nixos-manual.desktop', 'org.gnome.Terminal.desktop', 'org.gnome.Nautilus.desktop' ]
+      favorite-apps=[ 'chrome.desktop', 'firefox.desktop', 'nixos-manual.desktop', 'org.gnome.Terminal.desktop', 'org.gnome.Nautilus.desktop' ]
     '';
     enable = true;
   };
@@ -80,18 +80,21 @@
       echo "MYAUTOSTART" > $MYLOG
       date > $MYLOG
       mkdir -p $HOME/.config/autostart >> $MYLOG
+      mkdir -p $HOME/.local/share/applications/ >> $MYLOG
     
       export CHRDESK=$HOME/.config/autostart/chrome.desktop
       echo "[Desktop Entry]" > $CHRDESK
       echo "Name=Google Chrome" >> $CHRDESK
 
-      echo "Exec=${pkgs.google-chrome}/bin/google-chrome-stable --disable-fre --no-default-browser-check --no-first-run --hide-crash-restore-bubble https://bit.ly/Codeclubck" >> $CHRDESK
+      echo "Exec=${pkgs.google-chrome}/bin/google-chrome-stable --disable-fre --no-default-browser-check --no-first-run --hide-crash-restore-bubble https://bit.ly/codeclubnxl" >> $CHRDESK
       echo "StartupNotify=true" >> $CHRDESK
       echo "Terminal=false" >> $CHRDESK
       echo "Icon=google-chrome" >> $CHRDESK
       echo "Type=Application" >> $CHRDESK
 
       cat $CHRDESK >> $MYLOG
+
+      cp $CHRDESK $HOME/.local/share/applications/ >> $MYLOG
     '';
     wantedBy = [ "graphical-session.target" ]; # starts after login
     partOf = [ "graphical-session.target" ];
