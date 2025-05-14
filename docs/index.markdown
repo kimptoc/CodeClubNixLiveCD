@@ -8,7 +8,7 @@ layout: default
 {% for link in site.data.main_links %}
   <span>
     <a href="{{ link.url }}" target="_new">
-      <img alt="{{ link.name }}" src="{{ site.baseurl }}/assets/images/{{ link.img }}" width: 150px, height: auto>
+      <img alt="{{ link.name }}" src="{{ site.baseurl }}/assets/images/{{ link.img }}" width="150px", height="auto">
       <br>
       {{ link.name }}
     </a>
