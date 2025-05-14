@@ -5,16 +5,19 @@
 layout: default
 ---
 <h2>Main Links</h2>
+<table>
+<tr>
 {% for link in site.data.main_links %}
-  <span>
+  <td>
     <a href="{{ link.url }}" target="_new">
       <img alt="{{ link.name }}" src="{{ site.baseurl }}/assets/images/{{ link.img }}" width="150px" height="auto">
       <br>
       {{ link.name }}
     </a>
-  </span>
+  </td>
 {% endfor %}
-
+</tr>
+</table>
 <hr>
 
 <h2>Notes</h2>
