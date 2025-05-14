@@ -14,3 +14,37 @@ layout: default
   </li>
 {% endfor %}
 </ul>
+
+<hr>
+
+<h2>Notes</h2>
+<p>
+Screenshot - press windows key and type screenshot. Highlight area to capture and press capture button. Image is saved into Pictures/Screenshot folder.
+</p>
+
+<hr>
+
+<h2>News</h2>
+<ul>
+{% for link in site.data.news_links %}
+  <li>
+    <a href="{{ link.url }}" target="_new">
+      {{ link.name }}
+    </a>
+  </li>
+{% endfor %}
+</ul>
+
+<hr>
+
+<h2>References</h2>
+<ul>
+{% for link in site.data.reference_links %}
+  <li>
+    <a href="{{ link.url }}" target="_new">
+      {{ link.name }}
+    </a>
+  </li>
+{% endfor %}
+</ul>
+
