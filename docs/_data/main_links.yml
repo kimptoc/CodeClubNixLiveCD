@@ -1,12 +1,18 @@
 - name: Scratch
   url: https://scratch.mit.edu/
+  img: https://upload.wikimedia.org/wikipedia/commons/d/d6/Scratch_Logo.svg
 - name: Scratch Projects
   url: https://projects.raspberrypi.org/en/collections/scratch
+  img:
 - name: Hour of Code Activities
   url: https://hourofcode.com/uk/learn
+  img:
 - name: Trinket
   url: https://trinket.io/
+  img:
 - name: Astro Pi 
   url: https://astro-pi.org/
+  img:
 - name: MS MakeCode for Micro:bit
   url: https://makecode.microbit.org/
+  img:
