@@ -9,7 +9,7 @@ layout: default
 <tr>
 {% for link in site.data.main_links %}
   <td>
-    <a href="{{ link.url }}" target="_new">
+    <a href="{{ link.url }}" target="_blank">
       <img alt="{{ link.name }}" src="{{ site.baseurl }}/assets/images/{{ link.img }}" width="150px" height="auto">
       <br>
       {{ link.name }}
@@ -31,7 +31,7 @@ Screenshot - press windows key and type screenshot. Highlight area to capture an
 <ul>
 {% for link in site.data.news_links %}
   <li>
-    <a href="{{ link.url }}" target="_new">
+    <a href="{{ link.url }}" target="_blank">
       {{ link.name }}
     </a>
   </li>
@@ -44,7 +44,7 @@ Screenshot - press windows key and type screenshot. Highlight area to capture an
 <ul>
 {% for link in site.data.reference_links %}
   <li>
-    <a href="{{ link.url }}" target="_new">
+    <a href="{{ link.url }}" target="_blank">
       {{ link.name }}
     </a>
   </li>
