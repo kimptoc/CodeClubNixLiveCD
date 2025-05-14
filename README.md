@@ -50,3 +50,6 @@ DONE
 Jekyll site/notes
 * bundle exec jekyll serve --baseurl="" --livereload 
 * bundle info --path jekyll-theme-minimal
+* https://tomcam.github.io/least-github-pages/adding-assets-directory-github-pages.html
+* https://docs.github.com/en/pages
+* analog clock - https://codepen.io/vaskopetrov/pen/yVEXjz
