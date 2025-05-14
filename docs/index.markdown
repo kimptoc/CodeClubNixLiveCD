@@ -51,3 +51,6 @@ Screenshot - press windows key and type screenshot. Highlight area to capture an
 {% endfor %}
 </ul>
 
+<a href="{{ site.baseurl }}/easteregg" target="_blank">
+    <img alt="Easter Eggs..." src="{{ site.baseurl }}/assets/images/easter-egg.png" width="50px" height="auto">
+</a>
