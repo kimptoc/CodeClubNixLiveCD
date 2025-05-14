@@ -3,16 +3,16 @@
   img: Scratch_Logo.svg
 - name: Scratch Projects
   url: https://projects.raspberrypi.org/en/collections/scratch
-  img: Scratch_Projects_Logo.svg
+  img: Scratch_Projects_Logo.png
 - name: Hour of Code Activities
   url: https://hourofcode.com/uk/learn
   img: hour-of-code-vector-logo.svg
 - name: Trinket
   url: https://trinket.io/
-  img:
+  img: trinket-logo.png
 - name: Astro Pi 
   url: https://astro-pi.org/
-  img:
+  img: astro_pi_logo.svg
 - name: MS MakeCode for Micro:bit
   url: https://makecode.microbit.org/
   img:
