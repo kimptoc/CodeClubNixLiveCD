@@ -10,7 +10,7 @@ layout: default
 {% for link in site.data.main_links %}
   <td>
     <a href="{{ link.url }}" target="_new">
-      <img alt="{{ link.name }}" src="{{ link.img }}">
+      <img alt="{{ link.name }}" src="{{ baseurl }}/images/{{ link.img }}">
       <br>
       {{ link.name }}
     </a>

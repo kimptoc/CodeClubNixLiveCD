@@ -1,9 +1,9 @@
 - name: Scratch
   url: https://scratch.mit.edu/
-  img: https://upload.wikimedia.org/wikipedia/commons/d/d6/Scratch_Logo.svg
+  img: Scratch_Logo.svg
 - name: Scratch Projects
   url: https://projects.raspberrypi.org/en/collections/scratch
-  img:
+  img: Scratch_Projects_Logo.svg
 - name: Hour of Code Activities
   url: https://hourofcode.com/uk/learn
   img:
