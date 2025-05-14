@@ -15,4 +15,4 @@
   img: astro_pi_logo.svg
 - name: MS MakeCode for Micro:bit
   url: https://makecode.microbit.org/
-  img:
+  img: microbit-logo.png
