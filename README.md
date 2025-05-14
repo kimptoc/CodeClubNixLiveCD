@@ -20,12 +20,8 @@ Useful links
 * packages - https://search.nixos.org/
 
 TODO
-* make pinned work same as autostart one. use same desktop file
+
 * focus gnome on chrome app, not in overview view (or whatever its called)
-* skip chrome intro, max window, etc, start on boot, open scratch page and maybe others - done, I think
-  * https://discourse.nixos.org/t/automatic-program-start-up-on-login-with-xorg/34261/2
-  * https://www.reddit.com/r/NixOS/comments/rezf0s/how_to_run_script_on_startup/
-* browser home pages. scratch, CC projects etc. public start me page? https://bit.ly/codeclubnxl  (eg xdg-open)  or use github/jekyll pages 
 * add printer support
 * resolution ok - test on CC PCs?  seems ok
 * startup sound on boot? Nice to have, might be annoying...
@@ -43,6 +39,11 @@ DONE
 * set timezone. Europe London not utc
 * wrong keymap: " (quote), hash and @ sign in wrong places - maybe just a mac issue? SEEMS fixed, checkin keymap changes.
 * turn off auto suspend
+* make pinned work same as autostart one. use same desktop file
+* skip chrome intro, max window, etc, start on boot, open scratch page and maybe others - done, I think
+  * https://discourse.nixos.org/t/automatic-program-start-up-on-login-with-xorg/34261/2
+  * https://www.reddit.com/r/NixOS/comments/rezf0s/how_to_run_script_on_startup/
+* browser home pages. scratch, CC projects etc. public start me page? https://bit.ly/codeclubnxl  (eg xdg-open)  or use github/jekyll pages 
 
 
 
