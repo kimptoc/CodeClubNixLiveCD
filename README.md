@@ -22,6 +22,7 @@ Useful links
 TODO
 
 * focus gnome on chrome app, not in overview view (or whatever its called)
+* add in the max/min top right window buttons
 * add printer support
 * resolution ok - test on CC PCs?  seems ok
 * startup sound on boot? Nice to have, might be annoying...
