@@ -21,17 +21,18 @@ Useful links
 
 TODO
 
-* focus gnome on chrome app, not in overview view (or whatever its called)
+* focus gnome on chrome app, not in activities overview view (or whatever its called)
 * add in the max/min top right window buttons
+* * https://www.reddit.com/r/NixOS/comments/wag1ve/recently_installed_nixos_gnome_windows_only_have/
 * add printer support
-* resolution ok - test on CC PCs?  seems ok
-* startup sound on boot? Nice to have, might be annoying...
-* system monitor not starting on boot
-* pin gnome-system-monitor - tried but not working
-* no wifi on mac, not issue for CC, just me.
 
 
 DONE
+* NOT DONE startup sound on boot? Nice to have, might be annoying...
+* NOT DONE system monitor not starting on boot
+* NOT DONE pin gnome-system-monitor - tried but not working
+* NOT DONE - no wifi on mac, not issue for CC, just me.
+* resolution ok - test on CC PCs?  seems ok
 * python
 * add other browsers - opera, edge
 * disable gnome tour
