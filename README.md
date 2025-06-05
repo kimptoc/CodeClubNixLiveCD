@@ -22,12 +22,12 @@ Useful links
 TODO
 
 * focus gnome on chrome app, not in activities overview view (or whatever its called)
-* add in the max/min top right window buttons
-* * https://www.reddit.com/r/NixOS/comments/wag1ve/recently_installed_nixos_gnome_windows_only_have/
 * add printer support
 
 
 DONE
+* add in the max/min top right window buttons
+* * https://www.reddit.com/r/NixOS/comments/wag1ve/recently_installed_nixos_gnome_windows_only_have/
 * NOT DONE startup sound on boot? Nice to have, might be annoying...
 * NOT DONE system monitor not starting on boot
 * NOT DONE pin gnome-system-monitor - tried but not working

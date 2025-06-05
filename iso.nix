@@ -15,6 +15,11 @@
       favorite-apps=[ 'chrome.desktop', 'firefox.desktop', 'nixos-manual.desktop', 'org.gnome.Terminal.desktop', 'org.gnome.Nautilus.desktop' ]
     '';
     enable = true;
+    extraGSettingsOverrides = '' 
+[org.gnome.desktop.wm.preferences]
+button-layout='appmenu:minimize,maximize,close'
+'';
+
   };
 
   services.xserver.displayManager.gdm.autoSuspend = false;
