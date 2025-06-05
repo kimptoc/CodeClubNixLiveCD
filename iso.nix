@@ -18,6 +18,8 @@
     extraGSettingsOverrides = '' 
 [org.gnome.desktop.wm.preferences]
 button-layout='appmenu:minimize,maximize,close'
+[org.gnome.Extensions]
+window-maximized=true
 '';
 
   };
@@ -91,7 +93,7 @@ button-layout='appmenu:minimize,maximize,close'
       echo "[Desktop Entry]" > $CHRDESK
       echo "Name=Google Chrome" >> $CHRDESK
 
-      echo "Exec=${pkgs.google-chrome}/bin/google-chrome-stable --disable-fre --no-default-browser-check --no-first-run --hide-crash-restore-bubble https://bit.ly/codeclubnxl" >> $CHRDESK
+      echo "Exec=${pkgs.google-chrome}/bin/google-chrome-stable --disable-fre --no-default-browser-check --no-first-run --hide-crash-restore-bubble https://kimptoc.github.io/CodeClubNixLiveCD/" >> $CHRDESK
       echo "StartupNotify=true" >> $CHRDESK
       echo "Terminal=false" >> $CHRDESK
       echo "Icon=google-chrome" >> $CHRDESK

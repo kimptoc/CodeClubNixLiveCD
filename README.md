@@ -26,6 +26,8 @@ TODO
 
 
 DONE
+* use direct github pages link and not via bit.ly
+* start chrome maximized, I think
 * add in the max/min top right window buttons
 * * https://www.reddit.com/r/NixOS/comments/wag1ve/recently_installed_nixos_gnome_windows_only_have/
 * NOT DONE startup sound on boot? Nice to have, might be annoying...
