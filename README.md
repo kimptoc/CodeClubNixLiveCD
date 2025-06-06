@@ -14,6 +14,10 @@ Test locally in a VM
 * $ nixos-rebuild build-vm -I nixos-config=./iso.nix
 * $ ./result/bin/run-nixos-vm
 
+Or use qemu on the iso
+* nix-shell -p qemu
+* qemu-system-x86_64 -m 3096M --drive media=cdrom,file=result/iso/*.iso,format=raw,readonly=on
+
 Useful links
 * LiveCD how to - https://nixos.wiki/wiki/Creating_a_NixOS_live_CD
 * Live CD variations - https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/installer/cd-dvd/installation-cd-graphical-gnome.nix
