@@ -67,8 +67,6 @@ window-maximized=true
   temurin-bin
   prismlauncher
   google-chrome
-  microsoft-edge
-  opera
   vim
   git
   wget
