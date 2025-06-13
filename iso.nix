@@ -56,6 +56,8 @@ window-maximized=true
 
   services.locate.enable = true;
 
+  services.printing.enable = true;
+
   boot.extraModulePackages = [ config.boot.kernelPackages.broadcom_sta ];
  
   nixpkgs.config.allowUnfree = true;
