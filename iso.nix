@@ -18,6 +18,8 @@
     extraGSettingsOverrides = '' 
 [org.gnome.desktop.wm.preferences]
 button-layout='appmenu:minimize,maximize,close'
+[org.gnome.shell]
+enabled-extensions=['no-overview@fthx']
 [org.gnome.Extensions]
 window-maximized=true
 '';
@@ -73,6 +75,7 @@ window-maximized=true
   nmap
   pkgs.gnome-tweaks
   findutils
+  gnomeExtensions.no-overview
   ];
 
   environment.gnome.excludePackages = [ pkgs.gnome-tour ];

@@ -24,12 +24,12 @@ Useful links
 * packages - https://search.nixos.org/
 
 TODO
-* upgrade to nixos 25.05 - largely done, had to remove Edge and Opera, as package is not supported.  Getting issues with basic apps - system monitor/tweaks, discussing on nixos discourse. also no generation liat on boot- bug or done differently now?
-* focus gnome on chrome app, not in activities overview view (or whatever its called)
 * add printer support
 
 
 DONE
+* upgrade to nixos 25.05 - largely done, had to remove Edge and Opera, as package is not supported.  Getting issues with basic apps - system monitor/tweaks, discussing on nixos discourse. also no generation liat on boot- bug or done differently now? Can get them to work using prefix GSK_RENDERER=opengl
+* focus gnome on chrome app, not in activities overview view (or whatever its called)
 * use direct github pages link and not via bit.ly
 * start chrome maximized, I think
 * add in the max/min top right window buttons
