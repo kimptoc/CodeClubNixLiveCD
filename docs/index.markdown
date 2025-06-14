@@ -22,9 +22,12 @@ layout: default
 
 <h2>Notes</h2>
 <p>
-Screenshot - press windows key and type screenshot. Highlight area to capture and press capture button. Image is saved into Pictures/Screenshot folder.
+<b>Screenshot</b> - press windows key and type screenshot. Highlight area to capture and press capture button. Image is saved into Pictures/Screenshot folder.
 </p>
-
+<p>
+<b>NixOS 25.05</b> - some apps (eg settings, tweaks, monitor) need to use opengl - if they don't start ok, set this before starting them 
+     <pre>export GSK_RENDERER=opengl</pre>
+</p>
 <hr>
 
 <h2>News</h2>
