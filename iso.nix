@@ -20,8 +20,6 @@
 button-layout='appmenu:minimize,maximize,close'
 [org.gnome.shell]
 enabled-extensions=['no-overview@fthx']
-[org.gnome.Extensions]
-window-maximized=true
 '';
 
   };
@@ -100,7 +98,7 @@ window-maximized=true
       echo "[Desktop Entry]" > $CHRDESK
       echo "Name=Google Chrome" >> $CHRDESK
 
-      echo "Exec=${pkgs.google-chrome}/bin/google-chrome-stable --disable-fre --no-default-browser-check --no-first-run --hide-crash-restore-bubble https://kimptoc.github.io/CodeClubNixLiveCD/" >> $CHRDESK
+      echo "Exec=${pkgs.google-chrome}/bin/google-chrome-stable --disable-fre --no-default-browser-check --no-first-run --hide-crash-restore-bubble --start-maximized https://kimptoc.github.io/CodeClubNixLiveCD/" >> $CHRDESK
       echo "StartupNotify=true" >> $CHRDESK
       echo "Terminal=false" >> $CHRDESK
       echo "Icon=google-chrome" >> $CHRDESK
