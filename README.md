@@ -24,7 +24,7 @@ Useful links
 * packages - https://search.nixos.org/
 
 TODO
-- chrome window not maximised on starting
+- chrome window not maximised on starting, try --start-maximized chrome option. remove gnome setting
 
 DONE
 * add printer support
