@@ -80,6 +80,10 @@ window-maximized=true
   gnomeExtensions.no-overview
   ];
 
+  environment.variables = {
+    GSK_RENDERER = "ngl";
+  };
+
   environment.gnome.excludePackages = [ pkgs.gnome-tour ];
 
   systemd.user.services.myautostart = {
