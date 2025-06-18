@@ -24,7 +24,7 @@ Useful links
 * packages - https://search.nixos.org/
 
 TODO
-
+- chrome window not maximised on starting
 
 DONE
 * add printer support
