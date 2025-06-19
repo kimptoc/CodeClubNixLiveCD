@@ -24,9 +24,9 @@ Useful links
 * packages - https://search.nixos.org/
 
 TODO
-- chrome window not maximised on starting, try --start-maximized chrome option. remove gnome setting
 
 DONE
+* chrome window not maximised on starting, try --start-maximized chrome option. remove gnome setting
 * add printer support
 * upgrade to nixos 25.05 - largely done, had to remove Edge and Opera, as package is not supported.  Getting issues with basic apps - system monitor/tweaks, discussing on nixos discourse. also no generation liat on boot- bug or done differently now? Can get them to work using prefix GSK_RENDERER=opengl
 * focus gnome on chrome app, not in activities overview view (or whatever its called)
