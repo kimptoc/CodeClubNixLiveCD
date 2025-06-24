@@ -24,6 +24,8 @@ Useful links
 * packages - https://search.nixos.org/
 
 TODO
+- change to just have one workspace, multiple leads to issue of pressing the wrong key, switching workspace and struggling to get back
+
 
 DONE
 * chrome window not maximised on starting, try --start-maximized chrome option. remove gnome setting
