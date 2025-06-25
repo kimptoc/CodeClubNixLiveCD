@@ -4,6 +4,9 @@
 - name: Scratch Projects
   url: https://projects.raspberrypi.org/en/collections/scratch
   img: Scratch_Projects_Logo.png
+- name: Code.org Activities
+  url: https://code.org/en-US/hour-of-code
+  img: codeorg3746.jpg
 - name: Hour of Code Activities
   url: https://hourofcode.com/uk/learn
   img: hour-of-code-vector-logo.svg
