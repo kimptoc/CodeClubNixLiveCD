@@ -64,3 +64,4 @@ Jekyll site/notes
 * https://tomcam.github.io/least-github-pages/adding-assets-directory-github-pages.html
 * https://docs.github.com/en/pages
 * analog clock - https://codepen.io/vaskopetrov/pen/yVEXjz
+* using leap day jekyll theme - https://github.com/pages-themes/leap-day 

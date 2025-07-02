@@ -21,7 +21,7 @@
 title: New Cross Learning Code Club
 email: nxl.leader@kimptoc.net
 description: >- # this means to ignore newlines until "baseurl:"
-  Links that we use in our Code Club sessions.
+  Useful links
 baseurl: "/CodeClubNixLiveCD" # the subpath of your site, e.g. /blog
 url: "https://kimptoc.github.io" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username: kimptoc
