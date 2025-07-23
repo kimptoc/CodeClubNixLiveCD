@@ -19,3 +19,6 @@
 - name: MS MakeCode for Micro:bit
   url: https://makecode.microbit.org/
   img: microbit-logo.png
+- name: Unplugged Activities
+  url: https://codeclub.org/en/resources/activities
+  img: unplugged.png
