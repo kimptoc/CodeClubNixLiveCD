@@ -18,15 +18,25 @@ layout: default
 {% endfor %}
 </tr>
 </table>
+
+<hr>
+
+<h2>Pre Blocks Projects</h2>
+<ul>
+{% for link in site.data.pre_blocks_links %}
+  <li>
+    <a href="{{ link.url }}" target="_blank">
+      {{ link.name }}
+    </a>
+  </li>
+{% endfor %}
+</ul>
+
 <hr>
 
 <h2>Notes</h2>
 <p>
 <b>Screenshot</b> - press windows key and type screenshot. Highlight area to capture and press capture button. Image is saved into Pictures/Screenshot folder.
-</p>
-<p>
-<b>NixOS 25.05</b> - some apps (eg settings, tweaks, monitor) need to use opengl - if they don't start ok, set this before starting them 
-     <pre>export GSK_RENDERER=opengl</pre>
 </p>
 <hr>
 
@@ -53,6 +63,8 @@ layout: default
   </li>
 {% endfor %}
 </ul>
+
+<hr>
 
 <a href="{{ site.baseurl }}/easteregg" target="_blank">
     <img alt="Easter Eggs..." src="{{ site.baseurl }}/assets/images/easter-egg.png" width="50px" height="auto">
