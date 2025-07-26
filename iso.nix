@@ -57,6 +57,10 @@ enabled-extensions=['no-overview@fthx']
   services.printing.enable = true;
 
   boot.extraModulePackages = [ config.boot.kernelPackages.broadcom_sta ];
+
+  nixpkgs.config.permittedInsecurePackages = [
+    "broadcom-sta-6.30.223.271-57-6.12.39"
+  ];
  
   nixpkgs.config.allowUnfree = true;
 
@@ -90,7 +94,8 @@ enabled-extensions=['no-overview@fthx']
     script = ''
       export MYLOG=$HOME/myautostart.log
       echo "MYAUTOSTART" > $MYLOG
-      date > $MYLOG
+      date >> $MYLOG
+
       mkdir -p $HOME/.config/autostart >> $MYLOG
       mkdir -p $HOME/.local/share/applications/ >> $MYLOG
     
@@ -107,6 +112,10 @@ enabled-extensions=['no-overview@fthx']
       cat $CHRDESK >> $MYLOG
 
       cp $CHRDESK $HOME/.local/share/applications/ >> $MYLOG
+
+      echo "MYAUTOSTART end" >> $MYLOG
+      date >> $MYLOG
+      
     '';
     wantedBy = [ "graphical-session.target" ]; # starts after login
     partOf = [ "graphical-session.target" ];
