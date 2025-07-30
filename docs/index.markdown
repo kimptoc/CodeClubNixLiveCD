@@ -34,6 +34,19 @@ layout: default
 
 <hr>
 
+<h2>Basic Blocks Projects</h2>
+<ul>
+{% for link in site.data.basic_blocks_links %}
+  <li>
+    <a href="{{ link.url }}" target="_blank">
+      {{ link.name }}
+    </a>
+  </li>
+{% endfor %}
+</ul>
+
+<hr>
+
 <h2>Notes</h2>
 <p>
 <b>Screenshot</b> - press windows key and type screenshot. Highlight area to capture and press capture button. Image is saved into Pictures/Screenshot folder.
