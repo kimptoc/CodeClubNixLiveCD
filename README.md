@@ -24,6 +24,8 @@ Useful links
 * packages - https://search.nixos.org/
 
 TODO
+- website - show the other scratch projects links
+- website - review hour of code projects, barbie onwards, any to add to website
 - change to just have one workspace, multiple leads to issue of pressing the wrong key, switching workspace and struggling to get back
 
 
