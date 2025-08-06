@@ -1,6 +1,8 @@
 - name: Minecraft 
   url: https://code.org/en-US/hour-of-code/minecraft
-- name: Frozen
+- name: Frozen - Anna and Elsa
   url: https://studio.code.org/courses/frozen/units/1/lessons/1/levels/1
 - name: Star Wars
   url: https://studio.code.org/courses/starwarsblocks/units/1
+- name: Flappy game
+  url: https://hourofcode.com/flap
