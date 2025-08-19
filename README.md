@@ -27,7 +27,7 @@ TODO
 - website - show the other scratch projects links
 - website - review hour of code projects, barbie onwards, any to add to website
 - change to just have one workspace, multiple leads to issue of pressing the wrong key, switching workspace and struggling to get back
-
+- change clock to show seconds
 
 DONE
 * chrome window not maximised on starting, try --start-maximized chrome option. remove gnome setting
