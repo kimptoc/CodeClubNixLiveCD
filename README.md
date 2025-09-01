@@ -29,9 +29,9 @@ TODO
 - change to just have one workspace, multiple leads to issue of pressing the wrong key, switching workspace and struggling to get back
 - change clock to show seconds
 - change boot entry to not be called installer
-- add some linux/gnome games (but not easy to find)
 
 DONE
+* add some linux/gnome games (but not easy to find) - for mouse practice
 * chrome window not maximised on starting, try --start-maximized chrome option. remove gnome setting
 * add printer support
 * upgrade to nixos 25.05 - largely done, had to remove Edge and Opera, as package is not supported.  Getting issues with basic apps - system monitor/tweaks, discussing on nixos discourse. also no generation liat on boot- bug or done differently now? Can get them to work using prefix GSK_RENDERER=opengl
