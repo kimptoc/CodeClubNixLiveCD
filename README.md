@@ -22,6 +22,8 @@ Useful links
 * LiveCD how to - https://nixos.wiki/wiki/Creating_a_NixOS_live_CD
 * Live CD variations - https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/installer/cd-dvd/installation-cd-graphical-gnome.nix
 * packages - https://search.nixos.org/
+* github pages site - https://kimptoc.github.io/CodeClubNixLiveCD/
+* bitly link to it - https://bit.ly/codeclubnxl
 
 TODO
 - website - show the other scratch projects links
