@@ -68,4 +68,8 @@ Jekyll site/notes
 * https://tomcam.github.io/least-github-pages/adding-assets-directory-github-pages.html
 * https://docs.github.com/en/pages
 * analog clock - https://codepen.io/vaskopetrov/pen/yVEXjz
-* using leap day jekyll theme - https://github.com/pages-themes/leap-day 
+* using leap day jekyll theme - https://github.com/pages-themes/leap-day
+
+Roblox Studio
+* Install it locally, under Windows - https://create.roblox.com/docs/tutorials/curriculums/studio/install-studio
+* Educational Experiences - https://corp.roblox.com/educational-experiences
