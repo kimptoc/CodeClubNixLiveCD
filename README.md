@@ -26,7 +26,6 @@ Useful links
 * bitly link to it - https://bit.ly/codeclubnxl
 
 TODO
-- add swap if possible 
 - website - show the other scratch projects links
 - website - review hour of code projects, barbie onwards, any to add to website
 - change to just have one workspace, multiple leads to issue of pressing the wrong key, switching workspace and struggling to get back
@@ -34,6 +33,8 @@ TODO
 - change boot entry to not be called installer
 
 DONE
+- add swap if possible - added ram based swap
+- disable keyring password prompt and google password manager
 * add some linux/gnome games (but not easy to find) - for mouse practice
 * chrome window not maximised on starting, try --start-maximized chrome option. remove gnome setting
 * add printer support
@@ -76,3 +77,5 @@ Jekyll site/notes
 Roblox Studio
 * Install it locally, under Windows - https://create.roblox.com/docs/tutorials/curriculums/studio/install-studio
 * Educational Experiences - https://corp.roblox.com/educational-experiences
+
+

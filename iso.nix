@@ -8,6 +8,11 @@
     <nixpkgs/nixos/modules/installer/cd-dvd/channel.nix>
   ];
 
+  zramSwap = {
+    enable = true;
+    memoryPercent = 50;  # Uses 50% of RAM for compressed swap
+  };
+
   services.xserver.desktopManager.gnome = {
     # Add Firefox and other tools useful for installation to the launcher
     favoriteAppsOverride = ''
@@ -59,7 +64,7 @@ enabled-extensions=['no-overview@fthx']
   boot.extraModulePackages = [ config.boot.kernelPackages.broadcom_sta ];
 
   nixpkgs.config.permittedInsecurePackages = [
-    "broadcom-sta-6.30.223.271-57-6.12.44"
+    "broadcom-sta-6.30.223.271-57-6.12.55"
   ];
  
   nixpkgs.config.allowUnfree = true;
@@ -90,6 +95,13 @@ enabled-extensions=['no-overview@fthx']
     GSK_RENDERER = "ngl";
   };
 
+# Create Chrome policy directory and files
+  environment.etc."opt/chrome/policies/managed/disable-password-manager.json".text = ''
+  {
+    "PasswordManagerEnabled": false
+  }
+  '';
+
   environment.gnome.excludePackages = [ pkgs.gnome-tour ];
 
   systemd.user.services.myautostart = {
@@ -107,7 +119,7 @@ enabled-extensions=['no-overview@fthx']
       echo "[Desktop Entry]" > $CHRDESK
       echo "Name=Google Chrome" >> $CHRDESK
 
-      echo "Exec=${pkgs.google-chrome}/bin/google-chrome-stable --disable-fre --no-default-browser-check --no-first-run --hide-crash-restore-bubble --start-maximized https://kimptoc.github.io/CodeClubNixLiveCD/" >> $CHRDESK
+      echo "Exec=${pkgs.google-chrome}/bin/google-chrome-stable --disable-fre --no-default-browser-check --no-first-run --hide-crash-restore-bubble --password-store=basic --start-maximized https://kimptoc.github.io/CodeClubNixLiveCD/" >> $CHRDESK
       echo "StartupNotify=true" >> $CHRDESK
       echo "Terminal=false" >> $CHRDESK
       echo "Icon=google-chrome" >> $CHRDESK
