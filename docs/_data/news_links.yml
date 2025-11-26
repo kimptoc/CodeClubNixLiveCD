@@ -1,5 +1,5 @@
-- name: Discover 'This is our Code Club' projects
-  url: https://codeclub.org/en/our-code-club
+- name: Project of the month - CATS!
+  url: https://projects.raspberrypi.org/en/projects/cats
 - name: European Astro Pi Challenge is back on 8 September 2025! 
   url: https://astro-pi.org/
 - name: Code Club Australia - Moonhack - registration opens 1 September 2025
