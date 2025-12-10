@@ -1,3 +1,7 @@
+- name: Code Club Insights Evaluation/1
+  url: https://rpf.io/cci-ncl1
+#- name: Code Club Insights Evaluation/2
+#  url: https://rpf.io/cci-ncl2
 - name: Project of the month - CATS!
   url: https://projects.raspberrypi.org/en/projects/cats
 - name: European Astro Pi Challenge is back on 8 September 2025! 
