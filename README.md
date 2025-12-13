@@ -26,6 +26,7 @@ Useful links
 * bitly link to it - https://bit.ly/codeclubnxl
 
 TODO
+- nixos 25.11 update. disable gnome donation link. min max buttons gone. chrome appears as sep app icon. 
 - website - show the other scratch projects links
 - website - review hour of code projects, barbie onwards, any to add to website
 - change to just have one workspace, multiple leads to issue of pressing the wrong key, switching workspace and struggling to get back
