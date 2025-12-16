@@ -131,7 +131,7 @@ clock-show-seconds=true
       Homepage = {
         URL = "https://kimptoc.github.io/CodeClubNixLiveCD/";
         Locked = true;  # Set to false if you want users to be able to change it
-        StartPage = "homepage";  # Options: "homepage", "previous-session", "homepage-locked"
+        StartPage = "homepage-locked";  # Options: "homepage", "previous-session", "homepage-locked"
       };
  
       # Optional: Also disable the password prompt

@@ -26,15 +26,16 @@ Useful links
 * bitly link to it - https://bit.ly/codeclubnxl
 
 TODO
-- nixos 25.11 update. disable gnome donation link. min max buttons gone. chrome appears as sep app icon. 
-- switch to firefox.  disable privacy page. disable password manager. ensure its default browser. don't offer to open previous tabs or make it default?
-- website - show the other scratch projects links
-- website - review hour of code projects, barbie onwards, any to add to website
-- change to just have one workspace, multiple leads to issue of pressing the wrong key, switching workspace and struggling to get back
-- change clock to show seconds
-- change boot entry to not be called installer
+- firefox - asks about restore previous tabs, maybe switch to always doing that to avoid question
 
 DONE
+- change boot entry to not be called installer
+- change clock to show seconds
+- change to just have one workspace, multiple leads to issue of pressing the wrong key, switching workspace and struggling to get back
+- website - review hour of code projects, barbie onwards, any to add to website
+- website - show the other scratch projects links
+- switch to firefox.  disable privacy page. disable password manager. ensure its default browser. don't offer to open previous tabs or make it default?
+- nixos 25.11 update. disable gnome donation link. min max buttons gone. chrome appears as sep app icon. 
 - add swap if possible - added ram based swap
 - disable keyring password prompt and google password manager
 * add some linux/gnome games (but not easy to find) - for mouse practice
