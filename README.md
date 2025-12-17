@@ -27,6 +27,7 @@ Useful links
 
 TODO
 - firefox - asks about restore previous tabs, maybe switch to always doing that to avoid question
+- firefox - did not auto start on nxl machines but worked on macs??
 
 DONE
 - change boot entry to not be called installer
