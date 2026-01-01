@@ -5,10 +5,10 @@
 layout: default
 ---
 <h2>Main Links</h2>
-<table>
+<table style="border-collapse: collapse;">
 <tr>
 {% for link in site.data.main_links %}
-  <td>
+  <td style="vertical-align: middle; text-align: center; border: 1px solid #ddd; padding: 10px;">
     <a href="{{ link.url }}" target="_blank">
       <img alt="{{ link.name }}" src="{{ site.baseurl }}/assets/images/{{ link.img }}" width="150px" height="auto">
       <br>

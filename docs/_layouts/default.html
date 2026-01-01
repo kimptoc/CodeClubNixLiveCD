@@ -6,6 +6,7 @@
 
 {% seo %}
     <link rel="stylesheet" href="{{ '/assets/css/style.css?v=' | append: site.github.build_revision | relative_url }}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poiret+One">
     <script src="https://code.jquery.com/jquery-3.3.0.min.js" integrity="sha256-RTQy8VOmNlT6b2PIRur37p6JEBZUE7o8wPgMvu18MC4=" crossorigin="anonymous"></script>
     <script src="{{ '/assets/js/main.js' | relative_url }}"></script>
     <!--[if lt IE 9]>
@@ -14,8 +15,219 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
 
     {% include head-custom.html %}
+
+    <style>
+      .clock {
+        background: #ececec;
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        border: 10px solid #333;
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        box-shadow: 0 2vw 4vw -1vw rgba(0,0,0,0.8);
+        z-index: 1000;
+      }
+
+      .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #ccc;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        margin: auto;
+        position: absolute;
+        z-index: 10;
+        box-shadow: 0 2px 4px -1px black;
+      }
+
+      .hour-hand {
+        position: absolute;
+        z-index: 5;
+        width: 3px;
+        height: 43px;
+        background: #333;
+        top: 53px;
+        transform-origin: 50% 48px;
+        left: 50%;
+        margin-left: -1.5px;
+        border-top-left-radius: 50%;
+        border-top-right-radius: 50%;
+      }
+
+      .minute-hand {
+        position: absolute;
+        z-index: 6;
+        width: 3px;
+        height: 67px;
+        background: #666;
+        top: 31px;
+        left: 50%;
+        margin-left: -1.5px;
+        border-top-left-radius: 50%;
+        border-top-right-radius: 50%;
+        transform-origin: 50% 70px;
+      }
+
+      .second-hand {
+        position: absolute;
+        z-index: 7;
+        width: 2px;
+        height: 80px;
+        background: gold;
+        top: 17px;
+        left: 50%;
+        margin-left: -1px;
+        border-top-left-radius: 50%;
+        border-top-right-radius: 50%;
+        transform-origin: 50% 83px;
+      }
+
+      .clock span {
+        display: inline-block;
+        position: absolute;
+        color: #333;
+        font-size: 16px;
+        font-family: 'Poiret One';
+        font-weight: 700;
+        z-index: 4;
+      }
+
+      .h12 {
+        top: 20px;
+        left: 50%;
+        margin-left: -7px;
+      }
+      .h3 {
+        top: 93px;
+        right: 20px;
+      }
+      .h6 {
+        bottom: 20px;
+        left: 50%;
+        margin-left: -4px;
+      }
+      .h9 {
+        left: 22px;
+        top: 93px;
+      }
+
+      .diallines {
+        position: absolute;
+        z-index: 2;
+        width: 1px;
+        height: 10px;
+        background: #666;
+        left: 50%;
+        margin-left: -0.5px;
+        transform-origin: 50% 100px;
+      }
+      .diallines:nth-of-type(5n) {
+        position: absolute;
+        z-index: 2;
+        width: 2px;
+        height: 17px;
+        background: #666;
+        left: 50%;
+        margin-left: -1px;
+        transform-origin: 50% 100px;
+      }
+
+      .info {
+        position: absolute;
+        width: 100px;
+        height: 16px;
+        border-radius: 5px;
+        background: #ccc;
+        text-align: center;
+        line-height: 16px;
+        color: #000;
+        font-size: 9px;
+        left: 50%;
+        margin-left: -50px;
+        font-family: "Poiret One";
+        font-weight: 700;
+        z-index: 3;
+        letter-spacing: 2px;
+      }
+      .date {
+        top: 53px;
+      }
+      .day {
+        top: 133px;
+      }
+
+      @media (max-width: 768px) {
+        .clock {
+          width: 150px;
+          height: 150px;
+          top: 10px;
+          right: 10px;
+        }
+        .hour-hand {
+          height: 32px;
+          top: 40px;
+          transform-origin: 50% 36px;
+        }
+        .minute-hand {
+          height: 50px;
+          top: 23px;
+          transform-origin: 50% 52px;
+        }
+        .second-hand {
+          height: 60px;
+          top: 13px;
+          transform-origin: 50% 62px;
+        }
+        .diallines {
+          height: 8px;
+          transform-origin: 50% 75px;
+        }
+        .diallines:nth-of-type(5n) {
+          height: 13px;
+          transform-origin: 50% 75px;
+        }
+        .h12 { top: 15px; }
+        .h3 { top: 70px; right: 15px; }
+        .h6 { bottom: 15px; }
+        .h9 { left: 17px; top: 70px; }
+        .info {
+          width: 80px;
+          height: 14px;
+          line-height: 14px;
+          font-size: 8px;
+          margin-left: -40px;
+        }
+        .date { top: 40px; }
+        .day { top: 100px; }
+      }
+    </style>
   </head>
   <body>
+
+      <div class="clock">
+        <div>
+          <div class="info date"></div>
+          <div class="info day"></div>
+        </div>
+        <div class="dot"></div>
+        <div>
+          <div class="hour-hand"></div>
+          <div class="minute-hand"></div>
+          <div class="second-hand"></div>
+        </div>
+        <div>
+          <span class="h3">3</span>
+          <span class="h6">6</span>
+          <span class="h9">9</span>
+          <span class="h12">12</span>
+        </div>
+        <div class="diallines"></div>
+      </div>
 
       <header>
         <h1>{{ page.title | default: site.title | default: site.github.repository_name }}</h1>
@@ -51,5 +263,58 @@
         <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/mattgraham">mattgraham</a></small></p>
       </footer>
     </div>
+
+    <script>
+      var dialLines = document.getElementsByClassName('diallines');
+      var clockEl = document.getElementsByClassName('clock')[0];
+
+      for (var i = 1; i < 60; i++) {
+        clockEl.innerHTML += "<div class='diallines'></div>";
+        dialLines[i].style.transform = "rotate(" + 6 * i + "deg)";
+      }
+
+      function clock() {
+        var weekday = [
+              "Sunday",
+              "Monday",
+              "Tuesday",
+              "Wednesday",
+              "Thursday",
+              "Friday",
+              "Saturday"
+            ],
+            d = new Date(),
+            h = d.getHours(),
+            m = d.getMinutes(),
+            s = d.getSeconds(),
+            date = d.getDate(),
+            month = d.getMonth() + 1,
+            year = d.getFullYear(),
+
+            hDeg = h * 30 + m * (360/720),
+            mDeg = m * 6 + s * (360/3600),
+            sDeg = s * 6,
+
+            hEl = document.querySelector('.hour-hand'),
+            mEl = document.querySelector('.minute-hand'),
+            sEl = document.querySelector('.second-hand'),
+            dateEl = document.querySelector('.date'),
+            dayEl = document.querySelector('.day');
+
+            var day = weekday[d.getDay()];
+
+        if(month < 9) {
+          month = "0" + month;
+        }
+
+        hEl.style.transform = "rotate("+hDeg+"deg)";
+        mEl.style.transform = "rotate("+mDeg+"deg)";
+        sEl.style.transform = "rotate("+sDeg+"deg)";
+        dateEl.innerHTML = date+"/"+month+"/"+year;
+        dayEl.innerHTML = day;
+      }
+
+      setInterval("clock()", 100);
+    </script>
   </body>
 </html>
