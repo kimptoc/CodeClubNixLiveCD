@@ -21,29 +21,138 @@ layout: default
 
 <hr>
 
-<h2>Pre Blocks Projects</h2>
-<ul>
-{% for link in site.data.pre_blocks_links %}
-  <li>
-    <a href="{{ link.url }}" target="_blank">
-      {{ link.name }}
-    </a>
-  </li>
-{% endfor %}
-</ul>
+<div class="tabs">
+  <div class="tab-buttons">
+    <button class="tab-button" onclick="openTab(event, 'news')">News</button>
+    <button class="tab-button" onclick="openTab(event, 'pre-blocks')">Pre Blocks</button>
+    <button class="tab-button" onclick="openTab(event, 'basic-blocks')">Basic Blocks</button>
+    <button class="tab-button" onclick="openTab(event, 'references')">References</button>
+  </div>
 
-<hr>
+  <div id="news" class="tab-content">
+    <h2>News</h2>
+    <ul>
+    {% for link in site.data.news_links %}
+      <li>
+        <a href="{{ link.url }}" target="_blank">
+          {{ link.name }}
+        </a>
+      </li>
+    {% endfor %}
+    </ul>
+  </div>
 
-<h2>Basic Blocks Projects</h2>
-<ul>
-{% for link in site.data.basic_blocks_links %}
-  <li>
-    <a href="{{ link.url }}" target="_blank">
-      {{ link.name }}
-    </a>
-  </li>
-{% endfor %}
-</ul>
+  <div id="pre-blocks" class="tab-content">
+    <h2>Pre Blocks Projects</h2>
+    <ul>
+    {% for link in site.data.pre_blocks_links %}
+      <li>
+        <a href="{{ link.url }}" target="_blank">
+          {{ link.name }}
+        </a>
+      </li>
+    {% endfor %}
+    </ul>
+  </div>
+
+  <div id="basic-blocks" class="tab-content">
+    <h2>Basic Blocks Projects</h2>
+    <ul>
+    {% for link in site.data.basic_blocks_links %}
+      <li>
+        <a href="{{ link.url }}" target="_blank">
+          {{ link.name }}
+        </a>
+      </li>
+    {% endfor %}
+    </ul>
+  </div>
+
+  <div id="references" class="tab-content">
+    <h2>References</h2>
+    <ul>
+    {% for link in site.data.reference_links %}
+      <li>
+        <a href="{{ link.url }}" target="_blank">
+          {{ link.name }}
+        </a>
+      </li>
+    {% endfor %}
+    </ul>
+  </div>
+</div>
+
+<script>
+function openTab(evt, tabName) {
+  var i, tabcontent, tabbuttons;
+
+  tabcontent = document.getElementsByClassName("tab-content");
+  for (i = 0; i < tabcontent.length; i++) {
+    tabcontent[i].style.display = "none";
+  }
+
+  tabbuttons = document.getElementsByClassName("tab-button");
+  for (i = 0; i < tabbuttons.length; i++) {
+    tabbuttons[i].className = tabbuttons[i].className.replace(" active", "");
+  }
+
+  document.getElementById(tabName).style.display = "block";
+  evt.currentTarget.className += " active";
+}
+
+// Show News tab by default
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('news').style.display = 'block';
+  document.getElementsByClassName('tab-button')[0].className += ' active';
+});
+</script>
+
+<style>
+.tabs {
+  margin: 20px 0;
+}
+
+.tab-buttons {
+  overflow: hidden;
+  border-bottom: 2px solid #333;
+  margin-bottom: 20px;
+}
+
+.tab-button {
+  background-color: #f1f1f1;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 14px 16px;
+  transition: 0.3s;
+  font-size: 16px;
+  margin-right: 2px;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+}
+
+.tab-button:hover {
+  background-color: #ddd;
+}
+
+.tab-button.active {
+  background-color: #333;
+  color: white;
+}
+
+.tab-content {
+  display: none;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-top: none;
+  animation: fadeEffect 0.5s;
+}
+
+@keyframes fadeEffect {
+  from {opacity: 0;}
+  to {opacity: 1;}
+}
+</style>
 
 <hr>
 
@@ -51,31 +160,6 @@ layout: default
 <p>
 <b>Screenshot</b> - press windows key and type screenshot. Highlight area to capture and press capture button. Image is saved into Pictures/Screenshot folder.
 </p>
-<hr>
-
-<h2>News</h2>
-<ul>
-{% for link in site.data.news_links %}
-  <li>
-    <a href="{{ link.url }}" target="_blank">
-      {{ link.name }}
-    </a>
-  </li>
-{% endfor %}
-</ul>
-
-<hr>
-
-<h2>References</h2>
-<ul>
-{% for link in site.data.reference_links %}
-  <li>
-    <a href="{{ link.url }}" target="_blank">
-      {{ link.name }}
-    </a>
-  </li>
-{% endfor %}
-</ul>
 
 <hr>
 

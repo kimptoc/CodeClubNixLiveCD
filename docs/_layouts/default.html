@@ -205,6 +205,17 @@
         .date { top: 40px; }
         .day { top: 100px; }
       }
+
+      /* Hide navigation sidebar */
+      nav {
+        display: none !important;
+      }
+
+      /* Expand content to full width without nav */
+      .wrapper section {
+        width: 100% !important;
+        margin-left: 0 !important;
+      }
     </style>
   </head>
   <body>
@@ -249,7 +260,7 @@
       </div><!-- end banner -->
 
     <div class="wrapper">
-      <nav>
+      <nav style="display: none;">
         <ul></ul>
       </nav>
       <section>
