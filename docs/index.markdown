@@ -15,6 +15,10 @@ layout: default
       {{ link.name }}
     </a>
   </td>
+  {% if forloop.index == 4 %}
+</tr>
+<tr>
+  {% endif %}
 {% endfor %}
 </tr>
 </table>
