@@ -144,6 +144,8 @@ clock-show-seconds=true
         "datareporting.policy.dataSubmissionPolicyBypassNotification" = true;
         "browser.aboutwelcome.enabled" = false;
         "browser.startup.homepage_override.mstone" = "ignore";
+        "browser.startup.page" = 1;
+        "browser.startup.homepage" = "about:home"; # Or a custom URL like "nixos.org"
 
         "browser.shell.checkDefaultBrowser" = false;
         "browser.sessionstore.resume_session_once" = false;  # Don't offer to restore session
