@@ -30,6 +30,8 @@ TODO
 - seems to start before network ready, leading to blank page with try again option
 - firefox - asks about restore previous tabs, maybe switch to always doing that to avoid question
 - firefox - initially did not auto start on nxl machines but worked on macs??
+- see https://www.reddit.com/r/NixOS/comments/1off908/hey_im_still_learning_how_nix_works_whats_up_with/
+
 
 DONE
 - change boot entry to not be called installer
