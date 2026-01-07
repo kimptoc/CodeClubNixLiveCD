@@ -26,8 +26,10 @@ Useful links
 * bitly link to it - https://bit.ly/codeclubnxl
 
 TODO
+- firefox not maximised on start
+- seems to start before network ready, leading to blank page with try again option
 - firefox - asks about restore previous tabs, maybe switch to always doing that to avoid question
-- firefox - did not auto start on nxl machines but worked on macs??
+- firefox - initially did not auto start on nxl machines but worked on macs??
 
 DONE
 - change boot entry to not be called installer
