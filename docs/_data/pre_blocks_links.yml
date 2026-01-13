@@ -1,15 +1,8 @@
 - name: CodeMonkeyJr
-  url: https://hourofcode.com/codemonkeyjr
-- name: Kodable Basics - Intro
-  url: https://hourofcode.com/kodable-pre
-- name: Kodable Shapes
-  url: https://hourofcode.com/kodableshapes
-- name: Kodable Hero
-  url: https://hourofcode.com/kodablehero
-- name: Kodable Beach Cleanup
-  url: https://hourofcode.com/kodablebeach
+  url: https://www.codemonkey.com/hour-of-code/codemonkey-jr/
+- name: Kodable (6 projects)
+  url: https://www.kodable.com/hour-of-code
 - name: Rodocodo
-  url: https://hourofcode.com/rodocodehr
+  url: https://www.rodocodo.com/hour-of-code/rodocodo-code-hour/
 - name: Beaver Achiever
-  url: https://hourofcode.com/codemonkeybeaver
-
+  url: https://www.codemonkey.com/hour-of-code/beaver-achiever/
