@@ -161,6 +161,15 @@
         top: 133px;
       }
 
+      .hny-image {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        width: 300px;
+        height: auto;
+        z-index: 1000;
+      }
+
       @media (max-width: 768px) {
         .clock {
           width: 150px;
@@ -204,6 +213,11 @@
         }
         .date { top: 40px; }
         .day { top: 100px; }
+        .hny-image {
+          width: 225px;
+          top: 10px;
+          left: 10px;
+        }
       }
 
       /* Hide navigation sidebar */
@@ -219,6 +233,8 @@
     </style>
   </head>
   <body>
+
+      <img src="{{ '/assets/images/scratch-hny.gif' | relative_url }}" alt="Happy New Year" class="hny-image">
 
       <div class="clock">
         <div>
