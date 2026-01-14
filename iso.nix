@@ -73,7 +73,7 @@ clock-show-seconds=true
   boot.extraModulePackages = [ config.boot.kernelPackages.broadcom_sta ];
 
   nixpkgs.config.permittedInsecurePackages = [
-    "broadcom-sta-6.30.223.271-59-6.12.61"
+    "broadcom-sta-6.30.223.271-59-6.12.64"
   ];
  
   nixpkgs.config.allowUnfree = true;
