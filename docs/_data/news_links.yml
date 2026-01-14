@@ -1,3 +1,11 @@
+- name: Project - Cricket
+  url: https://projects.raspberrypi.org/en/projects/cricket
+- name: Project - Kabaddi
+  url: https://projects.raspberrypi.org/en/projects/kabaddi
+- name: Project - Jukskei
+  url: https://projects.raspberrypi.org/en/projects/jukskei
+- name: Project - Kit Chooser
+  url: https://projects.raspberrypi.org/en/projects/kit-chooser
 - name: KPop Demon Hunters wins Golden Globes for best animated film
   url: https://www.bbc.co.uk/news/articles/cy8pnn9p8lgo
 - name: Scratch - Christmas Caper
