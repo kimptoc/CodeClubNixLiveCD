@@ -149,6 +149,9 @@ clock-show-seconds=true
 
         "browser.shell.checkDefaultBrowser" = false;
         "browser.sessionstore.resume_session_once" = false;  # Don't offer to restore session
+        "browser.sessionstore.resume_from_crash" = false;  # Don't show crash restore dialog
+        "browser.sessionstore.max_resumed_crashes" = 0;  # Disable crash recovery entirely
+        "browser.startup.couldRestoreSession.count" = -1;  # Hide "Restore Previous Session" button on homepage
 
       };
     };
@@ -171,8 +174,8 @@ clock-show-seconds=true
 
       mkdir -p $HOME/.config/autostart >> $MYLOG
       mkdir -p $HOME/.local/share/applications/ >> $MYLOG
-    
-      export CHRDESK=$HOME/.local/share/applications/chrome.desktop 
+
+      export CHRDESK=$HOME/.local/share/applications/chrome.desktop
       echo "[Desktop Entry]" > $CHRDESK
       echo "Name=Google Chrome" >> $CHRDESK
 
@@ -184,13 +187,10 @@ clock-show-seconds=true
 
       cat $CHRDESK >> $MYLOG
 
-#      cp $CHRDESK $HOME/.config/autostart/ >> $MYLOG
-
-
-      export FFXDESK=$HOME/.config/autostart/firefox.desktop
+      # Create Firefox desktop entry for applications menu (not autostart)
+      export FFXDESK=$HOME/.local/share/applications/firefox.desktop
       echo "[Desktop Entry]" > $FFXDESK
       echo "Name=Firefox" >> $FFXDESK
-
       echo "Exec=${pkgs.firefox}/bin/firefox https://kimptoc.github.io/CodeClubNixLiveCD/" >> $FFXDESK
       echo "StartupNotify=true" >> $FFXDESK
       echo "Terminal=false" >> $FFXDESK
@@ -199,17 +199,60 @@ clock-show-seconds=true
 
       cat $FFXDESK >> $MYLOG
 
-      cp $FFXDESK $HOME/.local/share/applications/ >> $MYLOG
-
       echo "MYAUTOSTART end" >> $MYLOG
       date >> $MYLOG
-      
+
     '';
     wantedBy = [ "graphical-session.target" ]; # starts after login
     partOf = [ "graphical-session.target" ];
     serviceConfig = {
        RemainAfterExit = true;
     };
+  };
 
+  # Separate service for Firefox that waits for network connectivity
+  systemd.user.services.firefox-autostart = {
+    description = "Firefox autostart with network wait";
+    serviceConfig.PassEnvironment = "DISPLAY";
+    after = [ "graphical-session.target" "myautostart.service" ];
+    wants = [ "myautostart.service" ];
+    script = ''
+      export MYLOG=$HOME/firefox-autostart.log
+      echo "FIREFOX-AUTOSTART" > $MYLOG
+      date >> $MYLOG
+
+      # Wait for network connectivity (max 10 seconds, then proceed anyway)
+      echo "Waiting for network..." >> $MYLOG
+      NETWORK_READY=0
+      for i in $(seq 1 10); do
+        if ${pkgs.curl}/bin/curl -s --connect-timeout 1 --max-time 2 -o /dev/null https://www.google.com 2>/dev/null; then
+          echo "Network available after $i seconds" >> $MYLOG
+          NETWORK_READY=1
+          break
+        fi
+        sleep 1
+      done
+      if [ "$NETWORK_READY" = "0" ]; then
+        echo "Network not available after 10 seconds, launching Firefox anyway" >> $MYLOG
+      fi
+
+      echo "Launching Firefox..." >> $MYLOG
+      date >> $MYLOG
+      ${pkgs.firefox}/bin/firefox &
+
+      # Wait for Firefox to open, then maximize it
+      sleep 5
+      echo "Maximizing Firefox window..." >> $MYLOG
+      ${pkgs.xdotool}/bin/xdotool key super+Up >> $MYLOG 2>&1
+
+      echo "FIREFOX-AUTOSTART end" >> $MYLOG
+      date >> $MYLOG
+    '';
+    wantedBy = [ "graphical-session.target" ];
+    partOf = [ "graphical-session.target" ];
+    serviceConfig = {
+       RemainAfterExit = true;
+       Type = "oneshot";
+    };
   };
 }
