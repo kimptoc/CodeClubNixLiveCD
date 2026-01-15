@@ -26,14 +26,14 @@ Useful links
 * bitly link to it - https://bit.ly/codeclubnxl
 
 TODO
-- firefox not maximised on start
-- firefox - asks about restore previous tabs, maybe switch to always doing that to avoid question
-- firefox - sometimes does not auto start on nxl machines but worked on macs??
-- seems to start before network ready, leading to blank page with try again option - maybe add delay for firefox start?
-- see https://www.reddit.com/r/NixOS/comments/1off908/hey_im_still_learning_how_nix_works_whats_up_with/
 
 
 DONE
+- see https://www.reddit.com/r/NixOS/comments/1off908/hey_im_still_learning_how_nix_works_whats_up_with/
+- seems to start before network ready, leading to blank page with try again option - maybe add delay for firefox start?
+- firefox - sometimes does not auto start on nxl machines but worked on macs??
+- firefox - asks about restore previous tabs, maybe switch to always doing that to avoid question
+- firefox not maximised on start
 - change boot entry to not be called installer
 - change clock to show seconds
 - change to just have one workspace, multiple leads to issue of pressing the wrong key, switching workspace and struggling to get back
