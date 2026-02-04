@@ -165,6 +165,10 @@ document.addEventListener('DOMContentLoaded', function() {
 <b>Screenshot</b> - press windows key and type screenshot. Highlight area to capture and press capture button. Image is saved into Pictures/Screenshot folder.
 </p>
 
+<p>
+<b>AstroPI AI Prompt</b> - Write a Python script for the Astro Pi (Sense HAT) that creates a program that lasts 30 seconds which ...
+</p>
+
 <hr>
 
 <a href="{{ site.baseurl }}/easteregg" target="_blank">
