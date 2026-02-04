@@ -1,3 +1,5 @@
+- name: Flower Generator
+  url: https://projects.raspberrypi.org/en/projects/flower-generator
 - name: Project - Cricket
   url: https://projects.raspberrypi.org/en/projects/cricket
 - name: Project - Kabaddi
