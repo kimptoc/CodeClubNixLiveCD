@@ -31,7 +31,6 @@ layout: default
     <button class="tab-button" onclick="openTab(event, 'pre-blocks')">Pre Blocks</button>
     <button class="tab-button" onclick="openTab(event, 'basic-blocks')">Basic Blocks</button>
     <button class="tab-button" onclick="openTab(event, 'scratch-projects')">Scratch Projects</button>
-    <button class="tab-button" onclick="openTab(event, 'hourofcode')">Hour of Code</button>
     <button class="tab-button" onclick="openTab(event, 'references')">References</button>
   </div>
 
@@ -78,19 +77,6 @@ layout: default
     <h2>Scratch Projects</h2>
     <ul>
     {% for link in site.data.other_scratch_projects %}
-      <li>
-        <a href="{{ link.url }}" target="_blank">
-          {{ link.name }}
-        </a>
-      </li>
-    {% endfor %}
-    </ul>
-  </div>
-
-  <div id="hourofcode" class="tab-content">
-    <h2>Hour of Code</h2>
-    <ul>
-    {% for link in site.data.hour_of_code_links %}
       <li>
         <a href="{{ link.url }}" target="_blank">
           {{ link.name }}
