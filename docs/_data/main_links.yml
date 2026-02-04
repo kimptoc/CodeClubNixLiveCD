@@ -13,8 +13,8 @@
 - name: Trinket
   url: https://trinket.io/
   img: trinket-logo.png
-- name: Astro Pi 
-  url: https://astro-pi.org/
+- name: Astro Pi Mission Zero
+  url: https://projects.raspberrypi.org/en/projects/astro-pi-mission-zero
   img: astro_pi_logo.svg
 - name: MS MakeCode for Micro:bit
   url: https://makecode.microbit.org/
