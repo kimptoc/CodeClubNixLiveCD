@@ -26,7 +26,10 @@ Useful links
 * bitly link to it - https://bit.ly/codeclubnxl
 
 TODO
-- firefox usb - gnome donate pops up still, gives the remote desktop window on login, firefox is not maximised.
+- firefox usb - gnome donate pops up still,
+- gives the remote desktop window on login,
+- firefox is not maximised.
+- new tab shows news items, not the code club home page
 
 DONE
 - see https://www.reddit.com/r/NixOS/comments/1off908/hey_im_still_learning_how_nix_works_whats_up_with/
