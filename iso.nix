@@ -157,7 +157,7 @@ clock-show-seconds=true
     };
   };
 
-  environment.gnome.excludePackages = [ pkgs.gnome-tour ];
+  environment.gnome.excludePackages = [ pkgs.gnome-tour pkgs.gnome-initial-setup ];
 
   systemd.user.services.myautostart = {
     description = "myautostart";
@@ -171,6 +171,9 @@ clock-show-seconds=true
       echo "Setting dconf workspace settings..." >> $MYLOG
       ${pkgs.dconf}/bin/dconf write /org/gnome/mutter/dynamic-workspaces false >> $MYLOG 2>&1
       ${pkgs.dconf}/bin/dconf write /org/gnome/desktop/wm/preferences/num-workspaces 1 >> $MYLOG 2>&1
+
+      # Dismiss GNOME donation dialog by marking it as already shown
+      ${pkgs.dconf}/bin/dconf write /org/gnome/shell/donation-dialog-last-shown "'2025-01-01T00:00:00Z'" >> $MYLOG 2>&1
 
       mkdir -p $HOME/.config/autostart >> $MYLOG
       mkdir -p $HOME/.local/share/applications/ >> $MYLOG
