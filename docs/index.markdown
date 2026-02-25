@@ -5,23 +5,24 @@
 layout: default
 ---
 <h2>Main Links</h2>
-<table style="border-collapse: collapse;">
-<tr>
+<div id="main-links-grid" style="display: grid; gap: 10px; width: fit-content; margin: 0 auto;">
 {% for link in site.data.main_links %}
-  <td style="vertical-align: middle; text-align: center; border: 1px solid #ddd; padding: 10px;">
-    <a href="{{ link.url }}" target="_blank">
+  <div style="display: flex; flex-direction: column; align-items: center; border: 1px solid #ddd; padding: 10px; width: 170px;">
+    <a href="{{ link.url }}" target="_blank" style="text-align: center;">
       <img alt="{{ link.name }}" src="{{ site.baseurl }}/assets/images/{{ link.img }}" width="150px" height="auto">
       <br>
       {{ link.name }}
     </a>
-  </td>
-  {% if forloop.index == 4 %}
-</tr>
-<tr>
-  {% endif %}
+  </div>
 {% endfor %}
-</tr>
-</table>
+</div>
+<script>
+(function() {
+  var grid = document.getElementById('main-links-grid');
+  var cols = Math.ceil(Math.sqrt(grid.children.length));
+  grid.style.gridTemplateColumns = 'repeat(' + cols + ', 170px)';
+})();
+</script>
 
 <hr>
 
