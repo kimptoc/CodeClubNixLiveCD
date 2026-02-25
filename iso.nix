@@ -242,12 +242,7 @@ clock-show-seconds=true
 
       echo "Launching Firefox..." >> $MYLOG
       date >> $MYLOG
-      ${pkgs.firefox}/bin/firefox &
-
-      # Wait for Firefox to open, then maximize it
-      sleep 5
-      echo "Maximizing Firefox window..." >> $MYLOG
-      ${pkgs.xdotool}/bin/xdotool key super+Up >> $MYLOG 2>&1
+      ${pkgs.firefox}/bin/firefox --width 9999 --height 9999 &
 
       echo "FIREFOX-AUTOSTART end" >> $MYLOG
       date >> $MYLOG
