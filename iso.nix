@@ -38,6 +38,7 @@ clock-show-seconds=true
 
   };
 
+  services.gnome.gnome-remote-desktop.enable = false;
   services.displayManager.gdm.autoSuspend = false;
 
   time.timeZone = "Europe/London";
