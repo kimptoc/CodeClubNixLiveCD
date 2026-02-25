@@ -18,6 +18,12 @@
   url: https://machinelearningforkids.co.uk/
 - name: AI related projects
   url: https://projects.raspberrypi.org/en/collections/artificial_intelligence
+- name: Code.org Activities
+  url: https://code.org/en-US/hour-of-code
+  img: codeorg3746.jpg
+- name: Hour of AI Activities
+  url: https://csforall.org/en-US/activities/hour-of-ai
+  img: hour-of-code-vector-logo.svg
 - name: Roblox Studio
   url: https://create.roblox.com/docs/studio/setup
 - name: ChatGPT
