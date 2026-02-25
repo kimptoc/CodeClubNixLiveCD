@@ -4,12 +4,6 @@
 - name: Scratch Projects
   url: https://projects.raspberrypi.org/en/collections/scratch
   img: Scratch_Projects_Logo.png
-- name: Code.org Activities
-  url: https://code.org/en-US/hour-of-code
-  img: codeorg3746.jpg
-- name: Hour of AI Activities
-  url: https://csforall.org/en-US/activities/hour-of-ai
-  img: hour-of-code-vector-logo.svg
 - name: Trinket
   url: https://trinket.io/
   img: trinket-logo.png
