@@ -4,7 +4,7 @@ Easter Eggs!
  <li>Minecraft - prismlauncher</li>
  <li>Roblox - vinegar (TBD)</li>
  <li>Roblox - <a href="https://hourofcode.com/codecombatworlds">CodeCombat</a></li>
- <li><a href="https://theducklair.com">TheDucklair.com</a></li>
+ <li><a href="https://duck.theducklair.com">Duck.TheDucklair.com</a></li>
  <li><a href="https://crazygames.com">CrazyGames.com</a></li>
 </ul>
 
