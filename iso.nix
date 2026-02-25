@@ -127,6 +127,7 @@ clock-show-seconds=true
       PasswordManagerEnabled = false;
       DontCheckDefaultBrowser = true;
       DisablePrivacySegmentation = true;
+      NewTabPage = false;
 
       # Set homepage
       Homepage = {
@@ -154,6 +155,11 @@ clock-show-seconds=true
         "browser.sessionstore.max_resumed_crashes" = 0;  # Disable crash recovery entirely
         "browser.startup.couldRestoreSession.count" = -1;  # Hide "Restore Previous Session" button on homepage
 
+        # Disable new tab activity stream (news, sponsored content, etc.)
+        "browser.newtabpage.activity-stream.feeds.section.topstories" = false;
+        "browser.newtabpage.activity-stream.feeds.topsites" = false;
+        "browser.newtabpage.activity-stream.showSponsored" = false;
+        "browser.newtabpage.activity-stream.showSponsoredTopSites" = false;
       };
     };
   };
