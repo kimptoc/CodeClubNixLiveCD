@@ -5,23 +5,17 @@
 layout: default
 ---
 <h2>Main Links</h2>
-<table style="border-collapse: collapse;">
-<tr>
+<div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;">
 {% for link in site.data.main_links %}
-  <td style="vertical-align: middle; text-align: center; border: 1px solid #ddd; padding: 10px;">
-    <a href="{{ link.url }}" target="_blank">
+  <div style="display: flex; flex-direction: column; align-items: center; border: 1px solid #ddd; padding: 10px; min-width: 170px;">
+    <a href="{{ link.url }}" target="_blank" style="text-align: center;">
       <img alt="{{ link.name }}" src="{{ site.baseurl }}/assets/images/{{ link.img }}" width="150px" height="auto">
       <br>
       {{ link.name }}
     </a>
-  </td>
-  {% if forloop.index == 4 %}
-</tr>
-<tr>
-  {% endif %}
+  </div>
 {% endfor %}
-</tr>
-</table>
+</div>
 
 <hr>
 
