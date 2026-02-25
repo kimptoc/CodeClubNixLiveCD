@@ -5,9 +5,9 @@
 layout: default
 ---
 <h2>Main Links</h2>
-<div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;">
+<div id="main-links-grid" style="display: grid; gap: 10px; width: fit-content; margin: 0 auto;">
 {% for link in site.data.main_links %}
-  <div style="display: flex; flex-direction: column; align-items: center; border: 1px solid #ddd; padding: 10px; min-width: 170px;">
+  <div style="display: flex; flex-direction: column; align-items: center; border: 1px solid #ddd; padding: 10px; width: 170px;">
     <a href="{{ link.url }}" target="_blank" style="text-align: center;">
       <img alt="{{ link.name }}" src="{{ site.baseurl }}/assets/images/{{ link.img }}" width="150px" height="auto">
       <br>
@@ -16,6 +16,13 @@ layout: default
   </div>
 {% endfor %}
 </div>
+<script>
+(function() {
+  var grid = document.getElementById('main-links-grid');
+  var cols = Math.ceil(Math.sqrt(grid.children.length));
+  grid.style.gridTemplateColumns = 'repeat(' + cols + ', 170px)';
+})();
+</script>
 
 <hr>
 
