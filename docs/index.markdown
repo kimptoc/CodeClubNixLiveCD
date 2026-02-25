@@ -186,6 +186,32 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <hr>
 
-<a href="{{ site.baseurl }}/easteregg" target="_blank">
+<div id="easter-egg-link" style="display: none;">
+  <a href="{{ site.baseurl }}/easteregg" target="_blank">
     <img alt="Easter Eggs..." src="{{ site.baseurl }}/assets/images/easter-egg.png" width="50px" height="auto">
-</a>
+  </a>
+</div>
+
+<script>
+(function() {
+  function checkEasterEggVisibility() {
+    var now = new Date();
+    var hours = now.getHours();
+    var minutes = now.getMinutes();
+    if (hours > 16 || (hours === 16 && minutes >= 54)) {
+      document.getElementById('easter-egg-link').style.display = 'block';
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    checkEasterEggVisibility();
+
+    document.addEventListener('keydown', function(e) {
+      if (e.ctrlKey && e.shiftKey && e.key === 'E') {
+        var el = document.getElementById('easter-egg-link');
+        el.style.display = el.style.display === 'none' ? 'block' : 'none';
+      }
+    });
+  });
+})();
+</script>
