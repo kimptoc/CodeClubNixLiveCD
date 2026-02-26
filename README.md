@@ -26,6 +26,8 @@ Useful links
 * bitly link to it - https://bit.ly/codeclubnxl
 
 TODO
+- 2 chrome entries on app list, just want one. my custom one. 
+- are there 2 Firefox entries?
 
 DONE
 - dismiss GNOME 47+ donation dialog via dconf and exclude gnome-initial-setup
