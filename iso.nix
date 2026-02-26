@@ -185,7 +185,7 @@ clock-show-seconds=true
       mkdir -p $HOME/.config/autostart >> $MYLOG
       mkdir -p $HOME/.local/share/applications/ >> $MYLOG
 
-      export CHRDESK=$HOME/.local/share/applications/chrome.desktop
+      export CHRDESK=$HOME/.local/share/applications/google-chrome.desktop
       echo "[Desktop Entry]" > $CHRDESK
       echo "Name=Google Chrome" >> $CHRDESK
 
@@ -244,6 +244,21 @@ clock-show-seconds=true
       done
       if [ "$NETWORK_READY" = "0" ]; then
         echo "Network not available after 10 seconds, launching Firefox anyway" >> $MYLOG
+      fi
+
+      # Pre-populate Firefox profile with maximized window state
+      FFPROFILE=$(find $HOME/.mozilla/firefox -maxdepth 1 -name '*.default*' -type d 2>/dev/null | head -1)
+      if [ -z "$FFPROFILE" ]; then
+        # Launch Firefox briefly to create profile, then kill it
+        ${pkgs.firefox}/bin/firefox --headless &
+        FFPID=$!
+        sleep 3
+        kill $FFPID 2>/dev/null
+        FFPROFILE=$(find $HOME/.mozilla/firefox -maxdepth 1 -name '*.default*' -type d 2>/dev/null | head -1)
+      fi
+      if [ -n "$FFPROFILE" ]; then
+        echo '{"chrome://browser/content/browser.xhtml":{"main-window":{"sizemode":"maximized"}}}' > "$FFPROFILE/xulstore.json"
+        echo "Set Firefox sizemode to maximized in $FFPROFILE" >> $MYLOG
       fi
 
       echo "Launching Firefox..." >> $MYLOG
