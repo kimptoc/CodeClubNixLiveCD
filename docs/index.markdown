@@ -208,7 +208,7 @@ document.addEventListener('DOMContentLoaded', function() {
     checkEasterEggVisibility();
 
     document.addEventListener('keydown', function(e) {
-      if (e.ctrlKey && e.altKey && e.key === 'e') {
+      if (e.ctrlKey && e.altKey && e.code === 'KeyE') {
         var el = document.getElementById('easter-egg-link');
         el.style.display = el.style.display === 'none' ? 'block' : 'none';
       }
