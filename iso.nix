@@ -248,7 +248,7 @@ clock-show-seconds=true
 
       echo "Launching Firefox..." >> $MYLOG
       date >> $MYLOG
-      ${pkgs.firefox}/bin/firefox --width 9999 --height 9999 &
+      ${pkgs.firefox}/bin/firefox &
 
       echo "FIREFOX-AUTOSTART end" >> $MYLOG
       date >> $MYLOG
