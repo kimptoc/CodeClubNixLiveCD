@@ -22,7 +22,7 @@
     # Add Firefox and other tools useful for installation to the launcher
     favoriteAppsOverride = ''
       [org.gnome.shell]
-      favorite-apps=[ 'firefox.desktop', 'org.gnome.Nautilus.desktop' ]
+      favorite-apps=[ 'firefox.desktop', 'chromium.desktop', 'org.gnome.Nautilus.desktop' ]
     '';
     enable = true;
     extraGSettingsOverrides = '' 
@@ -88,6 +88,7 @@ clock-show-seconds=true
   temurin-bin
   prismlauncher
   google-chrome
+  chromium
   vim
   git
   wget
@@ -105,8 +106,14 @@ clock-show-seconds=true
     GSK_RENDERER = "ngl";
   };
 
-# Create Chrome policy directory and files
+# Create Chrome/Chromium policy directory and files
   environment.etc."opt/chrome/policies/managed/disable-password-manager.json".text = ''
+  {
+    "PasswordManagerEnabled": false
+  }
+  '';
+
+  environment.etc."chromium/policies/managed/disable-password-manager.json".text = ''
   {
     "PasswordManagerEnabled": false
   }
@@ -196,6 +203,18 @@ clock-show-seconds=true
       echo "Type=Application" >> $CHRDESK
 
       cat $CHRDESK >> $MYLOG
+
+      # Chromium desktop entry for applications menu
+      export CHROMIUMDESK=$HOME/.local/share/applications/chromium.desktop
+      echo "[Desktop Entry]" > $CHROMIUMDESK
+      echo "Name=Chromium" >> $CHROMIUMDESK
+      echo "Exec=${pkgs.chromium}/bin/chromium --no-default-browser-check --no-first-run --password-store=basic --start-maximized https://kimptoc.github.io/CodeClubNixLiveCD/" >> $CHROMIUMDESK
+      echo "StartupNotify=true" >> $CHROMIUMDESK
+      echo "Terminal=false" >> $CHROMIUMDESK
+      echo "Icon=chromium-browser" >> $CHROMIUMDESK
+      echo "Type=Application" >> $CHROMIUMDESK
+
+      cat $CHROMIUMDESK >> $MYLOG
 
       # Create Firefox desktop entry for applications menu (not autostart)
       export FFXDESK=$HOME/.local/share/applications/firefox.desktop
