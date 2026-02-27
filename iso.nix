@@ -22,7 +22,7 @@
     # Add Firefox and other tools useful for installation to the launcher
     favoriteAppsOverride = ''
       [org.gnome.shell]
-      favorite-apps=[ 'firefox.desktop', 'org.gnome.Nautilus.desktop' ]
+      favorite-apps=[ 'firefox.desktop', 'org.gnome.Nautilus.desktop', 'gnome-terminal.desktop', 'gnome-system-monitor.desktop' ]
     '';
     enable = true;
     extraGSettingsOverrides = '' 
