@@ -211,7 +211,7 @@ clock-show-seconds=true
       echo "Exec=${pkgs.chromium}/bin/chromium --no-default-browser-check --no-first-run --password-store=basic --start-maximized https://kimptoc.github.io/CodeClubNixLiveCD/" >> $CHROMIUMDESK
       echo "StartupNotify=true" >> $CHROMIUMDESK
       echo "Terminal=false" >> $CHROMIUMDESK
-      echo "Icon=chromium-browser" >> $CHROMIUMDESK
+      echo "Icon=${pkgs.chromium}/share/icons/hicolor/256x256/apps/chromium.png" >> $CHROMIUMDESK
       echo "Type=Application" >> $CHROMIUMDESK
 
       cat $CHROMIUMDESK >> $MYLOG
