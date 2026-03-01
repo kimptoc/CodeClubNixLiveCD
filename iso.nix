@@ -13,6 +13,9 @@
   isoImage.volumeID = "CODECLUB";
   isoImage.appendToMenuLabel = " CodeClub";
 
+  # Make the ISO smaller (xz compresses better than zstd; slower build, smaller output)
+  isoImage.squashfsCompression = "xz";
+
   zramSwap = {
     enable = true;
     memoryPercent = 50;  # Uses 50% of RAM for compressed swap
@@ -22,7 +25,7 @@
     # Add Firefox and other tools useful for installation to the launcher
     favoriteAppsOverride = ''
       [org.gnome.shell]
-      favorite-apps=[ 'firefox.desktop', 'chromium.desktop', 'org.gnome.Nautilus.desktop' ]
+      favorite-apps=[ 'firefox.desktop', 'org.gnome.Nautilus.desktop', 'org.gnome.Terminal.desktop', 'org.gnome.SystemMonitor.desktop' ]
     '';
     enable = true;
     extraGSettingsOverrides = '' 
@@ -80,6 +83,7 @@ clock-show-seconds=true
   nixpkgs.config.allowUnfree = true;
 
   environment.systemPackages = with pkgs; [  
+  gnome-terminal
   terminator
   ghostty
   zsh
@@ -204,14 +208,14 @@ clock-show-seconds=true
 
       cat $CHRDESK >> $MYLOG
 
-      # Chromium desktop entry for applications menu
-      export CHROMIUMDESK=$HOME/.local/share/applications/chromium.desktop
+      # Chromium desktop entry override (avoid duplicate icon by using the package's desktop file name)
+      export CHROMIUMDESK=$HOME/.local/share/applications/chromium-browser.desktop
       echo "[Desktop Entry]" > $CHROMIUMDESK
       echo "Name=Chromium" >> $CHROMIUMDESK
       echo "Exec=${pkgs.chromium}/bin/chromium --no-default-browser-check --no-first-run --password-store=basic --start-maximized https://kimptoc.github.io/CodeClubNixLiveCD/" >> $CHROMIUMDESK
       echo "StartupNotify=true" >> $CHROMIUMDESK
       echo "Terminal=false" >> $CHROMIUMDESK
-      echo "Icon=chromium-browser" >> $CHROMIUMDESK
+      echo "Icon=${pkgs.chromium}/share/icons/hicolor/256x256/apps/chromium.png" >> $CHROMIUMDESK
       echo "Type=Application" >> $CHROMIUMDESK
 
       cat $CHROMIUMDESK >> $MYLOG
