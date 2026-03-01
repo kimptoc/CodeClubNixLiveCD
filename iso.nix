@@ -13,6 +13,9 @@
   isoImage.volumeID = "CODECLUB";
   isoImage.appendToMenuLabel = " CodeClub";
 
+  # Make the ISO smaller (xz compresses better than zstd; slower build, smaller output)
+  isoImage.squashfsCompression = "xz";
+
   zramSwap = {
     enable = true;
     memoryPercent = 50;  # Uses 50% of RAM for compressed swap
@@ -80,6 +83,7 @@ clock-show-seconds=true
   nixpkgs.config.allowUnfree = true;
 
   environment.systemPackages = with pkgs; [  
+  gnome-terminal
   terminator
   ghostty
   zsh
