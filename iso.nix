@@ -88,6 +88,7 @@ clock-show-seconds=true
   ghostty
   zsh
   nettools
+  wmctrl
   python3
   temurin-bin
   prismlauncher
@@ -287,6 +288,22 @@ clock-show-seconds=true
       echo "Launching Firefox..." >> $MYLOG
       date >> $MYLOG
       ${pkgs.firefox}/bin/firefox &
+
+      # Try to force-maximize the first Firefox window once it appears.
+      MAXIMIZED=0
+      for i in $(seq 1 20); do
+        WIN_ID=$(${pkgs.wmctrl}/bin/wmctrl -lx 2>/dev/null | awk '/firefox\.Firefox/ {print $1; exit}')
+        if [ -n "$WIN_ID" ]; then
+          ${pkgs.wmctrl}/bin/wmctrl -i -r "$WIN_ID" -b add,maximized_vert,maximized_horz 2>/dev/null || true
+          echo "Applied wmctrl maximize to Firefox window $WIN_ID" >> $MYLOG
+          MAXIMIZED=1
+          break
+        fi
+        sleep 0.5
+      done
+      if [ "$MAXIMIZED" = "0" ]; then
+        echo "Could not find Firefox window to maximize via wmctrl" >> $MYLOG
+      fi
 
       echo "FIREFOX-AUTOSTART end" >> $MYLOG
       date >> $MYLOG
