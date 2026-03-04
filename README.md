@@ -26,10 +26,10 @@ Useful links
 * bitly link to it - https://bit.ly/codeclubnxl
 
 TODO
+- firefox maximised on start via xulstore.json sizemode (--width/--height flags caused GNOME login loop)
 
 DONE
 - fix duplicate Chrome entry in apps view (override system desktop entry with custom one)
-- firefox maximised on start via xulstore.json sizemode (--width/--height flags caused GNOME login loop)
 - dismiss GNOME 47+ donation dialog via dconf and exclude gnome-initial-setup
 - disable gnome remote desktop popup on login
 - new tab shows blank page instead of news items (NewTabPage policy + activity stream disabled)
