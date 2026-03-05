@@ -233,6 +233,30 @@ clock-show-seconds=true
 
       cat $FFXDESK >> $MYLOG
 
+      # Autostart Firefox from inside GNOME session so DISPLAY/Wayland env is correct.
+      export FFXAUTO=$HOME/.config/autostart/firefox-autostart.desktop
+      echo "[Desktop Entry]" > $FFXAUTO
+      echo "Name=Firefox Autostart" >> $FFXAUTO
+      echo "Exec=${pkgs.firefox}/bin/firefox --new-window https://kimptoc.github.io/CodeClubNixLiveCD/" >> $FFXAUTO
+      echo "StartupNotify=true" >> $FFXAUTO
+      echo "Terminal=false" >> $FFXAUTO
+      echo "Type=Application" >> $FFXAUTO
+      echo "X-GNOME-Autostart-enabled=true" >> $FFXAUTO
+
+      cat $FFXAUTO >> $MYLOG
+
+      # Best-effort maximize shortly after launch.
+      export FFXMAX=$HOME/.config/autostart/firefox-maximize.desktop
+      echo "[Desktop Entry]" > $FFXMAX
+      echo "Name=Firefox Maximize" >> $FFXMAX
+      echo "Exec=${pkgs.bash}/bin/bash -lc 'sleep 4; WIN_ID=$(${pkgs.wmctrl}/bin/wmctrl -lx 2>/dev/null | awk \"/firefox\\.Firefox/ {print \\\$1; exit}\"); [ -n \"\\$WIN_ID\" ] && ${pkgs.wmctrl}/bin/wmctrl -i -r \"\\$WIN_ID\" -b add,maximized_vert,maximized_horz || true'" >> $FFXMAX
+      echo "StartupNotify=false" >> $FFXMAX
+      echo "Terminal=false" >> $FFXMAX
+      echo "Type=Application" >> $FFXMAX
+      echo "X-GNOME-Autostart-enabled=true" >> $FFXMAX
+
+      cat $FFXMAX >> $MYLOG
+
       echo "MYAUTOSTART end" >> $MYLOG
       date >> $MYLOG
 
@@ -244,75 +268,5 @@ clock-show-seconds=true
     };
   };
 
-  # Separate service for Firefox that waits for network connectivity
-  systemd.user.services.firefox-autostart = {
-    description = "Firefox autostart with network wait";
-    serviceConfig.PassEnvironment = "DISPLAY";
-    after = [ "graphical-session.target" "myautostart.service" ];
-    wants = [ "myautostart.service" ];
-    script = ''
-      export MYLOG=$HOME/firefox-autostart.log
-      echo "FIREFOX-AUTOSTART" > $MYLOG
-      date >> $MYLOG
-
-      # Wait for network connectivity (max 10 seconds, then proceed anyway)
-      echo "Waiting for network..." >> $MYLOG
-      NETWORK_READY=0
-      for i in $(seq 1 10); do
-        if ${pkgs.curl}/bin/curl -s --connect-timeout 1 --max-time 2 -o /dev/null https://www.google.com 2>/dev/null; then
-          echo "Network available after $i seconds" >> $MYLOG
-          NETWORK_READY=1
-          break
-        fi
-        sleep 1
-      done
-      if [ "$NETWORK_READY" = "0" ]; then
-        echo "Network not available after 10 seconds, launching Firefox anyway" >> $MYLOG
-      fi
-
-      # Pre-populate Firefox profile with maximized window state
-      FFPROFILE=$(find $HOME/.mozilla/firefox -maxdepth 1 -name '*.default*' -type d 2>/dev/null | head -1)
-      if [ -z "$FFPROFILE" ]; then
-        # Launch Firefox briefly to create profile, then kill it
-        ${pkgs.firefox}/bin/firefox --headless &
-        FFPID=$!
-        sleep 3
-        kill $FFPID 2>/dev/null
-        FFPROFILE=$(find $HOME/.mozilla/firefox -maxdepth 1 -name '*.default*' -type d 2>/dev/null | head -1)
-      fi
-      if [ -n "$FFPROFILE" ]; then
-        echo '{"chrome://browser/content/browser.xhtml":{"main-window":{"sizemode":"maximized"}}}' > "$FFPROFILE/xulstore.json"
-        echo "Set Firefox sizemode to maximized in $FFPROFILE" >> $MYLOG
-      fi
-
-      echo "Launching Firefox..." >> $MYLOG
-      date >> $MYLOG
-      ${pkgs.firefox}/bin/firefox &
-
-      # Try to force-maximize the first Firefox window once it appears.
-      MAXIMIZED=0
-      for i in $(seq 1 20); do
-        WIN_ID=$(${pkgs.wmctrl}/bin/wmctrl -lx 2>/dev/null | awk '/firefox\.Firefox/ {print $1; exit}')
-        if [ -n "$WIN_ID" ]; then
-          ${pkgs.wmctrl}/bin/wmctrl -i -r "$WIN_ID" -b add,maximized_vert,maximized_horz 2>/dev/null || true
-          echo "Applied wmctrl maximize to Firefox window $WIN_ID" >> $MYLOG
-          MAXIMIZED=1
-          break
-        fi
-        sleep 0.5
-      done
-      if [ "$MAXIMIZED" = "0" ]; then
-        echo "Could not find Firefox window to maximize via wmctrl" >> $MYLOG
-      fi
-
-      echo "FIREFOX-AUTOSTART end" >> $MYLOG
-      date >> $MYLOG
-    '';
-    wantedBy = [ "graphical-session.target" ];
-    partOf = [ "graphical-session.target" ];
-    serviceConfig = {
-       RemainAfterExit = true;
-       Type = "oneshot";
-    };
-  };
+  # Firefox launch is handled by GNOME autostart desktop files created in myautostart.
 }
