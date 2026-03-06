@@ -1,3 +1,9 @@
+- name: Scratch/Visual - Sunset
+  url: https://projects.raspberrypi.org/en/projects/sunset
+- name: Scratch/Visual - Space Talk
+  url: https://projects.raspberrypi.org/en/projects/space-talk-visual
+- name: Scratch/Visual - Turtle Race!
+  url: https://projects.raspberrypi.org/en/projects/turtle-race-visual
 - name: Flower Generator
   url: https://projects.raspberrypi.org/en/projects/flower-generator
 - name: Project - Cricket
@@ -10,17 +16,11 @@
   url: https://projects.raspberrypi.org/en/projects/kit-chooser
 - name: Python - Disgusting Dishes
   url: https://projects.raspberrypi.org/en/projects/python-bytes-disgusting-dishes/editor
-- name: Scratch Year in Review
-  url: https://scratch.mit.edu/studios/51132479/
-- name: Code Club Insights Evaluation/1
-  url: https://rpf.io/cci-ncl1
-#- name: Code Club Insights Evaluation/2
-#  url: https://rpf.io/cci-ncl2
+#- name: Code Club Insights Evaluation/1
+#  url: https://rpf.io/cci-ncl1
+- name: Code Club Insights Evaluation/2
+  url: https://rpf.io/cci-ncl2
 - name: European Astro Pi Challenge is back on 8 September 2025! 
   url: https://astro-pi.org/
-- name: Code Club Australia - Moonhack - registration opens 1 September 2025
-  url: https://moonhack.com/
 - name: AI/ChatGPT
   url: https://chatgpt.com/
-- name: Kilo App Builder
-  url: https://app.kilo.ai/app-builder#
