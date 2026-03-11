@@ -25,7 +25,7 @@
     # Add Firefox and other tools useful for installation to the launcher
     favoriteAppsOverride = ''
       [org.gnome.shell]
-      favorite-apps=[ 'firefox.desktop', 'org.gnome.Nautilus.desktop', 'org.gnome.Terminal.desktop', 'org.gnome.SystemMonitor.desktop' ]
+      favorite-apps=[ 'chromium.desktop', 'org.gnome.Nautilus.desktop', 'org.gnome.Terminal.desktop', 'org.gnome.SystemMonitor.desktop' ]
     '';
     enable = true;
     extraGSettingsOverrides = '' 
@@ -233,11 +233,11 @@ clock-show-seconds=true
 
       cat $FFXDESK >> $MYLOG
 
-      # Autostart Firefox from inside GNOME session so DISPLAY/Wayland env is correct.
-      export FFXAUTO=$HOME/.config/autostart/firefox-autostart.desktop
+      # Autostart Chromium from inside GNOME session so DISPLAY/Wayland env is correct.
+      export FFXAUTO=$HOME/.config/autostart/chromium-autostart.desktop
       echo "[Desktop Entry]" > $FFXAUTO
-      echo "Name=Firefox Autostart" >> $FFXAUTO
-      echo "Exec=${pkgs.firefox}/bin/firefox --new-window https://kimptoc.github.io/CodeClubNixLiveCD/" >> $FFXAUTO
+      echo "Name=Chromium Autostart" >> $FFXAUTO
+      echo "Exec=${pkgs.chromium}/bin/chromium --no-default-browser-check --no-first-run --password-store=basic --start-maximized https://kimptoc.github.io/CodeClubNixLiveCD/" >> $FFXAUTO
       echo "StartupNotify=true" >> $FFXAUTO
       echo "Terminal=false" >> $FFXAUTO
       echo "Type=Application" >> $FFXAUTO
@@ -247,11 +247,11 @@ clock-show-seconds=true
 
       # Best-effort maximize shortly after launch - simpler approach
       # Write script to file first to avoid escaping issues
-      export FFXSCRIPT=$HOME/.local/bin/firefox-maximize.sh
+      export FFXSCRIPT=$HOME/.local/bin/chromium-maximize.sh
       mkdir -p $HOME/.local/bin
       echo '#!/bin/bash' > $FFXSCRIPT
       echo 'sleep 4' >> $FFXSCRIPT
-      echo 'wmctrl -r Firefox -b add,maximized_vert,maximized_horz' >> $FFXSCRIPT
+      echo 'wmctrl -r Chromium -b add,maximized_vert,maximized_horz' >> $FFXSCRIPT
       chmod +x $FFXSCRIPT
       
       export FFXMAX=$HOME/.config/autostart/firefox-maximize.desktop
