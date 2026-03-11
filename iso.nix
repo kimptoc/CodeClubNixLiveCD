@@ -25,7 +25,7 @@
     # Add Firefox and other tools useful for installation to the launcher
     favoriteAppsOverride = ''
       [org.gnome.shell]
-      favorite-apps=[ 'chromium.desktop', 'org.gnome.Nautilus.desktop', 'org.gnome.Terminal.desktop', 'org.gnome.SystemMonitor.desktop' ]
+      favorite-apps=[ 'google-chrome.desktop', 'org.gnome.Nautilus.desktop', 'org.gnome.Terminal.desktop', 'org.gnome.SystemMonitor.desktop' ]
     '';
     enable = true;
     extraGSettingsOverrides = '' 
@@ -233,13 +233,14 @@ clock-show-seconds=true
 
       cat $FFXDESK >> $MYLOG
 
-      # Autostart Chromium from inside GNOME session so DISPLAY/Wayland env is correct.
-      export FFXAUTO=$HOME/.config/autostart/chromium-autostart.desktop
+      # Autostart Google Chrome from inside GNOME session so DISPLAY/Wayland env is correct.
+      export FFXAUTO=$HOME/.config/autostart/chrome-autostart.desktop
       echo "[Desktop Entry]" > $FFXAUTO
-      echo "Name=Chromium Autostart" >> $FFXAUTO
-      echo "Exec=${pkgs.chromium}/bin/chromium --no-default-browser-check --no-first-run --password-store=basic --start-maximized https://kimptoc.github.io/CodeClubNixLiveCD/" >> $FFXAUTO
+      echo "Name=Chrome Autostart" >> $FFXAUTO
+      echo "Exec=${pkgs.google-chrome}/bin/google-chrome-stable --disable-fre --no-default-browser-check --no-first-run --hide-crash-restore-bubble --password-store=basic --start-maximized https://kimptoc.github.io/CodeClubNixLiveCD/" >> $FFXAUTO
       echo "StartupNotify=true" >> $FFXAUTO
       echo "Terminal=false" >> $FFXAUTO
+      echo "Icon=google-chrome" >> $FFXAUTO
       echo "Type=Application" >> $FFXAUTO
       echo "X-GNOME-Autostart-enabled=true" >> $FFXAUTO
 
@@ -247,11 +248,11 @@ clock-show-seconds=true
 
       # Best-effort maximize shortly after launch - simpler approach
       # Write script to file first to avoid escaping issues
-      export FFXSCRIPT=$HOME/.local/bin/chromium-maximize.sh
+      export FFXSCRIPT=$HOME/.local/bin/chrome-maximize.sh
       mkdir -p $HOME/.local/bin
       echo '#!/bin/bash' > $FFXSCRIPT
       echo 'sleep 4' >> $FFXSCRIPT
-      echo 'wmctrl -r Chromium -b add,maximized_vert,maximized_horz' >> $FFXSCRIPT
+      echo 'wmctrl -r google-chrome -b add,maximized_vert,maximized_horz' >> $FFXSCRIPT
       chmod +x $FFXSCRIPT
       
       export FFXMAX=$HOME/.config/autostart/firefox-maximize.desktop
