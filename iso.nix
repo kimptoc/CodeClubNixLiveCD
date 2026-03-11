@@ -245,11 +245,19 @@ clock-show-seconds=true
 
       cat $FFXAUTO >> $MYLOG
 
-      # Best-effort maximize shortly after launch.
+      # Best-effort maximize shortly after launch - simpler approach
+      # Write script to file first to avoid escaping issues
+      export FFXSCRIPT=$HOME/.local/bin/firefox-maximize.sh
+      mkdir -p $HOME/.local/bin
+      echo '#!/bin/bash' > $FFXSCRIPT
+      echo 'sleep 4' >> $FFXSCRIPT
+      echo 'wmctrl -r Firefox -b add,maximized_vert,maximized_horz' >> $FFXSCRIPT
+      chmod +x $FFXSCRIPT
+      
       export FFXMAX=$HOME/.config/autostart/firefox-maximize.desktop
       echo "[Desktop Entry]" > $FFXMAX
       echo "Name=Firefox Maximize" >> $FFXMAX
-      echo "Exec=${pkgs.bash}/bin/bash -lc 'sleep 4; WIN_ID=$(${pkgs.wmctrl}/bin/wmctrl -lx 2>/dev/null | awk \"/firefox\\.Firefox/ {print \\\$1; exit}\"); [ -n \"\\$WIN_ID\" ] && ${pkgs.wmctrl}/bin/wmctrl -i -r \"\\$WIN_ID\" -b add,maximized_vert,maximized_horz || true'" >> $FFXMAX
+      echo "Exec=$FFXSCRIPT" >> $FFXMAX
       echo "StartupNotify=false" >> $FFXMAX
       echo "Terminal=false" >> $FFXMAX
       echo "Type=Application" >> $FFXMAX
