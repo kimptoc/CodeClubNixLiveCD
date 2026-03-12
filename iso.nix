@@ -74,12 +74,6 @@ clock-show-seconds=true
 
   services.printing.enable = true;
 
-  boot.extraModulePackages = [ config.boot.kernelPackages.broadcom_sta ];
-
-  nixpkgs.config.permittedInsecurePackages = [
-    "broadcom-sta-6.30.223.271-59-6.12.74"
-  ];
- 
   nixpkgs.config.allowUnfree = true;
 
   environment.systemPackages = with pkgs; [  
