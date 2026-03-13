@@ -25,7 +25,7 @@
     # Add Firefox and other tools useful for installation to the launcher
     favoriteAppsOverride = ''
       [org.gnome.shell]
-      favorite-apps=[ 'firefox.desktop', 'org.gnome.Nautilus.desktop', 'org.gnome.Terminal.desktop', 'org.gnome.SystemMonitor.desktop' ]
+      favorite-apps=[ 'google-chrome.desktop', 'org.gnome.Nautilus.desktop', 'org.gnome.Terminal.desktop', 'org.gnome.SystemMonitor.desktop' ]
     '';
     enable = true;
     extraGSettingsOverrides = '' 
@@ -74,12 +74,6 @@ clock-show-seconds=true
 
   services.printing.enable = true;
 
-  boot.extraModulePackages = [ config.boot.kernelPackages.broadcom_sta ];
-
-  nixpkgs.config.permittedInsecurePackages = [
-    "broadcom-sta-6.30.223.271-59-6.12.74"
-  ];
- 
   nixpkgs.config.allowUnfree = true;
 
   environment.systemPackages = with pkgs; [  
@@ -88,6 +82,7 @@ clock-show-seconds=true
   ghostty
   zsh
   nettools
+  wmctrl
   python3
   temurin-bin
   prismlauncher
@@ -232,6 +227,39 @@ clock-show-seconds=true
 
       cat $FFXDESK >> $MYLOG
 
+      # Autostart Google Chrome from inside GNOME session so DISPLAY/Wayland env is correct.
+      export FFXAUTO=$HOME/.config/autostart/chrome-autostart.desktop
+      echo "[Desktop Entry]" > $FFXAUTO
+      echo "Name=Chrome Autostart" >> $FFXAUTO
+      echo "Exec=${pkgs.google-chrome}/bin/google-chrome-stable --disable-fre --no-default-browser-check --no-first-run --hide-crash-restore-bubble --password-store=basic --start-maximized https://kimptoc.github.io/CodeClubNixLiveCD/" >> $FFXAUTO
+      echo "StartupNotify=true" >> $FFXAUTO
+      echo "Terminal=false" >> $FFXAUTO
+      echo "Icon=google-chrome" >> $FFXAUTO
+      echo "Type=Application" >> $FFXAUTO
+      echo "X-GNOME-Autostart-enabled=true" >> $FFXAUTO
+
+      cat $FFXAUTO >> $MYLOG
+
+      # Best-effort maximize shortly after launch - simpler approach
+      # Write script to file first to avoid escaping issues
+      export FFXSCRIPT=$HOME/.local/bin/chrome-maximize.sh
+      mkdir -p $HOME/.local/bin
+      echo '#!/bin/bash' > $FFXSCRIPT
+      echo 'sleep 4' >> $FFXSCRIPT
+      echo 'wmctrl -r google-chrome -b add,maximized_vert,maximized_horz' >> $FFXSCRIPT
+      chmod +x $FFXSCRIPT
+      
+      export FFXMAX=$HOME/.config/autostart/firefox-maximize.desktop
+      echo "[Desktop Entry]" > $FFXMAX
+      echo "Name=Firefox Maximize" >> $FFXMAX
+      echo "Exec=$FFXSCRIPT" >> $FFXMAX
+      echo "StartupNotify=false" >> $FFXMAX
+      echo "Terminal=false" >> $FFXMAX
+      echo "Type=Application" >> $FFXMAX
+      echo "X-GNOME-Autostart-enabled=true" >> $FFXMAX
+
+      cat $FFXMAX >> $MYLOG
+
       echo "MYAUTOSTART end" >> $MYLOG
       date >> $MYLOG
 
@@ -243,59 +271,5 @@ clock-show-seconds=true
     };
   };
 
-  # Separate service for Firefox that waits for network connectivity
-  systemd.user.services.firefox-autostart = {
-    description = "Firefox autostart with network wait";
-    serviceConfig.PassEnvironment = "DISPLAY";
-    after = [ "graphical-session.target" "myautostart.service" ];
-    wants = [ "myautostart.service" ];
-    script = ''
-      export MYLOG=$HOME/firefox-autostart.log
-      echo "FIREFOX-AUTOSTART" > $MYLOG
-      date >> $MYLOG
-
-      # Wait for network connectivity (max 10 seconds, then proceed anyway)
-      echo "Waiting for network..." >> $MYLOG
-      NETWORK_READY=0
-      for i in $(seq 1 10); do
-        if ${pkgs.curl}/bin/curl -s --connect-timeout 1 --max-time 2 -o /dev/null https://www.google.com 2>/dev/null; then
-          echo "Network available after $i seconds" >> $MYLOG
-          NETWORK_READY=1
-          break
-        fi
-        sleep 1
-      done
-      if [ "$NETWORK_READY" = "0" ]; then
-        echo "Network not available after 10 seconds, launching Firefox anyway" >> $MYLOG
-      fi
-
-      # Pre-populate Firefox profile with maximized window state
-      FFPROFILE=$(find $HOME/.mozilla/firefox -maxdepth 1 -name '*.default*' -type d 2>/dev/null | head -1)
-      if [ -z "$FFPROFILE" ]; then
-        # Launch Firefox briefly to create profile, then kill it
-        ${pkgs.firefox}/bin/firefox --headless &
-        FFPID=$!
-        sleep 3
-        kill $FFPID 2>/dev/null
-        FFPROFILE=$(find $HOME/.mozilla/firefox -maxdepth 1 -name '*.default*' -type d 2>/dev/null | head -1)
-      fi
-      if [ -n "$FFPROFILE" ]; then
-        echo '{"chrome://browser/content/browser.xhtml":{"main-window":{"sizemode":"maximized"}}}' > "$FFPROFILE/xulstore.json"
-        echo "Set Firefox sizemode to maximized in $FFPROFILE" >> $MYLOG
-      fi
-
-      echo "Launching Firefox..." >> $MYLOG
-      date >> $MYLOG
-      ${pkgs.firefox}/bin/firefox &
-
-      echo "FIREFOX-AUTOSTART end" >> $MYLOG
-      date >> $MYLOG
-    '';
-    wantedBy = [ "graphical-session.target" ];
-    partOf = [ "graphical-session.target" ];
-    serviceConfig = {
-       RemainAfterExit = true;
-       Type = "oneshot";
-    };
-  };
+  # Firefox launch is handled by GNOME autostart desktop files created in myautostart.
 }
