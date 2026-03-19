@@ -170,7 +170,7 @@ clock-show-seconds=true
     };
   };
 
-  environment.gnome.excludePackages = [ pkgs.gnome-tour pkgs.gnome-initial-setup ];
+  environment.gnome.excludePackages = [ pkgs.gnome-tour pkgs.gnome-initial-setup pkgs.gnome-software ];
 
   systemd.user.services.myautostart = {
     description = "myautostart";
