@@ -28,6 +28,7 @@ Useful links
 TODO
 - firefox maximised on start via xulstore.json sizemode (--width/--height flags caused GNOME login loop)
 - still getting the gnome donations popup
+- disable workspace switcher/not add workspace
 
 DONE
 - fix duplicate Chrome entry in apps view (override system desktop entry with custom one)
