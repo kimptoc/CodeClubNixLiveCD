@@ -1,3 +1,9 @@
+- name: Scratch/Drum star
+  url: https://projects.raspberrypi.org/en/projects/drum-star
+- name: Scratch/How are you?
+  url: https://projects.raspberrypi.org/en/projects/how-are-you
+- name: Scratch/Dodgeball
+  url: https://projects.raspberrypi.org/en/projects/dodgeball
 - name: Nogginville characters
   url: https://scratch.mit.edu/studios/51447751/
 - name: Pi Day!
@@ -10,15 +16,15 @@
   url: https://projects.raspberrypi.org/en/projects/turtle-race-visual
 - name: Flower Generator
   url: https://projects.raspberrypi.org/en/projects/flower-generator
-- name: Project - Cricket
+- name: Project/Cricket
   url: https://projects.raspberrypi.org/en/projects/cricket
-- name: Project - Kabaddi
+- name: Project/Kabaddi
   url: https://projects.raspberrypi.org/en/projects/kabaddi
-- name: Project - Jukskei
+- name: Project/Jukskei
   url: https://projects.raspberrypi.org/en/projects/jukskei
-- name: Project - Kit Chooser
+- name: Project/Kit Chooser
   url: https://projects.raspberrypi.org/en/projects/kit-chooser
-- name: Python - Disgusting Dishes
+- name: Python/Disgusting Dishes
   url: https://projects.raspberrypi.org/en/projects/python-bytes-disgusting-dishes/editor
 #- name: Code Club Insights Evaluation/1
 #  url: https://rpf.io/cci-ncl1
