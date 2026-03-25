@@ -29,6 +29,8 @@ TODO
 - firefox maximised on start via xulstore.json sizemode (--width/--height flags caused GNOME login loop)
 - still getting the gnome donations popup, see screenshot on issue
 - disable workspace switcher/not add workspace
+- add support for kilocode on CLI - install nodejs/ kilocode/cli?
+- * programs.nix-ld.enable = true;
 
 DONE
 - fix duplicate Chrome entry in apps view (override system desktop entry with custom one)
