@@ -98,8 +98,11 @@ clock-show-seconds=true
 
   nixpkgs.config.allowUnfree = true;
 
-  environment.systemPackages = with pkgs; [  
+  programs.nix-ld.enable = true;
+
+  environment.systemPackages = with pkgs; [
   gnome-terminal
+  nodejs
   terminator
   ghostty
   zsh
@@ -125,7 +128,12 @@ clock-show-seconds=true
 
   environment.variables = {
     GSK_RENDERER = "ngl";
+    NPM_CONFIG_PREFIX = "$HOME/.cache/npm/global";
   };
+
+  environment.extraInit = ''
+    export PATH="$PATH:$HOME/.cache/npm/global/bin"
+  '';
 
 # Create Chrome/Chromium policy directory and files
   environment.etc."opt/chrome/policies/managed/disable-password-manager.json".text = ''
@@ -282,6 +290,14 @@ clock-show-seconds=true
       echo "X-GNOME-Autostart-enabled=true" >> $FFXMAX
 
       cat $FFXMAX >> $MYLOG
+
+      # Install kilocode CLI globally via npm
+      echo "Installing kilocode CLI..." >> $MYLOG
+      ${pkgs.nodejs}/bin/npm config set prefix "$HOME/.cache/npm/global" >> $MYLOG 2>&1
+      mkdir -p "$HOME/.cache/npm/global" >> $MYLOG 2>&1
+      ${pkgs.nodejs}/bin/npm install -g @kilocode/cli >> $MYLOG 2>&1
+      export PATH=$PATH:"$HOME/.cache/npm/global/bin"
+      echo "kilocode CLI install done" >> $MYLOG
 
       echo "MYAUTOSTART end" >> $MYLOG
       date >> $MYLOG
