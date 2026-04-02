@@ -102,6 +102,16 @@ clock-show-seconds=true
   programs.zsh.enable = true;
   users.defaultUserShell = pkgs.zsh;
 
+  # Create .zshrc for the nixos user to suppress zsh new-user-install prompt.
+  # NixOS user activation does NOT copy from /etc/skel, so we use an activation script.
+  system.activationScripts.nixosZshrc = ''
+    if [ ! -f /home/nixos/.zshrc ]; then
+      mkdir -p /home/nixos
+      touch /home/nixos/.zshrc
+      chown nixos:nixos /home/nixos/.zshrc 2>/dev/null || true
+    fi
+  '';
+
   environment.systemPackages = with pkgs; [
   gnome-terminal
   nodejs
@@ -132,9 +142,18 @@ clock-show-seconds=true
     GSK_RENDERER = "ngl";
   };
 
+  # environment.extraInit only affects login shells (sourced via /etc/profile).
+  # GNOME Terminal opens non-login interactive zsh shells, so PATH must also be
+  # set in /etc/zshrc via programs.zsh.shellInit.
   environment.extraInit = ''
     export NPM_CONFIG_PREFIX="$HOME/.cache/npm/global"
     export PATH="$PATH:$HOME/.cache/npm/global/bin"
+  '';
+
+  programs.zsh.shellInit = ''
+    # Ensure npm global bin is on PATH for non-login shells (e.g. GNOME Terminal)
+    export NPM_CONFIG_PREFIX="$HOME/.cache/npm/global"
+    [[ ":$PATH:" != *":$HOME/.cache/npm/global/bin:"* ]] && export PATH="$PATH:$HOME/.cache/npm/global/bin"
   '';
 
 # Create Chrome/Chromium policy directory and files
@@ -295,6 +314,7 @@ clock-show-seconds=true
 
       # Install kilocode CLI globally via npm (wait for network, up to 5 minutes)
       export NPM_CONFIG_PREFIX="$HOME/.cache/npm/global"
+      export PATH="${pkgs.nodejs}/bin:${pkgs.bash}/bin:$PATH"
       mkdir -p "$HOME/.cache/npm/global"
       echo "Installing kilocode CLI..." >> $MYLOG
       KILO_INSTALLED=false
