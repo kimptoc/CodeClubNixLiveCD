@@ -98,11 +98,14 @@ clock-show-seconds=true
 
   nixpkgs.config.allowUnfree = true;
 
+  programs.nix-ld.enable = true;
+
   programs.zsh.enable = true;
   users.defaultUserShell = pkgs.zsh;
 
-  environment.systemPackages = with pkgs; [  
+  environment.systemPackages = with pkgs; [
   gnome-terminal
+  nodejs
   terminator
   ghostty
   zsh
@@ -128,7 +131,12 @@ clock-show-seconds=true
 
   environment.variables = {
     GSK_RENDERER = "ngl";
+    NPM_CONFIG_PREFIX = "$HOME/.cache/npm/global";
   };
+
+  environment.extraInit = ''
+    export PATH="$PATH:$HOME/.cache/npm/global/bin"
+  '';
 
 # Create Chrome/Chromium policy directory and files
   environment.etc."opt/chrome/policies/managed/disable-password-manager.json".text = ''
@@ -285,6 +293,23 @@ clock-show-seconds=true
       echo "X-GNOME-Autostart-enabled=true" >> $FFXMAX
 
       cat $FFXMAX >> $MYLOG
+
+      # Install kilocode CLI globally via npm (wait for network, up to 5 minutes)
+      echo "Installing kilocode CLI..." >> $MYLOG
+      KILO_INSTALLED=false
+      for i in $(seq 1 30); do
+        if ${pkgs.nodejs}/bin/npm install -g @kilocode/cli >> $MYLOG 2>&1; then
+          echo "kilocode CLI install done (attempt $i)" >> $MYLOG
+          KILO_INSTALLED=true
+          break
+        fi
+        echo "kilocode CLI install attempt $i failed, retrying in 10s..." >> $MYLOG
+        sleep 10
+      done
+      if [ "$KILO_INSTALLED" = false ]; then
+        echo "ERROR: kilocode CLI install failed after 30 attempts" >> $MYLOG
+      fi
+      export PATH=$PATH:"$HOME/.cache/npm/global/bin"
 
       echo "MYAUTOSTART end" >> $MYLOG
       date >> $MYLOG
