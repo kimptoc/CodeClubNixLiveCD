@@ -105,7 +105,7 @@ clock-show-seconds=true
 
   environment.systemPackages = with pkgs; [
   gnome-terminal
-  nodejs_22
+  nodejs
   terminator
   ghostty
   zsh
@@ -298,7 +298,7 @@ clock-show-seconds=true
       echo "Installing kilocode CLI..." >> $MYLOG
       KILO_INSTALLED=false
       for i in $(seq 1 30); do
-        if ${pkgs.nodejs_22}/bin/npm install -g @kilocode/cli >> $MYLOG 2>&1; then
+        if ${pkgs.nodejs}/bin/npm install -g @kilocode/cli >> $MYLOG 2>&1; then
           echo "kilocode CLI install done (attempt $i)" >> $MYLOG
           KILO_INSTALLED=true
           break
