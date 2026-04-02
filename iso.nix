@@ -294,12 +294,20 @@ clock-show-seconds=true
 
       cat $FFXMAX >> $MYLOG
 
-      # Install kilocode CLI globally via npm
+      # Install kilocode CLI globally via npm (wait for network, up to 5 minutes)
       echo "Installing kilocode CLI..." >> $MYLOG
-      if ${pkgs.nodejs}/bin/npm install -g @kilocode/cli >> $MYLOG 2>&1; then
-        echo "kilocode CLI install done" >> $MYLOG
-      else
-        echo "ERROR: kilocode CLI install failed" >> $MYLOG
+      KILO_INSTALLED=false
+      for i in $(seq 1 30); do
+        if ${pkgs.nodejs}/bin/npm install -g @kilocode/cli >> $MYLOG 2>&1; then
+          echo "kilocode CLI install done (attempt $i)" >> $MYLOG
+          KILO_INSTALLED=true
+          break
+        fi
+        echo "kilocode CLI install attempt $i failed, retrying in 10s..." >> $MYLOG
+        sleep 10
+      done
+      if [ "$KILO_INSTALLED" = false ]; then
+        echo "ERROR: kilocode CLI install failed after 30 attempts" >> $MYLOG
       fi
       export PATH=$PATH:"$HOME/.cache/npm/global/bin"
 
