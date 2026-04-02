@@ -131,10 +131,10 @@ clock-show-seconds=true
 
   environment.variables = {
     GSK_RENDERER = "ngl";
-    NPM_CONFIG_PREFIX = "$HOME/.cache/npm/global";
   };
 
   environment.extraInit = ''
+    export NPM_CONFIG_PREFIX="$HOME/.cache/npm/global"
     export PATH="$PATH:$HOME/.cache/npm/global/bin"
   '';
 
