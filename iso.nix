@@ -296,11 +296,12 @@ clock-show-seconds=true
 
       # Install kilocode CLI globally via npm
       echo "Installing kilocode CLI..." >> $MYLOG
-      ${pkgs.nodejs}/bin/npm config set prefix "$HOME/.cache/npm/global" >> $MYLOG 2>&1
-      mkdir -p "$HOME/.cache/npm/global" >> $MYLOG 2>&1
-      ${pkgs.nodejs}/bin/npm install -g @kilocode/cli >> $MYLOG 2>&1
+      if ${pkgs.nodejs}/bin/npm install -g @kilocode/cli >> $MYLOG 2>&1; then
+        echo "kilocode CLI install done" >> $MYLOG
+      else
+        echo "ERROR: kilocode CLI install failed" >> $MYLOG
+      fi
       export PATH=$PATH:"$HOME/.cache/npm/global/bin"
-      echo "kilocode CLI install done" >> $MYLOG
 
       echo "MYAUTOSTART end" >> $MYLOG
       date >> $MYLOG
