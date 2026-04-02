@@ -8,6 +8,26 @@
     <nixpkgs/nixos/modules/installer/cd-dvd/channel.nix>
   ];
 
+  # Patch gnome-shell to remove the donation dialog entirely.
+  # Belt-and-suspenders: even if GSettings overrides fail to suppress it,
+  # the dialog code itself is neutralised.
+  nixpkgs.overlays = [
+    (final: prev: {
+      gnome-shell = prev.gnome-shell.overrideAttrs (oldAttrs: {
+        postPatch = (oldAttrs.postPatch or "") + ''
+          # Disable donation dialog by replacing its show() with a no-op
+          if [ -f js/ui/donateDialog.js ]; then
+            echo "// Donation dialog disabled for CodeClub LiveCD" > js/ui/donateDialog.js
+          fi
+          # Also handle the welcome dialog if present
+          if [ -f js/ui/welcomeDialog.js ]; then
+            echo "// Welcome dialog disabled for CodeClub LiveCD" > js/ui/welcomeDialog.js
+          fi
+        '';
+      });
+    })
+  ];
+
   # Set the boot label to "codeclub"
   isoImage.isoName = "codeclub.iso";
   isoImage.volumeID = "CODECLUB";
@@ -33,6 +53,8 @@
 button-layout=':minimize,maximize,close'
 [org.gnome.shell]
 enabled-extensions=['no-overview@fthx']
+welcome-dialog-last-shown='2099-12-31T23:59:59Z'
+donation-dialog-last-shown='2099-12-31T23:59:59Z'
 [org.gnome.settings-daemon.plugins.housekeeping]
 donation-reminder-enabled=false
 [org.gnome.desktop.interface]
@@ -185,8 +207,9 @@ clock-show-seconds=true
       ${pkgs.dconf}/bin/dconf write /org/gnome/mutter/dynamic-workspaces false >> $MYLOG 2>&1
       ${pkgs.dconf}/bin/dconf write /org/gnome/desktop/wm/preferences/num-workspaces 1 >> $MYLOG 2>&1
 
-      # Dismiss GNOME donation dialog by marking it as already shown
-      ${pkgs.dconf}/bin/dconf write /org/gnome/shell/donation-dialog-last-shown "'2025-01-01T00:00:00Z'" >> $MYLOG 2>&1
+      # Dismiss GNOME donation/welcome dialogs by marking them as shown far in the future
+      ${pkgs.dconf}/bin/dconf write /org/gnome/shell/donation-dialog-last-shown "'2099-12-31T23:59:59Z'" >> $MYLOG 2>&1
+      ${pkgs.dconf}/bin/dconf write /org/gnome/shell/welcome-dialog-last-shown "'2099-12-31T23:59:59Z'" >> $MYLOG 2>&1
 
       mkdir -p $HOME/.config/autostart >> $MYLOG
       mkdir -p $HOME/.local/share/applications/ >> $MYLOG
