@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 {
   imports = [
     <nixpkgs/nixos/modules/installer/cd-dvd/installation-cd-graphical-gnome.nix>
@@ -6,6 +6,26 @@
     # Provide an initial copy of the NixOS channel so that the user
     # doesn't need to run "nix-channel --update" first.
     <nixpkgs/nixos/modules/installer/cd-dvd/channel.nix>
+  ];
+
+  # Patch gnome-shell to remove the donation dialog entirely.
+  # Belt-and-suspenders: even if GSettings overrides fail to suppress it,
+  # the dialog code itself is neutralised.
+  nixpkgs.overlays = [
+    (final: prev: {
+      gnome-shell = prev.gnome-shell.overrideAttrs (oldAttrs: {
+        postPatch = (oldAttrs.postPatch or "") + ''
+          # Disable donation dialog by replacing its show() with a no-op
+          if [ -f js/ui/donateDialog.js ]; then
+            echo "// Donation dialog disabled for CodeClub LiveCD" > js/ui/donateDialog.js
+          fi
+          # Also handle the welcome dialog if present
+          if [ -f js/ui/welcomeDialog.js ]; then
+            echo "// Welcome dialog disabled for CodeClub LiveCD" > js/ui/welcomeDialog.js
+          fi
+        '';
+      });
+    })
   ];
 
   # Set the boot label to "codeclub"
