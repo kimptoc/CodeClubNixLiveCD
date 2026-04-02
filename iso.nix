@@ -53,8 +53,7 @@
 button-layout=':minimize,maximize,close'
 [org.gnome.shell]
 enabled-extensions=['no-overview@fthx']
-welcome-dialog-last-shown='2099-12-31T23:59:59Z'
-donation-dialog-last-shown='2099-12-31T23:59:59Z'
+welcome-dialog-last-shown-version='9999'
 [org.gnome.settings-daemon.plugins.housekeeping]
 donation-reminder-enabled=false
 [org.gnome.desktop.interface]
