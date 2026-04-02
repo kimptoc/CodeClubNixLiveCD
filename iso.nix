@@ -130,10 +130,10 @@ clock-show-seconds=true
 
   environment.variables = {
     GSK_RENDERER = "ngl";
-    NPM_CONFIG_PREFIX = "$HOME/.cache/npm/global";
   };
 
   environment.extraInit = ''
+    export NPM_CONFIG_PREFIX="$HOME/.cache/npm/global"
     export PATH="$PATH:$HOME/.cache/npm/global/bin"
   '';
 
@@ -294,6 +294,8 @@ clock-show-seconds=true
       cat $FFXMAX >> $MYLOG
 
       # Install kilocode CLI globally via npm (wait for network, up to 5 minutes)
+      export NPM_CONFIG_PREFIX="$HOME/.cache/npm/global"
+      mkdir -p "$HOME/.cache/npm/global"
       echo "Installing kilocode CLI..." >> $MYLOG
       KILO_INSTALLED=false
       for i in $(seq 1 30); do
