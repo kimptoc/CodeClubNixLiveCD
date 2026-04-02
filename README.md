@@ -31,6 +31,7 @@ TODO
 - disable workspace switcher/not add workspace
 - add support for kilocode on CLI - install nodejs/ kilocode/cli?
 - * programs.nix-ld.enable = true;
+- install zsh and make default shell
 
 DONE
 - fix duplicate Chrome entry in apps view (override system desktop entry with custom one)
