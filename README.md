@@ -26,6 +26,7 @@ Useful links
 * bitly link to it - https://bit.ly/codeclubnxl
 
 TODO
+- still getting the gnome donations popup, see screenshot on issue
 - firefox maximised on start via xulstore.json sizemode (--width/--height flags caused GNOME login loop)
 - disable workspace switcher/not add workspace
 
@@ -33,7 +34,6 @@ DONE
 - add support for kilocode on CLI - install nodejs/ kilocode/cli?
 - * programs.nix-ld.enable = true;
 - install zsh and make default shell
-- still getting the gnome donations popup, see screenshot on issue
 - fix duplicate Chrome entry in apps view (override system desktop entry with custom one)
 - dismiss GNOME 47+ donation dialog via dconf and exclude gnome-initial-setup
 - disable gnome remote desktop popup on login
