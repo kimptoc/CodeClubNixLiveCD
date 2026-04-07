@@ -26,7 +26,7 @@ Useful links
 * bitly link to it - https://bit.ly/codeclubnxl
 
 TODO
-- still getting the gnome donations popup, see screenshot on issue
+- still getting the gnome donations popup, see screenshot on issue. use other window manager. ie not gnome
 - firefox maximised on start via xulstore.json sizemode (--width/--height flags caused GNOME login loop)
 - disable workspace switcher/not add workspace
 
