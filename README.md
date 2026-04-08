@@ -29,6 +29,7 @@ TODO
 - still getting the gnome donations popup, see screenshot on issue. use other window manager. ie not gnome
 - firefox maximised on start via xulstore.json sizemode (--width/--height flags caused GNOME login loop)
 - disable workspace switcher/not add workspace
+- add an app shortcut to open kilocode directly in a console, pin it to the panel
 
 DONE
 - add support for kilocode on CLI - install nodejs/ kilocode/cli?
