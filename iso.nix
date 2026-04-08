@@ -21,8 +21,9 @@
     memoryPercent = 50;  # Uses 50% of RAM for compressed swap
   };
 
-  # KDE Plasma 6 desktop (provided by the installation-cd-graphical-plasma6
-  # import above; set explicitly here for clarity).
+  # KDE Plasma 6 desktop (provided by the
+  # installation-cd-graphical-calamares-plasma6 import above; set explicitly
+  # here for clarity).
   services.desktopManager.plasma6.enable = true;
   services.displayManager.sddm.enable = true;
   services.displayManager.sddm.wayland.enable = true;
@@ -81,7 +82,6 @@
   ghostty
   zsh
   nettools
-  wmctrl
   python3
   temurin-bin
   prismlauncher
@@ -97,10 +97,6 @@
   kdePackages.kreversi
   kdePackages.kpat
   ];
-
-  environment.variables = {
-    GSK_RENDERER = "ngl";
-  };
 
   # environment.extraInit only affects login shells (sourced via /etc/profile).
   # Konsole opens non-login interactive zsh shells, so PATH must also be
@@ -129,13 +125,14 @@
   }
   '';
 
-  # Set Firefox as the default browser
+  # Set Google Chrome as the default browser (Chrome is the primary
+  # autostarting browser, so xdg.mime should match).
   xdg.mime.defaultApplications = {
-    "text/html" = "firefox.desktop";
-    "x-scheme-handler/http" = "firefox.desktop";
-    "x-scheme-handler/https" = "firefox.desktop";
-    "x-scheme-handler/about" = "firefox.desktop";
-    "x-scheme-handler/unknown" = "firefox.desktop";
+    "text/html" = "google-chrome.desktop";
+    "x-scheme-handler/http" = "google-chrome.desktop";
+    "x-scheme-handler/https" = "google-chrome.desktop";
+    "x-scheme-handler/about" = "google-chrome.desktop";
+    "x-scheme-handler/unknown" = "google-chrome.desktop";
   };
 
   programs.firefox = {
@@ -240,26 +237,6 @@
       echo "X-KDE-autostart-phase=2" >> $CHRAUTO
 
       cat $CHRAUTO >> $MYLOG
-
-      # Best-effort maximize shortly after launch - simpler approach
-      # Write script to file first to avoid escaping issues
-      export CHRSCRIPT=$HOME/.local/bin/chrome-maximize.sh
-      mkdir -p $HOME/.local/bin
-      echo '#!/bin/bash' > $CHRSCRIPT
-      echo 'sleep 4' >> $CHRSCRIPT
-      echo 'wmctrl -r google-chrome -b add,maximized_vert,maximized_horz' >> $CHRSCRIPT
-      chmod +x $CHRSCRIPT
-
-      export CHRMAX=$HOME/.config/autostart/chrome-maximize.desktop
-      echo "[Desktop Entry]" > $CHRMAX
-      echo "Name=Chrome Maximize" >> $CHRMAX
-      echo "Exec=$CHRSCRIPT" >> $CHRMAX
-      echo "StartupNotify=false" >> $CHRMAX
-      echo "Terminal=false" >> $CHRMAX
-      echo "Type=Application" >> $CHRMAX
-      echo "X-KDE-autostart-phase=2" >> $CHRMAX
-
-      cat $CHRMAX >> $MYLOG
 
       # Install kilocode CLI globally via npm (wait for network, up to 5 minutes)
       export NPM_CONFIG_PREFIX="$HOME/.cache/npm/global"
