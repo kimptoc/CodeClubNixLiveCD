@@ -75,7 +75,7 @@
   '';
 
   environment.systemPackages = with pkgs; [
-  konsole
+  kdePackages.konsole
   nodejs
   terminator
   ghostty
