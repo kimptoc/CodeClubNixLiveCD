@@ -1,31 +1,11 @@
 { config, pkgs, ... }:
 {
   imports = [
-    <nixpkgs/nixos/modules/installer/cd-dvd/installation-cd-graphical-gnome.nix>
+    <nixpkgs/nixos/modules/installer/cd-dvd/installation-cd-graphical-plasma6.nix>
 
     # Provide an initial copy of the NixOS channel so that the user
     # doesn't need to run "nix-channel --update" first.
     <nixpkgs/nixos/modules/installer/cd-dvd/channel.nix>
-  ];
-
-  # Patch gnome-shell to remove the donation dialog entirely.
-  # Belt-and-suspenders: even if GSettings overrides fail to suppress it,
-  # the dialog code itself is neutralised.
-  nixpkgs.overlays = [
-    (final: prev: {
-      gnome-shell = prev.gnome-shell.overrideAttrs (oldAttrs: {
-        postPatch = (oldAttrs.postPatch or "") + ''
-          # Disable donation dialog by replacing its show() with a no-op
-          if [ -f js/ui/donateDialog.js ]; then
-            echo "// Donation dialog disabled for CodeClub LiveCD" > js/ui/donateDialog.js
-          fi
-          # Also handle the welcome dialog if present
-          if [ -f js/ui/welcomeDialog.js ]; then
-            echo "// Welcome dialog disabled for CodeClub LiveCD" > js/ui/welcomeDialog.js
-          fi
-        '';
-      });
-    })
   ];
 
   # Set the boot label to "codeclub"
@@ -41,29 +21,11 @@
     memoryPercent = 50;  # Uses 50% of RAM for compressed swap
   };
 
-  services.desktopManager.gnome = {
-    # Add Firefox and other tools useful for installation to the launcher
-    favoriteAppsOverride = ''
-      [org.gnome.shell]
-      favorite-apps=[ 'google-chrome.desktop', 'org.gnome.Nautilus.desktop', 'org.gnome.Terminal.desktop', 'org.gnome.SystemMonitor.desktop' ]
-    '';
-    enable = true;
-    extraGSettingsOverrides = '' 
-[org.gnome.desktop.wm.preferences]
-button-layout=':minimize,maximize,close'
-[org.gnome.shell]
-enabled-extensions=['no-overview@fthx']
-welcome-dialog-last-shown-version='9999'
-[org.gnome.settings-daemon.plugins.housekeeping]
-donation-reminder-enabled=false
-[org.gnome.desktop.interface]
-clock-show-seconds=true
-'';
-
-  };
-
-  services.gnome.gnome-remote-desktop.enable = false;
-  services.displayManager.gdm.autoSuspend = false;
+  # KDE Plasma 6 desktop (provided by the installation-cd-graphical-plasma6
+  # import above; set explicitly here for clarity).
+  services.desktopManager.plasma6.enable = true;
+  services.displayManager.sddm.enable = true;
+  services.displayManager.sddm.wayland.enable = true;
 
   time.timeZone = "Europe/London";
 
@@ -113,7 +75,7 @@ clock-show-seconds=true
   '';
 
   environment.systemPackages = with pkgs; [
-  gnome-terminal
+  konsole
   nodejs
   terminator
   ghostty
@@ -129,13 +91,11 @@ clock-show-seconds=true
   git
   wget
   nmap
-  pkgs.gnome-tweaks
   findutils
-  gnomeExtensions.no-overview
-  gnome-mines
-  gnome-mahjongg
-  iagno
-  aisleriot
+  kdePackages.kmines
+  kdePackages.kmahjongg
+  kdePackages.kreversi
+  kdePackages.kpat
   ];
 
   environment.variables = {
@@ -143,7 +103,7 @@ clock-show-seconds=true
   };
 
   # environment.extraInit only affects login shells (sourced via /etc/profile).
-  # GNOME Terminal opens non-login interactive zsh shells, so PATH must also be
+  # Konsole opens non-login interactive zsh shells, so PATH must also be
   # set in /etc/zshrc via programs.zsh.shellInit.
   environment.extraInit = ''
     export NPM_CONFIG_PREFIX="$HOME/.cache/npm/global"
@@ -151,7 +111,7 @@ clock-show-seconds=true
   '';
 
   programs.zsh.shellInit = ''
-    # Ensure npm global bin is on PATH for non-login shells (e.g. GNOME Terminal)
+    # Ensure npm global bin is on PATH for non-login shells (e.g. Konsole)
     export NPM_CONFIG_PREFIX="$HOME/.cache/npm/global"
     [[ ":$PATH:" != *":$HOME/.cache/npm/global/bin:"* ]] && export PATH="$PATH:$HOME/.cache/npm/global/bin"
   '';
@@ -192,7 +152,7 @@ clock-show-seconds=true
         Locked = true;  # Set to false if you want users to be able to change it
         StartPage = "homepage-locked";  # Options: "homepage", "previous-session", "homepage-locked"
       };
- 
+
       # Optional: Also disable the password prompt
       Preferences = {
         "signon.rememberSignons" = false;
@@ -221,8 +181,6 @@ clock-show-seconds=true
     };
   };
 
-  environment.gnome.excludePackages = [ pkgs.gnome-tour pkgs.gnome-initial-setup pkgs.gnome-software ];
-
   systemd.user.services.myautostart = {
     description = "myautostart";
     serviceConfig.PassEnvironment = "DISPLAY";
@@ -230,15 +188,6 @@ clock-show-seconds=true
       export MYLOG=$HOME/myautostart.log
       echo "MYAUTOSTART" > $MYLOG
       date >> $MYLOG
-
-      # Set GNOME workspace settings via dconf
-      echo "Setting dconf workspace settings..." >> $MYLOG
-      ${pkgs.dconf}/bin/dconf write /org/gnome/mutter/dynamic-workspaces false >> $MYLOG 2>&1
-      ${pkgs.dconf}/bin/dconf write /org/gnome/desktop/wm/preferences/num-workspaces 1 >> $MYLOG 2>&1
-
-      # Dismiss GNOME donation/welcome dialogs by marking them as shown far in the future
-      ${pkgs.dconf}/bin/dconf write /org/gnome/shell/donation-dialog-last-shown "'2099-12-31T23:59:59Z'" >> $MYLOG 2>&1
-      ${pkgs.dconf}/bin/dconf write /org/gnome/shell/welcome-dialog-last-shown "'2099-12-31T23:59:59Z'" >> $MYLOG 2>&1
 
       mkdir -p $HOME/.config/autostart >> $MYLOG
       mkdir -p $HOME/.local/share/applications/ >> $MYLOG
@@ -279,38 +228,38 @@ clock-show-seconds=true
 
       cat $FFXDESK >> $MYLOG
 
-      # Autostart Google Chrome from inside GNOME session so DISPLAY/Wayland env is correct.
-      export FFXAUTO=$HOME/.config/autostart/chrome-autostart.desktop
-      echo "[Desktop Entry]" > $FFXAUTO
-      echo "Name=Chrome Autostart" >> $FFXAUTO
-      echo "Exec=${pkgs.google-chrome}/bin/google-chrome-stable --disable-fre --no-default-browser-check --no-first-run --hide-crash-restore-bubble --password-store=basic --start-maximized https://kimptoc.github.io/CodeClubNixLiveCD/" >> $FFXAUTO
-      echo "StartupNotify=true" >> $FFXAUTO
-      echo "Terminal=false" >> $FFXAUTO
-      echo "Icon=google-chrome" >> $FFXAUTO
-      echo "Type=Application" >> $FFXAUTO
-      echo "X-GNOME-Autostart-enabled=true" >> $FFXAUTO
+      # Autostart Google Chrome from inside the desktop session so DISPLAY/Wayland env is correct.
+      export CHRAUTO=$HOME/.config/autostart/chrome-autostart.desktop
+      echo "[Desktop Entry]" > $CHRAUTO
+      echo "Name=Chrome Autostart" >> $CHRAUTO
+      echo "Exec=${pkgs.google-chrome}/bin/google-chrome-stable --disable-fre --no-default-browser-check --no-first-run --hide-crash-restore-bubble --password-store=basic --start-maximized https://kimptoc.github.io/CodeClubNixLiveCD/" >> $CHRAUTO
+      echo "StartupNotify=true" >> $CHRAUTO
+      echo "Terminal=false" >> $CHRAUTO
+      echo "Icon=google-chrome" >> $CHRAUTO
+      echo "Type=Application" >> $CHRAUTO
+      echo "X-KDE-autostart-phase=2" >> $CHRAUTO
 
-      cat $FFXAUTO >> $MYLOG
+      cat $CHRAUTO >> $MYLOG
 
       # Best-effort maximize shortly after launch - simpler approach
       # Write script to file first to avoid escaping issues
-      export FFXSCRIPT=$HOME/.local/bin/chrome-maximize.sh
+      export CHRSCRIPT=$HOME/.local/bin/chrome-maximize.sh
       mkdir -p $HOME/.local/bin
-      echo '#!/bin/bash' > $FFXSCRIPT
-      echo 'sleep 4' >> $FFXSCRIPT
-      echo 'wmctrl -r google-chrome -b add,maximized_vert,maximized_horz' >> $FFXSCRIPT
-      chmod +x $FFXSCRIPT
-      
-      export FFXMAX=$HOME/.config/autostart/firefox-maximize.desktop
-      echo "[Desktop Entry]" > $FFXMAX
-      echo "Name=Firefox Maximize" >> $FFXMAX
-      echo "Exec=$FFXSCRIPT" >> $FFXMAX
-      echo "StartupNotify=false" >> $FFXMAX
-      echo "Terminal=false" >> $FFXMAX
-      echo "Type=Application" >> $FFXMAX
-      echo "X-GNOME-Autostart-enabled=true" >> $FFXMAX
+      echo '#!/bin/bash' > $CHRSCRIPT
+      echo 'sleep 4' >> $CHRSCRIPT
+      echo 'wmctrl -r google-chrome -b add,maximized_vert,maximized_horz' >> $CHRSCRIPT
+      chmod +x $CHRSCRIPT
 
-      cat $FFXMAX >> $MYLOG
+      export CHRMAX=$HOME/.config/autostart/chrome-maximize.desktop
+      echo "[Desktop Entry]" > $CHRMAX
+      echo "Name=Chrome Maximize" >> $CHRMAX
+      echo "Exec=$CHRSCRIPT" >> $CHRMAX
+      echo "StartupNotify=false" >> $CHRMAX
+      echo "Terminal=false" >> $CHRMAX
+      echo "Type=Application" >> $CHRMAX
+      echo "X-KDE-autostart-phase=2" >> $CHRMAX
+
+      cat $CHRMAX >> $MYLOG
 
       # Install kilocode CLI globally via npm (wait for network, up to 5 minutes)
       export NPM_CONFIG_PREFIX="$HOME/.cache/npm/global"
@@ -343,5 +292,5 @@ clock-show-seconds=true
     };
   };
 
-  # Firefox launch is handled by GNOME autostart desktop files created in myautostart.
+  # Chrome launch is handled by KDE autostart desktop files created in myautostart.
 }
