@@ -27,6 +27,12 @@ Useful links
 
 TODO
 - still getting the gnome donations popup, see screenshot on issue. use other window manager. ie not gnome
+- did not like kde. let's try xfce
+- disable or dont install the installer
+- take installer, gparted off desktop
+- autostart chrome, maximised
+- disable wallet, eg for wifi passwords
+
 - firefox maximised on start via xulstore.json sizemode (--width/--height flags caused GNOME login loop)
 - disable workspace switcher/not add workspace
 - add an app shortcut to open kilocode directly in a console, pin it to the panel
