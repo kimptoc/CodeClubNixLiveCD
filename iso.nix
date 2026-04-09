@@ -1,7 +1,7 @@
 { config, pkgs, ... }:
 {
   imports = [
-    <nixpkgs/nixos/modules/installer/cd-dvd/installation-cd-graphical-calamares-plasma6.nix>
+    <nixpkgs/nixos/modules/installer/cd-dvd/installation-cd-minimal.nix>
 
     # Provide an initial copy of the NixOS channel so that the user
     # doesn't need to run "nix-channel --update" first.
@@ -21,12 +21,28 @@
     memoryPercent = 50;  # Uses 50% of RAM for compressed swap
   };
 
-  # KDE Plasma 6 desktop (provided by the
-  # installation-cd-graphical-calamares-plasma6 import above; set explicitly
-  # here for clarity).
-  services.desktopManager.plasma6.enable = true;
-  services.displayManager.sddm.enable = true;
-  services.displayManager.sddm.wayland.enable = true;
+  # XFCE desktop with LightDM, auto-login the live CD user.
+  services.xserver.enable = true;
+  services.xserver.desktopManager.xfce.enable = true;
+  services.displayManager.defaultSession = "xfce";
+  services.xserver.displayManager.lightdm = {
+    enable = true;
+    greeter.enable = false;  # skip greeter, go straight to desktop
+  };
+  services.displayManager.autoLogin = {
+    enable = true;
+    user = "nixos";
+  };
+
+  # Disable screen lock / screensaver for the live CD.
+  services.xserver.displayManager.lightdm.extraSeatDefaults = ''
+    xserver-command=X -s 0 -dpms
+  '';
+
+  # Disable gnome-keyring to prevent wallet prompts (e.g. for wifi passwords).
+  services.gnome.gnome-keyring.enable = false;
+  # Store NetworkManager wifi passwords as system connections (no wallet needed).
+  networking.networkmanager.enable = true;
 
   time.timeZone = "Europe/London";
 
@@ -76,7 +92,7 @@
   '';
 
   environment.systemPackages = with pkgs; [
-  kdePackages.konsole
+  xfce.xfce4-terminal
   nodejs
   terminator
   ghostty
@@ -92,14 +108,14 @@
   wget
   nmap
   findutils
-  kdePackages.kmines
-  kdePackages.kmahjongg
-  kdePackages.kreversi
-  kdePackages.kpat
+  gnome-mines
+  gnome-mahjongg
+  iagno
+  aisleriot
   ];
 
   # environment.extraInit only affects login shells (sourced via /etc/profile).
-  # Konsole opens non-login interactive zsh shells, so PATH must also be
+  # xfce4-terminal opens non-login interactive zsh shells, so PATH must also be
   # set in /etc/zshrc via programs.zsh.shellInit.
   environment.extraInit = ''
     export NPM_CONFIG_PREFIX="$HOME/.cache/npm/global"
@@ -107,7 +123,7 @@
   '';
 
   programs.zsh.shellInit = ''
-    # Ensure npm global bin is on PATH for non-login shells (e.g. Konsole)
+    # Ensure npm global bin is on PATH for non-login shells (e.g. xfce4-terminal)
     export NPM_CONFIG_PREFIX="$HOME/.cache/npm/global"
     [[ ":$PATH:" != *":$HOME/.cache/npm/global/bin:"* ]] && export PATH="$PATH:$HOME/.cache/npm/global/bin"
   '';
@@ -192,7 +208,6 @@
       export CHRDESK=$HOME/.local/share/applications/google-chrome.desktop
       echo "[Desktop Entry]" > $CHRDESK
       echo "Name=Google Chrome" >> $CHRDESK
-
       echo "Exec=${pkgs.google-chrome}/bin/google-chrome-stable --disable-fre --no-default-browser-check --no-first-run --hide-crash-restore-bubble --password-store=basic --start-maximized https://kimptoc.github.io/CodeClubNixLiveCD/" >> $CHRDESK
       echo "StartupNotify=true" >> $CHRDESK
       echo "Terminal=false" >> $CHRDESK
@@ -201,7 +216,7 @@
 
       cat $CHRDESK >> $MYLOG
 
-      # Chromium desktop entry override (avoid duplicate icon by using the package's desktop file name)
+      # Chromium desktop entry override
       export CHROMIUMDESK=$HOME/.local/share/applications/chromium-browser.desktop
       echo "[Desktop Entry]" > $CHROMIUMDESK
       echo "Name=Chromium" >> $CHROMIUMDESK
@@ -213,7 +228,7 @@
 
       cat $CHROMIUMDESK >> $MYLOG
 
-      # Create Firefox desktop entry for applications menu (not autostart)
+      # Create Firefox desktop entry for applications menu
       export FFXDESK=$HOME/.local/share/applications/firefox.desktop
       echo "[Desktop Entry]" > $FFXDESK
       echo "Name=Firefox" >> $FFXDESK
@@ -225,7 +240,7 @@
 
       cat $FFXDESK >> $MYLOG
 
-      # Autostart Google Chrome from inside the desktop session so DISPLAY/Wayland env is correct.
+      # Autostart Google Chrome maximized
       export CHRAUTO=$HOME/.config/autostart/chrome-autostart.desktop
       echo "[Desktop Entry]" > $CHRAUTO
       echo "Name=Chrome Autostart" >> $CHRAUTO
@@ -234,7 +249,6 @@
       echo "Terminal=false" >> $CHRAUTO
       echo "Icon=google-chrome" >> $CHRAUTO
       echo "Type=Application" >> $CHRAUTO
-      echo "X-KDE-autostart-phase=2" >> $CHRAUTO
 
       cat $CHRAUTO >> $MYLOG
 
@@ -269,5 +283,5 @@
     };
   };
 
-  # Chrome launch is handled by KDE autostart desktop files created in myautostart.
+  # Chrome launch is handled by XDG autostart desktop files created in myautostart.
 }
