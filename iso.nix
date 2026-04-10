@@ -205,13 +205,127 @@
       echo "MYAUTOSTART" > $MYLOG
       date >> $MYLOG
 
-      mkdir -p $HOME/.config/autostart >> $MYLOG
-      mkdir -p $HOME/.local/share/applications/ >> $MYLOG
+      mkdir -p $HOME/.config/autostart
+      mkdir -p $HOME/.local/share/applications
+      mkdir -p $HOME/.local/bin
 
-      # Set Chrome as the XFCE preferred browser so the panel launcher opens it.
-      ${pkgs.xfce.xfconf}/bin/xfconf-query -c exo -p /ExoBrowsers/WebBrowser \
-        -s "google-chrome.desktop" --create -t string 2>> $MYLOG || true
+      # ---------------------------------------------------------------
+      # Panel setup — only runs once per user home (flagged after first run).
+      # Uses xfconf-query so changes are applied to the running panel,
+      # then the panel is restarted to load any new plugins.
+      # ---------------------------------------------------------------
+      PANEL_FLAG=$HOME/.panel-configured
+      if [ ! -f "$PANEL_FLAG" ]; then
+        echo "Panel setup starting..." >> $MYLOG
+        sleep 5  # wait for xfce4-panel to fully initialise
 
+        # 1. Set Chrome as the XFCE preferred browser (read by exo-open each time)
+        mkdir -p $HOME/.config/xfce4
+        printf '[Default Applications]\nWebBrowser=custom-chrome-browser\n' \
+          > $HOME/.config/xfce4/helpers.rc
+        mkdir -p $HOME/.local/share/xfce4/helpers
+        {
+          echo '[Desktop Entry]'
+          echo 'NoDisplay=true'
+          echo 'Version=0.9.4'
+          echo 'Encoding=UTF-8'
+          echo 'Type=X-XFCE-Helper'
+          echo 'X-XFCE-Category=WebBrowser'
+          echo "X-XFCE-CommandsWithParameter=${pkgs.google-chrome}/bin/google-chrome-stable %s"
+          echo 'Icon=google-chrome'
+          echo 'Name=Google Chrome'
+          echo "X-XFCE-Commands=${pkgs.google-chrome}/bin/google-chrome-stable"
+        } > $HOME/.local/share/xfce4/helpers/custom-chrome-browser.desktop
+        echo "Chrome set as XFCE preferred browser" >> $MYLOG
+
+        # 2. Single workspace — remove pager from all panels
+        ${pkgs.xfce.xfconf}/bin/xfconf-query -c xfwm4 \
+          -p /general/workspace_count -s 1 2>>$MYLOG || true
+        for pnum in $(${pkgs.xfce.xfconf}/bin/xfconf-query -c xfce4-panel \
+            -p /panels 2>/dev/null | grep -E '^[0-9]+$'); do
+          ids=$(${pkgs.xfce.xfconf}/bin/xfconf-query -c xfce4-panel \
+            -p /panel-''${pnum}/plugin-ids 2>/dev/null | grep -E '^[0-9]+$')
+          new_cmd="${pkgs.xfce.xfconf}/bin/xfconf-query -c xfce4-panel \
+            -p /panel-''${pnum}/plugin-ids --force-array"
+          changed=false
+          for id in $ids; do
+            ptype=$(${pkgs.xfce.xfconf}/bin/xfconf-query -c xfce4-panel \
+              -p /plugins/plugin-''${id} 2>/dev/null)
+            if [ "$ptype" = "pager" ]; then
+              changed=true
+              echo "Removing pager plugin ''${id} from panel ''${pnum}" >> $MYLOG
+            else
+              new_cmd="''${new_cmd} -t int -s ''${id}"
+            fi
+          done
+          [ "$changed" = "true" ] && eval "''${new_cmd}" 2>>$MYLOG || true
+        done
+
+        # 3. Add systemload plugin to panel 1, just before the systray
+        max_id=0
+        for pnum in $(${pkgs.xfce.xfconf}/bin/xfconf-query -c xfce4-panel \
+            -p /panels 2>/dev/null | grep -E '^[0-9]+$'); do
+          for id in $(${pkgs.xfce.xfconf}/bin/xfconf-query -c xfce4-panel \
+              -p /panel-''${pnum}/plugin-ids 2>/dev/null | grep -E '^[0-9]+$'); do
+            [ "$id" -gt "$max_id" ] 2>/dev/null && max_id=$id
+          done
+        done
+        sysload_id=$((max_id + 1))
+        echo "Adding systemload as plugin ''${sysload_id}" >> $MYLOG
+        ${pkgs.xfce.xfconf}/bin/xfconf-query -c xfce4-panel \
+          -p /plugins/plugin-''${sysload_id} -n -t string -s "systemload" 2>>$MYLOG
+        p1_ids=$(${pkgs.xfce.xfconf}/bin/xfconf-query -c xfce4-panel \
+          -p /panel-1/plugin-ids 2>/dev/null | grep -E '^[0-9]+$')
+        new_cmd="${pkgs.xfce.xfconf}/bin/xfconf-query -c xfce4-panel \
+          -p /panel-1/plugin-ids --force-array"
+        added=false
+        for id in $p1_ids; do
+          ptype=$(${pkgs.xfce.xfconf}/bin/xfconf-query -c xfce4-panel \
+            -p /plugins/plugin-''${id} 2>/dev/null)
+          if [ "$added" = "false" ] && \
+              { [ "$ptype" = "systray" ] || [ "$ptype" = "notification-plugin" ]; }; then
+            new_cmd="''${new_cmd} -t int -s ''${sysload_id}"
+            added=true
+          fi
+          new_cmd="''${new_cmd} -t int -s ''${id}"
+        done
+        [ "$added" = "false" ] && new_cmd="''${new_cmd} -t int -s ''${sysload_id}"
+        eval "''${new_cmd}" 2>>$MYLOG || true
+
+        # Restart panel to load the new systemload plugin
+        xfce4-panel --restart 2>>$MYLOG || true
+
+        touch "$PANEL_FLAG"
+        echo "Panel setup done" >> $MYLOG
+      fi
+
+      # ---------------------------------------------------------------
+      # KiloCode launcher — wrapper script + desktop entry so it
+      # appears in the apps menu and can be pinned to the panel.
+      # ---------------------------------------------------------------
+      {
+        echo '#!/usr/bin/env bash'
+        echo 'export NPM_CONFIG_PREFIX="$HOME/.cache/npm/global"'
+        echo 'export PATH="$PATH:$HOME/.cache/npm/global/bin"'
+        echo 'exec kilocode "$@"'
+      } > $HOME/.local/bin/kilocode-wrapper
+      chmod +x $HOME/.local/bin/kilocode-wrapper
+
+      {
+        echo '[Desktop Entry]'
+        echo 'Name=KiloCode'
+        echo 'Comment=AI Coding Assistant'
+        echo "Exec=xfce4-terminal -x $HOME/.local/bin/kilocode-wrapper"
+        echo 'Icon=utilities-terminal'
+        echo 'Type=Application'
+        echo 'Terminal=false'
+        echo 'Categories=Development;'
+      } > $HOME/.local/share/applications/kilocode.desktop
+      echo "KiloCode launcher created" >> $MYLOG
+
+      # ---------------------------------------------------------------
+      # Browser / app desktop entries and autostart
+      # ---------------------------------------------------------------
       export CHRDESK=$HOME/.local/share/applications/google-chrome.desktop
       echo "[Desktop Entry]" > $CHRDESK
       echo "Name=Google Chrome" >> $CHRDESK
