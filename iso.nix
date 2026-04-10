@@ -31,6 +31,14 @@
     user = "nixos";
   };
 
+  # Disable screen blanking and DPMS for the live CD.
+  services.xserver.serverFlagsSection = ''
+    Option "BlankTime" "0"
+    Option "StandbyTime" "0"
+    Option "SuspendTime" "0"
+    Option "OffTime" "0"
+  '';
+
   # Disable gnome-keyring to prevent wallet prompts (e.g. for wifi passwords).
   services.gnome.gnome-keyring.enable = false;
   # Store NetworkManager wifi passwords as system connections (no wallet needed).
@@ -100,7 +108,7 @@
   wget
   nmap
   findutils
-  gnome-mines
+  gnome-mines      # GTK games — XFCE shares the GTK toolkit so no extra runtime bloat
   gnome-mahjongg
   iagno
   aisleriot
