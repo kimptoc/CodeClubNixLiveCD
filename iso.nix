@@ -1,4 +1,55 @@
 { config, pkgs, ... }:
+let
+  xfcePanelXml = pkgs.writeText "xfce4-panel.xml" ''
+    <?xml version="1.0" encoding="UTF-8"?>
+    <channel name="xfce4-panel" version="1.0">
+      <property name="configver" type="sint" value="2"/>
+      <property name="panels" type="array">
+        <value type="uint" value="1"/>
+        <value type="uint" value="2"/>
+      </property>
+      <property name="panel-1" type="empty">
+        <property name="position" type="string" value="p=6;x=0;y=0"/>
+        <property name="length" type="uint" value="100"/>
+        <property name="position-locked" type="bool" value="true"/>
+        <property name="size" type="uint" value="28"/>
+        <property name="plugin-ids" type="array">
+          <value type="sint" value="1"/>
+          <value type="sint" value="2"/>
+          <value type="sint" value="3"/>
+          <value type="sint" value="4"/>
+          <value type="sint" value="5"/>
+          <value type="sint" value="6"/>
+        </property>
+      </property>
+      <property name="panel-2" type="empty">
+        <property name="position" type="string" value="p=10;x=0;y=0"/>
+        <property name="length" type="uint" value="100"/>
+        <property name="position-locked" type="bool" value="true"/>
+        <property name="size" type="uint" value="28"/>
+        <property name="plugin-ids" type="array">
+          <value type="sint" value="7"/>
+        </property>
+      </property>
+      <property name="plugins" type="empty">
+        <property name="plugin-1" type="string" value="applicationsmenu"/>
+        <property name="plugin-2" type="string" value="launcher">
+          <property name="items" type="array">
+            <value type="string" value="google-chrome.desktop"/>
+          </property>
+        </property>
+        <property name="plugin-3" type="string" value="separator">
+          <property name="expand" type="bool" value="true"/>
+          <property name="style" type="uint" value="0"/>
+        </property>
+        <property name="plugin-4" type="string" value="systemload"/>
+        <property name="plugin-5" type="string" value="systray"/>
+        <property name="plugin-6" type="string" value="clock"/>
+        <property name="plugin-7" type="string" value="tasklist"/>
+      </property>
+    </channel>
+  '';
+in
 {
   imports = [
     <nixpkgs/nixos/modules/installer/cd-dvd/installation-cd-graphical-base.nix>
@@ -38,6 +89,11 @@
     Option "SuspendTime" "0"
     Option "OffTime" "0"
   '';
+
+  # Set a password so the VM login screen works (auto-login handles the live CD).
+  users.users.nixos = {
+    initialPassword = "nixos";
+  };
 
   # Disable gnome-keyring to prevent wallet prompts (e.g. for wifi passwords).
   services.gnome.gnome-keyring.enable = false;
@@ -81,6 +137,9 @@
   programs.zsh.enable = true;
   users.defaultUserShell = pkgs.zsh;
 
+  # DISABLED FOR TESTING: Set up XFCE panel config.
+  # system.activationScripts.nixosXfcePanel = { ... };
+
   # Create .zshrc for the nixos user to suppress zsh new-user-install prompt.
   # NixOS user activation does NOT copy from /etc/skel, so we use an activation script.
   system.activationScripts.nixosZshrc = ''
@@ -92,6 +151,7 @@
   '';
 
   environment.systemPackages = with pkgs; [
+  xfce.xfce4-systemload-plugin
   xfce.xfce4-terminal
   nodejs
   terminator
