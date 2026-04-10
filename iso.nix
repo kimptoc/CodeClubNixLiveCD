@@ -21,13 +21,23 @@
     memoryPercent = 50;  # Uses 50% of RAM for compressed swap
   };
 
-  # Cosmic desktop with its own greeter, auto-login the live CD user.
-  services.desktopManager.cosmic.enable = true;
-  services.displayManager.cosmic-greeter.enable = true;
+  # XFCE desktop with LightDM, auto-login the live CD user.
+  services.xserver.enable = true;
+  services.xserver.desktopManager.xfce.enable = true;
+  services.displayManager.defaultSession = "xfce";
+  services.xserver.displayManager.lightdm.enable = true;
   services.displayManager.autoLogin = {
     enable = true;
     user = "nixos";
   };
+
+  # Disable screen blanking and DPMS for the live CD.
+  services.xserver.serverFlagsSection = ''
+    Option "BlankTime" "0"
+    Option "StandbyTime" "0"
+    Option "SuspendTime" "0"
+    Option "OffTime" "0"
+  '';
 
   # Set a password so the VM login screen works (auto-login handles the live CD).
   users.users.nixos = {
@@ -56,9 +66,13 @@
     LC_TIME = "en_GB.UTF-8";
   };
 
-  # Configure keymap
-  services.xserver.xkb.layout = "gb";
-  services.xserver.xkb.variant = "";
+  # Configure keymap in X11
+  services.xserver = {
+    xkb.layout = "gb";
+    xkb.variant = "";
+  };
+
+  # Configure console keymap
   console.keyMap = "uk";
 
   services.locate.enable = true;
@@ -83,6 +97,8 @@
   '';
 
   environment.systemPackages = with pkgs; [
+  xfce.xfce4-systemload-plugin  # CPU/mem/net monitor — right-click panel to add
+  xfce.xfce4-terminal
   nodejs
   terminator
   ghostty
@@ -104,12 +120,16 @@
   aisleriot
   ];
 
+  # environment.extraInit only affects login shells (sourced via /etc/profile).
+  # xfce4-terminal opens non-login interactive zsh shells, so PATH must also be
+  # set in /etc/zshrc via programs.zsh.shellInit.
   environment.extraInit = ''
     export NPM_CONFIG_PREFIX="$HOME/.cache/npm/global"
     export PATH="$PATH:$HOME/.cache/npm/global/bin"
   '';
 
   programs.zsh.shellInit = ''
+    # Ensure npm global bin is on PATH for non-login shells (e.g. xfce4-terminal)
     export NPM_CONFIG_PREFIX="$HOME/.cache/npm/global"
     [[ ":$PATH:" != *":$HOME/.cache/npm/global/bin:"* ]] && export PATH="$PATH:$HOME/.cache/npm/global/bin"
   '';
@@ -127,7 +147,8 @@
   }
   '';
 
-  # Set Google Chrome as the default browser.
+  # Set Google Chrome as the default browser (Chrome is the primary
+  # autostarting browser, so xdg.mime should match).
   xdg.mime.defaultApplications = {
     "text/html" = "google-chrome.desktop";
     "x-scheme-handler/http" = "google-chrome.desktop";
@@ -144,6 +165,7 @@
       DisablePrivacySegmentation = true;
       NewTabPage = false;
 
+      # Set homepage
       Homepage = {
         URL = "https://kimptoc.github.io/CodeClubNixLiveCD/";
         Locked = true;
@@ -177,6 +199,7 @@
 
   systemd.user.services.myautostart = {
     description = "myautostart";
+    serviceConfig.PassEnvironment = "DISPLAY";
     script = ''
       export MYLOG=$HOME/myautostart.log
       echo "MYAUTOSTART" > $MYLOG
@@ -184,6 +207,10 @@
 
       mkdir -p $HOME/.config/autostart >> $MYLOG
       mkdir -p $HOME/.local/share/applications/ >> $MYLOG
+
+      # Set Chrome as the XFCE preferred browser so the panel launcher opens it.
+      ${pkgs.xfce.xfconf}/bin/xfconf-query -c exo -p /ExoBrowsers/WebBrowser \
+        -s "google-chrome.desktop" --create -t string 2>> $MYLOG || true
 
       export CHRDESK=$HOME/.local/share/applications/google-chrome.desktop
       echo "[Desktop Entry]" > $CHRDESK
@@ -256,7 +283,7 @@
       date >> $MYLOG
 
     '';
-    wantedBy = [ "graphical-session.target" ];
+    wantedBy = [ "graphical-session.target" ]; # starts after login
     partOf = [ "graphical-session.target" ];
     serviceConfig = {
        RemainAfterExit = true;
