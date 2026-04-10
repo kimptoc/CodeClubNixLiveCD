@@ -1,7 +1,7 @@
 { config, pkgs, ... }:
 {
   imports = [
-    <nixpkgs/nixos/modules/installer/cd-dvd/installation-cd-minimal.nix>
+    <nixpkgs/nixos/modules/installer/cd-dvd/installation-cd-graphical-base.nix>
 
     # Provide an initial copy of the NixOS channel so that the user
     # doesn't need to run "nix-channel --update" first.
@@ -23,7 +23,6 @@
 
   # XFCE desktop with LightDM, auto-login the live CD user.
   services.xserver.enable = true;
-  services.xserver.videoDrivers = [ "modesetting" "fbdev" ];
   services.xserver.desktopManager.xfce.enable = true;
   services.displayManager.defaultSession = "xfce";
   services.xserver.displayManager.lightdm.enable = true;
@@ -31,9 +30,6 @@
     enable = true;
     user = "nixos";
   };
-
-  # GPU/graphics support for the live CD (needed since we use the minimal base).
-  hardware.graphics.enable = true;
 
   # Disable gnome-keyring to prevent wallet prompts (e.g. for wifi passwords).
   services.gnome.gnome-keyring.enable = false;
