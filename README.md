@@ -33,6 +33,8 @@ TODO
 - autostart chrome, maximised
 - disable wallet, eg for wifi passwords
 
+- xfce/kilocode - seems there but does nothing? check autostart log.
+
 - firefox maximised on start via xulstore.json sizemode (--width/--height flags caused GNOME login loop)
 - disable workspace switcher/not add workspace
 - add an app shortcut to open kilocode directly in a console, pin it to the panel
