@@ -25,19 +25,11 @@
   services.xserver.enable = true;
   services.xserver.desktopManager.xfce.enable = true;
   services.displayManager.defaultSession = "xfce";
-  services.xserver.displayManager.lightdm = {
-    enable = true;
-    greeter.enable = false;  # skip greeter, go straight to desktop
-  };
+  services.xserver.displayManager.lightdm.enable = true;
   services.displayManager.autoLogin = {
     enable = true;
     user = "nixos";
   };
-
-  # Disable screen lock / screensaver for the live CD.
-  services.xserver.displayManager.lightdm.extraSeatDefaults = ''
-    xserver-command=X -s 0 -dpms
-  '';
 
   # Disable gnome-keyring to prevent wallet prompts (e.g. for wifi passwords).
   services.gnome.gnome-keyring.enable = false;
