@@ -23,6 +23,7 @@
 
   # XFCE desktop with LightDM, auto-login the live CD user.
   services.xserver.enable = true;
+  services.xserver.videoDrivers = [ "modesetting" "fbdev" ];
   services.xserver.desktopManager.xfce.enable = true;
   services.displayManager.defaultSession = "xfce";
   services.xserver.displayManager.lightdm.enable = true;
@@ -30,6 +31,9 @@
     enable = true;
     user = "nixos";
   };
+
+  # GPU/graphics support for the live CD (needed since we use the minimal base).
+  hardware.graphics.enable = true;
 
   # Disable gnome-keyring to prevent wallet prompts (e.g. for wifi passwords).
   services.gnome.gnome-keyring.enable = false;
