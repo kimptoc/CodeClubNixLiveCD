@@ -569,6 +569,11 @@ HISTEOF
         $XQ -c xfce4-panel -p /plugins/plugin-17/expand -n -t bool -s true 2>>$MYLOG
         $XQ -c xfce4-panel -p /plugins/plugin-17/style  -n -t uint -s 0    2>>$MYLOG
 
+        # Clock config moved to a later stage — see the clock block below
+        # that runs AFTER the panel restart, because the live panel-1 layout
+        # diverges from our static XML (xfce4-panel auto-inserts tasklist,
+        # pager, and extra separators, reshuffling plugin IDs).
+
         # Hide all desktop icons (no Home / Filesystem / removable media
         # clutter on the live-CD desktop). style=0 means no icons at all.
         $XQ -c xfce4-desktop -p /desktop-icons/style -n -t int -s 0 2>>$MYLOG \
@@ -590,7 +595,34 @@ HISTEOF
         pkill -x xfce4-panel 2>/dev/null || true
         sleep 1
         xfce4-panel &
-        sleep 2
+        sleep 3
+
+        # Clock — show time only in HH:MM:SS, no date line.
+        # Runs AFTER the panel restart so that xfconf-query sees the live
+        # plugin layout. xfce4-panel auto-inserts tasklist/pager/extra
+        # separators into panel-1 regardless of our static XML, which
+        # reshuffles plugin IDs, so we discover the clock plugin at runtime
+        # by iterating all plugin-N entries and matching type == "clock".
+        # mode=2 = digital; digital-layout=3 = time-only layout (XFCE 4.16+).
+        CLOCK_PID=""
+        for i in 1 2 3 4 5 6 7 8 9 18 19 20 21 22 23 24 25; do
+          ptype=$($XQ -c xfce4-panel -p /plugins/plugin-$i 2>/dev/null)
+          if [ "$ptype" = "clock" ]; then
+            CLOCK_PID="plugin-$i"
+            break
+          fi
+        done
+        echo "clock plugin id = $CLOCK_PID" >> $MYLOG
+        if [ -n "$CLOCK_PID" ]; then
+          $XQ -c xfce4-panel -p /plugins/$CLOCK_PID/mode            -n -t uint   -s 2 2>>$MYLOG
+          $XQ -c xfce4-panel -p /plugins/$CLOCK_PID/digital-layout  -n -t uint   -s 3 2>>$MYLOG
+          $XQ -c xfce4-panel -p /plugins/$CLOCK_PID/digital-time-format -n -t string -s "%H:%M:%S" 2>>$MYLOG
+          $XQ -c xfce4-panel -p /plugins/$CLOCK_PID/digital-date-format -n -t string -s ""        2>>$MYLOG
+          $XQ -c xfce4-panel -p /plugins/$CLOCK_PID/digital-format      -n -t string -s "%H:%M:%S" 2>>$MYLOG \
+            && echo "clock digital-format set on $CLOCK_PID" >> $MYLOG
+          # Nudge the panel to re-read plugin config.
+          xfce4-panel --restart >> $MYLOG 2>&1 || true
+        fi
 
         touch "$PANEL_FLAG"
         echo "Panel setup done" >> $MYLOG

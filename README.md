@@ -26,13 +26,13 @@ Useful links
 * bitly link to it - https://bit.ly/codeclubnxl
 
 TODO
-- change panel date/time - to time only, eg 17:45:32
 
 NOT DONE (gave up — action-buttons xfconf settings didn't take effect on this XFCE version)
 - hide lock screen,switch user,suspend, logout menu items 
 - remove confirm option from shutdown menu item
 
 DONE
+- panel clock shows time only in HH:MM:SS (plugin-6 mode=2 + digital-time-format=%H:%M:%S, empty date)
 - hide all XFCE desktop icons (xfce4-desktop /desktop-icons/style=0 via xfconf-query in myautostart)
 - preloaded zsh history with kilocode/btop/python3/node/nmap (seeded in system.activationScripts.nixosZshrc)
 - disable screen locking on the live CD (services.xserver.desktopManager.xfce.enableScreensaver = false)
