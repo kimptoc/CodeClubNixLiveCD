@@ -625,7 +625,4 @@ in
       };
     };
   };
-
-  # Larger VM disk for testing.
-  virtualisation.diskSize = 4096;
 }
