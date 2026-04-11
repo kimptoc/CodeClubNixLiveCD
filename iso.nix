@@ -1,5 +1,25 @@
 { config, pkgs, ... }:
 let
+  # Paul Linux Themer's "PRO Dark XFCE Edition" (4.14 variant), fetched
+  # direct from GitHub since it isn't in nixpkgs. The repo contains three
+  # variants in subdirectories; we install only the XFCE 4.14 one as a
+  # theme named "PRO-dark-XFCE-4.14" under $out/share/themes/.
+  proDarkXfceTheme = pkgs.stdenvNoCC.mkDerivation {
+    pname = "pro-dark-xfce-edition";
+    version = "4.14-unstable-2019-10-28";
+    src = pkgs.fetchFromGitHub {
+      owner = "paullinuxthemer";
+      repo = "PRO-Dark-XFCE-Edition";
+      rev = "4b3f32f050f6504663a7e8f4038c33818557581a";
+      sha256 = "06cw40p52k7qird5g2d74wc8fdsd87fm1jg9dn1dkq42gr6mbbmm";
+    };
+    dontBuild = true;
+    installPhase = ''
+      mkdir -p $out/share/themes
+      cp -r "PRO-dark-XFCE-4.14" "$out/share/themes/PRO-dark-XFCE-4.14"
+    '';
+  };
+
   # Panel layout:
   #   Panel 1 (top): app-menu | chrome-launcher | <expand> | systray | clock
   #   Panel 2 (bottom dock): <expand> | show-desktop | terminal | files | chrome | appfinder | btop | <expand>
@@ -192,6 +212,13 @@ in
 
   isoImage.squashfsCompression = "xz";
 
+  # VM-test disk size. This option comes from the qemu-vm module, which is
+  # only imported by `nixos-rebuild build-vm` — for the actual ISO build it
+  # is a harmless no-op. The default 1 GiB is too small for us (zsh compinit
+  # runs, Chrome writes its profile, etc. → "no space left on device" errors
+  # in the VM), so bump it to 4 GiB for iteration testing.
+  virtualisation.diskSize = 4096;
+
   zramSwap = {
     enable = true;
     memoryPercent = 50;
@@ -200,6 +227,8 @@ in
   # XFCE desktop with LightDM, auto-login the live CD user.
   services.xserver.enable = true;
   services.xserver.desktopManager.xfce.enable = true;
+  # No screensaver/lock on a live CD — kids shouldn't be locked out.
+  services.xserver.desktopManager.xfce.enableScreensaver = false;
   services.displayManager.defaultSession = "xfce";
   services.xserver.displayManager.lightdm.enable = true;
   services.displayManager.autoLogin = {
@@ -256,13 +285,23 @@ in
   programs.zsh.enable = true;
   users.defaultUserShell = pkgs.zsh;
 
-  # Create .zshrc for the codeclub user to suppress zsh new-user-install prompt.
+  # Create .zshrc for the codeclub user to suppress zsh new-user-install prompt,
+  # and seed .zsh_history with a handful of useful commands so kids can
+  # up-arrow to them without typing.
   system.activationScripts.nixosZshrc = ''
     if [ ! -f /home/codeclub/.zshrc ]; then
       mkdir -p /home/codeclub
       touch /home/codeclub/.zshrc
-      chown codeclub:codeclub /home/codeclub/.zshrc 2>/dev/null || true
     fi
+    cat > /home/codeclub/.zsh_history <<'HISTEOF'
+kilocode
+btop
+python3
+node
+nmap 192.168.1.0/24
+HISTEOF
+    chmod 600 /home/codeclub/.zsh_history
+    chown 1000:100 /home/codeclub/.zshrc /home/codeclub/.zsh_history 2>/dev/null || true
   '';
 
   # Write XFCE panel config and launcher desktop files before any session starts.
@@ -367,6 +406,7 @@ in
     gnome-mahjongg
     iagno
     aisleriot
+    proDarkXfceTheme
   ];
 
   # Chromium policy (same as Chrome): disable built-in password manager
@@ -529,6 +569,22 @@ in
         $XQ -c xfce4-panel -p /plugins/plugin-17/expand -n -t bool -s true 2>>$MYLOG
         $XQ -c xfce4-panel -p /plugins/plugin-17/style  -n -t uint -s 0    2>>$MYLOG
 
+        # Hide all desktop icons (no Home / Filesystem / removable media
+        # clutter on the live-CD desktop). style=0 means no icons at all.
+        $XQ -c xfce4-desktop -p /desktop-icons/style -n -t int -s 0 2>>$MYLOG \
+          && echo "desktop-icons/style=0 set" >> $MYLOG
+        xfdesktop --reload >> $MYLOG 2>&1 || true
+
+        # Apply PRO Dark XFCE theme (GTK + xfwm4 window decorations).
+        # xfsettingsd watches these xfconf properties and propagates the
+        # change to running GTK apps without needing a logout.
+        $XQ -c xsettings -p /Net/ThemeName -n -t string -s "PRO-dark-XFCE-4.14" 2>>$MYLOG \
+          && echo "xsettings ThemeName set" >> $MYLOG
+        $XQ -c xsettings -p /Gtk/ApplicationPreferDarkTheme -n -t bool -s true 2>>$MYLOG \
+          && echo "Gtk ApplicationPreferDarkTheme=true set" >> $MYLOG
+        $XQ -c xfwm4 -p /general/theme -n -t string -s "PRO-dark-XFCE-4.14" 2>>$MYLOG \
+          && echo "xfwm4 theme set" >> $MYLOG
+
         echo "xfconf-query panel-2 done, restarting panel..." >> $MYLOG
 
         pkill -x xfce4-panel 2>/dev/null || true
@@ -543,6 +599,63 @@ in
       # Single workspace
       ${pkgs.xfce.xfconf}/bin/xfconf-query -c xfwm4 \
         -p /general/workspace_count -s 1 2>>$MYLOG || true
+
+      # Fetch Bing's daily wallpaper and set it as the desktop background.
+      # Bing rotates the image at 00:00 UTC so every CodeClub machine booted
+      # on the same day ends up with the same picture. Runs in a background
+      # subshell with retries so a slow network doesn't block Chrome launch.
+      (
+        # Wait for xrandr to enumerate outputs. graphical-session.target can
+        # fire before xfce4-session has finished wiring up X outputs, so
+        # xrandr may briefly return an empty list — retry for up to ~30s.
+        MONITORS=""
+        for w in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
+          MONITORS=$(${pkgs.xorg.xrandr}/bin/xrandr --listactivemonitors 2>/dev/null | awk 'NR>1 {print $NF}')
+          [ -n "$MONITORS" ] && break
+          sleep 2
+        done
+        # Fall back to a list of common names if xrandr never came up —
+        # xfdesktop will just ignore any that don't match a real output.
+        if [ -z "$MONITORS" ]; then
+          MONITORS="Virtual-1 Virtual1 0 VGA-1 VGA1 HDMI-1 HDMI1 eDP-1 eDP1 DP-1 DP1 LVDS-1 LVDS1"
+        fi
+        echo "wallpaper: monitors = [$MONITORS]" >> $MYLOG
+
+        for i in 1 2 3 4 5 6 7 8 9 10; do
+          WALL_URL=$(${pkgs.curl}/bin/curl -s --max-time 10 \
+            'https://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1&mkt=en-GB' \
+            | ${pkgs.python3}/bin/python3 -c 'import sys,json; d=json.load(sys.stdin); print("https://www.bing.com"+d["images"][0]["url"])' 2>/dev/null)
+          if [ -n "$WALL_URL" ]; then
+            WALL_FILE="$HOME/Pictures/bing-wallpaper.jpg"
+            mkdir -p "$HOME/Pictures"
+            if ${pkgs.curl}/bin/curl -s --max-time 30 -o "$WALL_FILE" "$WALL_URL"; then
+              # xfdesktop stores the wallpaper at
+              # /backdrop/screen0/monitor<NAME>/workspace<N>/last-image
+              # — create these explicitly since a fresh home has none.
+              for mon in $MONITORS; do
+                for ws in 0 1 2 3; do
+                  ${pkgs.xfce.xfconf}/bin/xfconf-query -c xfce4-desktop \
+                    -p "/backdrop/screen0/monitor$mon/workspace$ws/last-image" \
+                    -n -t string -s "$WALL_FILE" 2>>$MYLOG
+                  ${pkgs.xfce.xfconf}/bin/xfconf-query -c xfce4-desktop \
+                    -p "/backdrop/screen0/monitor$mon/workspace$ws/image-style" \
+                    -n -t int -s 5 2>>$MYLOG
+                done
+              done
+              # Also sweep any last-image properties xfdesktop may have
+              # created by the time we got here (defensive).
+              for prop in $(${pkgs.xfce.xfconf}/bin/xfconf-query -c xfce4-desktop -l 2>/dev/null | grep 'last-image$'); do
+                ${pkgs.xfce.xfconf}/bin/xfconf-query -c xfce4-desktop -p "$prop" -s "$WALL_FILE" 2>>$MYLOG
+              done
+              ${pkgs.xfce.xfdesktop}/bin/xfdesktop --reload >> $MYLOG 2>&1 || true
+              echo "wallpaper: set from $WALL_URL (monitors: $MONITORS)" >> $MYLOG
+              break
+            fi
+          fi
+          echo "wallpaper: attempt $i failed, retrying in 15s..." >> $MYLOG
+          sleep 15
+        done
+      ) &
 
       # Launch Chrome directly — the XDG autostart file approach fails on
       # first boot because the session manager scans autostart before this
