@@ -26,23 +26,22 @@ Useful links
 * bitly link to it - https://bit.ly/codeclubnxl
 
 TODO
+
+- xfce. hide disks from desktop, ideally hide all
+- preloaded zsh history eg kilocode
+- hide lock screen,switch user,suspend, logout menu items 
+- remove confirm option from shutdown menu item
+
+DONE
+- add an app shortcut to open kilocode  in a console, pin it to the panel
+- disable workspace switcher/not add workspace
+- firefox maximised on start via xulstore.json sizemode (--width/--height flags caused GNOME login loop
 - still getting the gnome donations popup, see screenshot on issue. use other window manager. ie not gnome
 - did not like kde. let's try xfce
 - disable or dont install the installer
 - take installer, gparted off desktop
 - autostart chrome, maximised
 - disable wallet, eg for wifi passwords
-
-- xfce. hide disks from desktop or hide all
-- preloaded zsh history
-
-
-- firefox maximised on start via xulstore.json sizemode (--width/--height flags caused GNOME login loop)
-- disable workspace switcher/not add workspace
-- add an app shortcut to open kilocode directly in a console, pin it to the panel
-- hide lock screen,switch user,suspend, logout options 
-
-DONE
 - add support for kilocode on CLI - install nodejs/ kilocode/cli?
 - * programs.nix-ld.enable = true;
 - install zsh and make default shell
