@@ -33,11 +33,14 @@ TODO
 - autostart chrome, maximised
 - disable wallet, eg for wifi passwords
 
-- xfce/kilocode - seems there but does nothing? check autostart log.
+- xfce. hide disks from desktop or hide all
+- preloaded zsh history
+
 
 - firefox maximised on start via xulstore.json sizemode (--width/--height flags caused GNOME login loop)
 - disable workspace switcher/not add workspace
 - add an app shortcut to open kilocode directly in a console, pin it to the panel
+- hide lock screen,switch user,suspend, logout options 
 
 DONE
 - add support for kilocode on CLI - install nodejs/ kilocode/cli?
