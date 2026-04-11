@@ -1,4 +1,146 @@
 { config, pkgs, ... }:
+let
+  # Panel layout:
+  #   Panel 1 (top): app-menu | chrome-launcher | <expand> | systray | clock
+  #   Panel 2 (bottom dock): <expand> | show-desktop | terminal | files | chrome | appfinder | btop | <expand>
+  xfcePanelXml = pkgs.writeText "xfce4-panel.xml" ''
+    <?xml version="1.0" encoding="UTF-8"?>
+    <channel name="xfce4-panel" version="1.0">
+      <property name="configver" type="sint" value="2"/>
+      <property name="panels" type="array">
+        <value type="uint" value="1"/>
+        <value type="uint" value="2"/>
+      </property>
+      <property name="panel-1" type="empty">
+        <property name="position" type="string" value="p=6;x=0;y=0"/>
+        <property name="length" type="uint" value="100"/>
+        <property name="position-locked" type="bool" value="true"/>
+        <property name="size" type="uint" value="28"/>
+        <property name="plugin-ids" type="array">
+          <value type="sint" value="1"/>
+          <value type="sint" value="2"/>
+          <value type="sint" value="3"/>
+          <value type="sint" value="5"/>
+          <value type="sint" value="6"/>
+        </property>
+      </property>
+      <property name="panel-2" type="empty">
+        <property name="position" type="string" value="p=10;x=0;y=0"/>
+        <property name="length" type="uint" value="100"/>
+        <property name="position-locked" type="bool" value="true"/>
+        <property name="size" type="uint" value="40"/>
+        <property name="plugin-ids" type="array">
+          <value type="sint" value="10"/>
+          <value type="sint" value="11"/>
+          <value type="sint" value="12"/>
+          <value type="sint" value="13"/>
+          <value type="sint" value="14"/>
+          <value type="sint" value="15"/>
+          <value type="sint" value="16"/>
+          <value type="sint" value="17"/>
+        </property>
+      </property>
+      <property name="plugins" type="empty">
+        <property name="plugin-1" type="string" value="applicationsmenu"/>
+        <property name="plugin-2" type="string" value="launcher">
+          <property name="items" type="array">
+            <value type="string" value="google-chrome.desktop"/>
+          </property>
+        </property>
+        <property name="plugin-3" type="string" value="separator">
+          <property name="expand" type="bool" value="true"/>
+          <property name="style" type="uint" value="0"/>
+        </property>
+        <property name="plugin-5" type="string" value="systray"/>
+        <property name="plugin-6" type="string" value="clock"/>
+        <property name="plugin-10" type="string" value="separator">
+          <property name="expand" type="bool" value="true"/>
+          <property name="style" type="uint" value="0"/>
+        </property>
+        <property name="plugin-11" type="string" value="showdesktop"/>
+        <property name="plugin-12" type="string" value="launcher">
+          <property name="items" type="array">
+            <value type="string" value="terminal.desktop"/>
+          </property>
+        </property>
+        <property name="plugin-13" type="string" value="launcher">
+          <property name="items" type="array">
+            <value type="string" value="thunar.desktop"/>
+          </property>
+        </property>
+        <property name="plugin-14" type="string" value="launcher">
+          <property name="items" type="array">
+            <value type="string" value="google-chrome.desktop"/>
+          </property>
+        </property>
+        <property name="plugin-15" type="string" value="launcher">
+          <property name="items" type="array">
+            <value type="string" value="appfinder.desktop"/>
+          </property>
+        </property>
+        <property name="plugin-16" type="string" value="launcher">
+          <property name="items" type="array">
+            <value type="string" value="btop.desktop"/>
+          </property>
+        </property>
+        <property name="plugin-17" type="string" value="separator">
+          <property name="expand" type="bool" value="true"/>
+          <property name="style" type="uint" value="0"/>
+        </property>
+      </property>
+    </channel>
+  '';
+
+  # Desktop files for panel launchers — written at activation time so xfce4-panel
+  # finds them immediately on first login without any kill/restart dance.
+  chromePanelLauncher = pkgs.writeText "google-chrome-panel.desktop" ''
+    [Desktop Entry]
+    Name=Google Chrome
+    Comment=Open CodeClub website
+    Exec=${pkgs.google-chrome}/bin/google-chrome-stable --disable-fre --no-default-browser-check --no-first-run --hide-crash-restore-bubble --password-store=basic --start-maximized https://kimptoc.github.io/CodeClubNixLiveCD/
+    Icon=google-chrome
+    Type=Application
+    StartupNotify=true
+    Terminal=false
+  '';
+
+  terminalLauncher = pkgs.writeText "terminal-launcher.desktop" ''
+    [Desktop Entry]
+    Name=Terminal
+    Exec=xfce4-terminal
+    Icon=utilities-terminal
+    Type=Application
+    Terminal=false
+  '';
+
+  thunarLauncher = pkgs.writeText "thunar-launcher.desktop" ''
+    [Desktop Entry]
+    Name=Files
+    Exec=thunar
+    Icon=system-file-manager
+    Type=Application
+    Terminal=false
+  '';
+
+  appfinderLauncher = pkgs.writeText "appfinder-launcher.desktop" ''
+    [Desktop Entry]
+    Name=App Finder
+    Exec=xfce4-appfinder
+    Icon=xfce4-appfinder
+    Type=Application
+    Terminal=false
+  '';
+
+  btopPanelLauncher = pkgs.writeText "btop-panel-launcher.desktop" ''
+    [Desktop Entry]
+    Name=System Monitor (btop)
+    Comment=Show CPU, memory, disk, network and processes
+    Exec=xfce4-terminal --title=System-Monitor -e ${pkgs.btop}/bin/btop
+    Icon=utilities-system-monitor
+    Type=Application
+    Terminal=false
+  '';
+in
 {
   imports = [
     <nixpkgs/nixos/modules/installer/cd-dvd/installation-cd-graphical-base.nix>
@@ -28,7 +170,7 @@
   services.xserver.displayManager.lightdm.enable = true;
   services.displayManager.autoLogin = {
     enable = true;
-    user = "nixos";
+    user = "codeclub";
   };
 
   # Disable screen blanking and DPMS for the live CD.
@@ -39,9 +181,11 @@
     Option "OffTime" "0"
   '';
 
-  # Set a password so the VM login screen works (auto-login handles the live CD).
+  # Rename the live CD user from nixos to codeclub.
   users.users.nixos = {
-    initialPassword = "nixos";
+    name = "codeclub";
+    home = "/home/codeclub";
+    initialPassword = "codeclub";
   };
 
   # Disable gnome-keyring to prevent wallet prompts (e.g. for wifi passwords).
@@ -86,18 +230,73 @@
   programs.zsh.enable = true;
   users.defaultUserShell = pkgs.zsh;
 
-  # Create .zshrc for the nixos user to suppress zsh new-user-install prompt.
+  # Create .zshrc for the codeclub user to suppress zsh new-user-install prompt.
   # NixOS user activation does NOT copy from /etc/skel, so we use an activation script.
   system.activationScripts.nixosZshrc = ''
-    if [ ! -f /home/nixos/.zshrc ]; then
-      mkdir -p /home/nixos
-      touch /home/nixos/.zshrc
-      chown nixos:nixos /home/nixos/.zshrc 2>/dev/null || true
+    if [ ! -f /home/codeclub/.zshrc ]; then
+      mkdir -p /home/codeclub
+      touch /home/codeclub/.zshrc
+      chown codeclub:codeclub /home/codeclub/.zshrc 2>/dev/null || true
     fi
   '';
 
+  # Write XFCE panel config and launcher desktop files before any session starts.
+  # deps=["users"] ensures codeclub exists so chown succeeds.
+  # Explicit chmod 755 on dirs because root's umask may be 077 (creates 700 dirs).
+  system.activationScripts.xfcePanelConfig = {
+    text = ''
+      H=/home/codeclub
+
+      # Create all dirs and make them world-readable (root umask may be 077)
+      mkdir -p "$H/.config/xfce4/xfconf/xfce-perchannel-xml"
+      mkdir -p "$H/.config/xfce4/panel/launcher-2"
+      mkdir -p "$H/.config/xfce4/panel/launcher-12"
+      mkdir -p "$H/.config/xfce4/panel/launcher-13"
+      mkdir -p "$H/.config/xfce4/panel/launcher-14"
+      mkdir -p "$H/.config/xfce4/panel/launcher-15"
+      mkdir -p "$H/.config/xfce4/panel/launcher-16"
+      chmod 755 "$H/.config/xfce4" \
+                "$H/.config/xfce4/xfconf" \
+                "$H/.config/xfce4/xfconf/xfce-perchannel-xml" \
+                "$H/.config/xfce4/panel" \
+                "$H/.config/xfce4/panel/launcher-2" \
+                "$H/.config/xfce4/panel/launcher-12" \
+                "$H/.config/xfce4/panel/launcher-13" \
+                "$H/.config/xfce4/panel/launcher-14" \
+                "$H/.config/xfce4/panel/launcher-15" \
+                "$H/.config/xfce4/panel/launcher-16"
+
+      # Panel XML
+      cp ${xfcePanelXml} "$H/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml"
+      chmod 644 "$H/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml"
+
+      # Panel-1 (top): Chrome launcher
+      cp ${chromePanelLauncher} "$H/.config/xfce4/panel/launcher-2/google-chrome.desktop"
+      chmod 644 "$H/.config/xfce4/panel/launcher-2/google-chrome.desktop"
+
+      # Panel-2 (bottom dock) launchers
+      cp ${terminalLauncher}  "$H/.config/xfce4/panel/launcher-12/terminal.desktop"
+      cp ${thunarLauncher}    "$H/.config/xfce4/panel/launcher-13/thunar.desktop"
+      cp ${chromePanelLauncher} "$H/.config/xfce4/panel/launcher-14/google-chrome.desktop"
+      cp ${appfinderLauncher} "$H/.config/xfce4/panel/launcher-15/appfinder.desktop"
+      cp ${btopPanelLauncher} "$H/.config/xfce4/panel/launcher-16/btop.desktop"
+      chmod 644 "$H/.config/xfce4/panel/launcher-12/terminal.desktop" \
+                "$H/.config/xfce4/panel/launcher-13/thunar.desktop" \
+                "$H/.config/xfce4/panel/launcher-14/google-chrome.desktop" \
+                "$H/.config/xfce4/panel/launcher-15/appfinder.desktop" \
+                "$H/.config/xfce4/panel/launcher-16/btop.desktop"
+
+      # Set Chrome as XFCE's preferred browser (exo-open uses this for WebBrowser)
+      echo "WebBrowser=google-chrome" > "$H/.config/xfce4/helpers.rc"
+      chmod 644 "$H/.config/xfce4/helpers.rc"
+
+      chown -R codeclub:codeclub "$H/.config/xfce4"
+    '';
+    deps = [ "users" ];
+  };
+
   environment.systemPackages = with pkgs; [
-  xfce.xfce4-systemload-plugin  # CPU/mem/net monitor — right-click panel to add
+  btop
   xfce.xfce4-terminal
   nodejs
   terminator
@@ -199,8 +398,9 @@
 
   systemd.user.services.myautostart = {
     description = "myautostart";
-    serviceConfig.PassEnvironment = "DISPLAY";
+    serviceConfig.PassEnvironment = "DISPLAY XAUTHORITY DBUS_SESSION_BUS_ADDRESS";
     script = ''
+      set +e  # don't exit on errors — log them and keep going
       export MYLOG=$HOME/myautostart.log
       echo "MYAUTOSTART" > $MYLOG
       date >> $MYLOG
@@ -210,104 +410,68 @@
       mkdir -p $HOME/.local/bin
 
       # ---------------------------------------------------------------
-      # Panel setup — only runs once per user home (flagged after first run).
-      # Uses xfconf-query so changes are applied to the running panel,
-      # then the panel is restarted to load any new plugins.
+      # App menu desktop entry overrides (with our custom flags/URL)
+      # Written BEFORE panel setup so the launcher finds our custom
+      # google-chrome.desktop (in ~/.local/share/applications/) when
+      # the panel restarts.
       # ---------------------------------------------------------------
-      PANEL_FLAG=$HOME/.panel-configured
-      if [ ! -f "$PANEL_FLAG" ]; then
-        echo "Panel setup starting..." >> $MYLOG
-        sleep 5  # wait for xfce4-panel to fully initialise
+      {
+        echo '[Desktop Entry]'
+        echo 'Name=Google Chrome'
+        echo "Exec=${pkgs.google-chrome}/bin/google-chrome-stable --disable-fre --no-default-browser-check --no-first-run --hide-crash-restore-bubble --password-store=basic --start-maximized https://kimptoc.github.io/CodeClubNixLiveCD/"
+        echo 'StartupNotify=true'
+        echo 'Terminal=false'
+        echo 'Icon=google-chrome'
+        echo 'Type=Application'
+      } > $HOME/.local/share/applications/google-chrome.desktop
 
-        # 1. Set Chrome as the XFCE preferred browser (read by exo-open each time)
-        mkdir -p $HOME/.config/xfce4
-        printf '[Default Applications]\nWebBrowser=custom-chrome-browser\n' \
-          > $HOME/.config/xfce4/helpers.rc
-        mkdir -p $HOME/.local/share/xfce4/helpers
-        {
-          echo '[Desktop Entry]'
-          echo 'NoDisplay=true'
-          echo 'Version=0.9.4'
-          echo 'Encoding=UTF-8'
-          echo 'Type=X-XFCE-Helper'
-          echo 'X-XFCE-Category=WebBrowser'
-          echo "X-XFCE-CommandsWithParameter=${pkgs.google-chrome}/bin/google-chrome-stable %s"
-          echo 'Icon=google-chrome'
-          echo 'Name=Google Chrome'
-          echo "X-XFCE-Commands=${pkgs.google-chrome}/bin/google-chrome-stable"
-        } > $HOME/.local/share/xfce4/helpers/custom-chrome-browser.desktop
-        echo "Chrome set as XFCE preferred browser" >> $MYLOG
+      {
+        echo '[Desktop Entry]'
+        echo 'Name=Chromium'
+        echo "Exec=${pkgs.chromium}/bin/chromium --no-default-browser-check --no-first-run --password-store=basic --start-maximized https://kimptoc.github.io/CodeClubNixLiveCD/"
+        echo 'StartupNotify=true'
+        echo 'Terminal=false'
+        echo "Icon=${pkgs.chromium}/share/icons/hicolor/256x256/apps/chromium.png"
+        echo 'Type=Application'
+      } > $HOME/.local/share/applications/chromium-browser.desktop
 
-        # 2. Single workspace — remove pager from all panels
-        ${pkgs.xfce.xfconf}/bin/xfconf-query -c xfwm4 \
-          -p /general/workspace_count -s 1 2>>$MYLOG || true
-        for pnum in $(${pkgs.xfce.xfconf}/bin/xfconf-query -c xfce4-panel \
-            -p /panels 2>/dev/null | grep -E '^[0-9]+$'); do
-          ids=$(${pkgs.xfce.xfconf}/bin/xfconf-query -c xfce4-panel \
-            -p /panel-''${pnum}/plugin-ids 2>/dev/null | grep -E '^[0-9]+$')
-          new_cmd="${pkgs.xfce.xfconf}/bin/xfconf-query -c xfce4-panel \
-            -p /panel-''${pnum}/plugin-ids --force-array"
-          changed=false
-          for id in $ids; do
-            ptype=$(${pkgs.xfce.xfconf}/bin/xfconf-query -c xfce4-panel \
-              -p /plugins/plugin-''${id} 2>/dev/null)
-            if [ "$ptype" = "pager" ]; then
-              changed=true
-              echo "Removing pager plugin ''${id} from panel ''${pnum}" >> $MYLOG
-            else
-              new_cmd="''${new_cmd} -t int -s ''${id}"
-            fi
-          done
-          [ "$changed" = "true" ] && eval "''${new_cmd}" 2>>$MYLOG || true
-        done
+      {
+        echo '[Desktop Entry]'
+        echo 'Name=Firefox'
+        echo "Exec=${pkgs.firefox}/bin/firefox https://kimptoc.github.io/CodeClubNixLiveCD/"
+        echo 'StartupNotify=true'
+        echo 'Terminal=false'
+        echo 'Icon=firefox'
+        echo 'Type=Application'
+      } > $HOME/.local/share/applications/firefox.desktop
 
-        # 3. Add systemload plugin to panel 1, just before the systray
-        max_id=0
-        for pnum in $(${pkgs.xfce.xfconf}/bin/xfconf-query -c xfce4-panel \
-            -p /panels 2>/dev/null | grep -E '^[0-9]+$'); do
-          for id in $(${pkgs.xfce.xfconf}/bin/xfconf-query -c xfce4-panel \
-              -p /panel-''${pnum}/plugin-ids 2>/dev/null | grep -E '^[0-9]+$'); do
-            [ "$id" -gt "$max_id" ] 2>/dev/null && max_id=$id
-          done
-        done
-        sysload_id=$((max_id + 1))
-        echo "Adding systemload as plugin ''${sysload_id}" >> $MYLOG
-        ${pkgs.xfce.xfconf}/bin/xfconf-query -c xfce4-panel \
-          -p /plugins/plugin-''${sysload_id} -n -t string -s "systemload" 2>>$MYLOG
-        p1_ids=$(${pkgs.xfce.xfconf}/bin/xfconf-query -c xfce4-panel \
-          -p /panel-1/plugin-ids 2>/dev/null | grep -E '^[0-9]+$')
-        new_cmd="${pkgs.xfce.xfconf}/bin/xfconf-query -c xfce4-panel \
-          -p /panel-1/plugin-ids --force-array"
-        added=false
-        for id in $p1_ids; do
-          ptype=$(${pkgs.xfce.xfconf}/bin/xfconf-query -c xfce4-panel \
-            -p /plugins/plugin-''${id} 2>/dev/null)
-          if [ "$added" = "false" ] && \
-              { [ "$ptype" = "systray" ] || [ "$ptype" = "notification-plugin" ]; }; then
-            new_cmd="''${new_cmd} -t int -s ''${sysload_id}"
-            added=true
-          fi
-          new_cmd="''${new_cmd} -t int -s ''${id}"
-        done
-        [ "$added" = "false" ] && new_cmd="''${new_cmd} -t int -s ''${sysload_id}"
-        eval "''${new_cmd}" 2>>$MYLOG || true
-
-        # Restart panel to load the new systemload plugin
-        xfce4-panel --restart 2>>$MYLOG || true
-
-        touch "$PANEL_FLAG"
-        echo "Panel setup done" >> $MYLOG
-      fi
+      # btop — override system .desktop to remove ConsoleOnly so it shows in the menu
+      {
+        echo '[Desktop Entry]'
+        echo 'Name=System Monitor (btop)'
+        echo 'Comment=Show CPU, memory, disk, network and processes'
+        echo "Exec=xfce4-terminal --title=System-Monitor -e ${pkgs.btop}/bin/btop"
+        echo 'Icon=utilities-system-monitor'
+        echo 'Type=Application'
+        echo 'Terminal=false'
+        echo 'Categories=System;Monitor;'
+      } > $HOME/.local/share/applications/btop.desktop
 
       # ---------------------------------------------------------------
-      # KiloCode launcher — wrapper script + desktop entry so it
-      # appears in the apps menu and can be pinned to the panel.
+      # KiloCode launcher (written early so it's ready when panel loads)
       # ---------------------------------------------------------------
       {
         echo '#!/usr/bin/env bash'
+        echo 'KILO_BIN="$HOME/.cache/npm/global/bin/kilocode"'
+        echo 'if [ ! -x "$KILO_BIN" ]; then'
+        echo '  echo "KiloCode is still being installed in the background."'
+        echo '  echo "Check ~/myautostart.log for progress, then try again."'
+        echo '  sleep 4'
+        echo '  exit 1'
+        echo 'fi'
         echo 'export NPM_CONFIG_PREFIX="$HOME/.cache/npm/global"'
         echo 'export PATH="$PATH:$HOME/.cache/npm/global/bin"'
-        echo 'exec kilocode "$@"'
+        echo 'exec "$KILO_BIN" "$@"'
       } > $HOME/.local/bin/kilocode-wrapper
       chmod +x $HOME/.local/bin/kilocode-wrapper
 
@@ -321,59 +485,106 @@
         echo 'Terminal=false'
         echo 'Categories=Development;'
       } > $HOME/.local/share/applications/kilocode.desktop
-      echo "KiloCode launcher created" >> $MYLOG
 
       # ---------------------------------------------------------------
-      # Browser / app desktop entries and autostart
+      # Panel-2 dock setup via xfconf-query.
+      # xfce4-panel ignores our XML (uses built-in defaults on cold start),
+      # so we SET the properties directly into xfconfd while it is running,
+      # then restart only the panel (not xfconfd) to pick them up.
+      # Guarded by a flag so it only runs once per boot.
       # ---------------------------------------------------------------
-      export CHRDESK=$HOME/.local/share/applications/google-chrome.desktop
-      echo "[Desktop Entry]" > $CHRDESK
-      echo "Name=Google Chrome" >> $CHRDESK
-      echo "Exec=${pkgs.google-chrome}/bin/google-chrome-stable --disable-fre --no-default-browser-check --no-first-run --hide-crash-restore-bubble --password-store=basic --start-maximized https://kimptoc.github.io/CodeClubNixLiveCD/" >> $CHRDESK
-      echo "StartupNotify=true" >> $CHRDESK
-      echo "Terminal=false" >> $CHRDESK
-      echo "Icon=google-chrome" >> $CHRDESK
-      echo "Type=Application" >> $CHRDESK
+      PANEL_FLAG=$HOME/.panel-configured
+      if [ ! -f "$PANEL_FLAG" ]; then
+        echo "Panel setup starting..." >> $MYLOG
+        sleep 5  # let xfce4-panel and xfconfd fully start
 
-      cat $CHRDESK >> $MYLOG
+        XQ="${pkgs.xfce.xfconf}/bin/xfconf-query"
 
-      # Chromium desktop entry override
-      export CHROMIUMDESK=$HOME/.local/share/applications/chromium-browser.desktop
-      echo "[Desktop Entry]" > $CHROMIUMDESK
-      echo "Name=Chromium" >> $CHROMIUMDESK
-      echo "Exec=${pkgs.chromium}/bin/chromium --no-default-browser-check --no-first-run --password-store=basic --start-maximized https://kimptoc.github.io/CodeClubNixLiveCD/" >> $CHROMIUMDESK
-      echo "StartupNotify=true" >> $CHROMIUMDESK
-      echo "Terminal=false" >> $CHROMIUMDESK
-      echo "Icon=${pkgs.chromium}/share/icons/hicolor/256x256/apps/chromium.png" >> $CHROMIUMDESK
-      echo "Type=Application" >> $CHROMIUMDESK
+        # Verify xfconfd is reachable
+        $XQ -c xfce4-panel -p /panels >> $MYLOG 2>&1 || echo "xfconfd not ready yet, waiting..." >> $MYLOG
+        sleep 2
 
-      cat $CHROMIUMDESK >> $MYLOG
+        # ---- panel-2: replace plugin-ids with our 8-plugin dock ----
+        # Reset first so we can recreate with the correct type (int, not sint)
+        $XQ -c xfce4-panel -p /panel-2/plugin-ids -r 2>/dev/null || true
+        $XQ -c xfce4-panel -p /panel-2/plugin-ids \
+          -n -t int -s 10 -t int -s 11 -t int -s 12 -t int -s 13 \
+             -t int -s 14 -t int -s 15 -t int -s 16 -t int -s 17 \
+          2>>$MYLOG && echo "panel-2/plugin-ids set OK" >> $MYLOG \
+                    || echo "panel-2/plugin-ids FAILED" >> $MYLOG
 
-      # Create Firefox desktop entry for applications menu
-      export FFXDESK=$HOME/.local/share/applications/firefox.desktop
-      echo "[Desktop Entry]" > $FFXDESK
-      echo "Name=Firefox" >> $FFXDESK
-      echo "Exec=${pkgs.firefox}/bin/firefox https://kimptoc.github.io/CodeClubNixLiveCD/" >> $FFXDESK
-      echo "StartupNotify=true" >> $FFXDESK
-      echo "Terminal=false" >> $FFXDESK
-      echo "Icon=firefox" >> $FFXDESK
-      echo "Type=Application" >> $FFXDESK
+        # ---- plugin definitions ----
+        # plugin-10: left expand separator
+        $XQ -c xfce4-panel -p /plugins/plugin-10 -n -t string -s "separator" 2>>$MYLOG
+        $XQ -c xfce4-panel -p /plugins/plugin-10/expand -n -t bool -s true 2>>$MYLOG
+        $XQ -c xfce4-panel -p /plugins/plugin-10/style  -n -t uint -s 0    2>>$MYLOG
 
-      cat $FFXDESK >> $MYLOG
+        # plugin-11: show desktop
+        $XQ -c xfce4-panel -p /plugins/plugin-11 -n -t string -s "showdesktop" 2>>$MYLOG
 
-      # Autostart Google Chrome maximized
-      export CHRAUTO=$HOME/.config/autostart/chrome-autostart.desktop
-      echo "[Desktop Entry]" > $CHRAUTO
-      echo "Name=Chrome Autostart" >> $CHRAUTO
-      echo "Exec=${pkgs.google-chrome}/bin/google-chrome-stable --disable-fre --no-default-browser-check --no-first-run --hide-crash-restore-bubble --password-store=basic --start-maximized https://kimptoc.github.io/CodeClubNixLiveCD/" >> $CHRAUTO
-      echo "StartupNotify=true" >> $CHRAUTO
-      echo "Terminal=false" >> $CHRAUTO
-      echo "Icon=google-chrome" >> $CHRAUTO
-      echo "Type=Application" >> $CHRAUTO
+        # plugin-12: terminal launcher
+        $XQ -c xfce4-panel -p /plugins/plugin-12 -n -t string -s "launcher" 2>>$MYLOG
+        $XQ -c xfce4-panel -p /plugins/plugin-12/items \
+          -n --force-array -t string -s "terminal.desktop" 2>>$MYLOG
 
-      cat $CHRAUTO >> $MYLOG
+        # plugin-13: file manager launcher
+        $XQ -c xfce4-panel -p /plugins/plugin-13 -n -t string -s "launcher" 2>>$MYLOG
+        $XQ -c xfce4-panel -p /plugins/plugin-13/items \
+          -n --force-array -t string -s "thunar.desktop" 2>>$MYLOG
 
+        # plugin-14: Chrome launcher
+        $XQ -c xfce4-panel -p /plugins/plugin-14 -n -t string -s "launcher" 2>>$MYLOG
+        $XQ -c xfce4-panel -p /plugins/plugin-14/items \
+          -n --force-array -t string -s "google-chrome.desktop" 2>>$MYLOG
+
+        # plugin-15: app finder launcher
+        $XQ -c xfce4-panel -p /plugins/plugin-15 -n -t string -s "launcher" 2>>$MYLOG
+        $XQ -c xfce4-panel -p /plugins/plugin-15/items \
+          -n --force-array -t string -s "appfinder.desktop" 2>>$MYLOG
+
+        # plugin-16: btop launcher
+        $XQ -c xfce4-panel -p /plugins/plugin-16 -n -t string -s "launcher" 2>>$MYLOG
+        $XQ -c xfce4-panel -p /plugins/plugin-16/items \
+          -n --force-array -t string -s "btop.desktop" 2>>$MYLOG
+
+        # plugin-17: right expand separator
+        $XQ -c xfce4-panel -p /plugins/plugin-17 -n -t string -s "separator" 2>>$MYLOG
+        $XQ -c xfce4-panel -p /plugins/plugin-17/expand -n -t bool -s true 2>>$MYLOG
+        $XQ -c xfce4-panel -p /plugins/plugin-17/style  -n -t uint -s 0    2>>$MYLOG
+
+        echo "xfconf-query panel-2 done, restarting panel..." >> $MYLOG
+
+        # Restart only the panel (xfconfd stays running with our values)
+        pkill -x xfce4-panel 2>/dev/null || true
+        sleep 1
+        xfce4-panel &
+        sleep 2
+
+        touch "$PANEL_FLAG"
+        echo "Panel setup done" >> $MYLOG
+      fi
+
+      # Single workspace
+      ${pkgs.xfce.xfconf}/bin/xfconf-query -c xfwm4 \
+        -p /general/workspace_count -s 1 2>>$MYLOG || true
+
+      # ---------------------------------------------------------------
+      # Launch Chrome directly — the XDG autostart file approach fails
+      # on first boot because the session manager scans autostart before
+      # this service has created the file.
+      # ---------------------------------------------------------------
+      sleep 8
+      echo "Launching Chrome..." >> $MYLOG
+      ${pkgs.google-chrome}/bin/google-chrome-stable \
+        --disable-fre --no-default-browser-check --no-first-run \
+        --hide-crash-restore-bubble --password-store=basic \
+        --start-maximized \
+        https://kimptoc.github.io/CodeClubNixLiveCD/ &
+      echo "Chrome launched" >> $MYLOG
+
+      # ---------------------------------------------------------------
       # Install kilocode CLI globally via npm (wait for network, up to 5 minutes)
+      # ---------------------------------------------------------------
       export NPM_CONFIG_PREFIX="$HOME/.cache/npm/global"
       export PATH="${pkgs.nodejs}/bin:${pkgs.bash}/bin:$PATH"
       mkdir -p "$HOME/.cache/npm/global"
@@ -395,7 +606,6 @@
 
       echo "MYAUTOSTART end" >> $MYLOG
       date >> $MYLOG
-
     '';
     wantedBy = [ "graphical-session.target" ]; # starts after login
     partOf = [ "graphical-session.target" ];
@@ -404,5 +614,8 @@
     };
   };
 
-  # Chrome launch is handled by XDG autostart desktop files created in myautostart.
+  # Chrome launch is handled directly by myautostart service.
+
+  # Larger VM disk for testing (npm install needs space; real ISO uses RAM).
+  virtualisation.diskSize = 4096;
 }
