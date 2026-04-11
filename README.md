@@ -26,6 +26,7 @@ Useful links
 * bitly link to it - https://bit.ly/codeclubnxl
 
 TODO
+- change panel date/time - to time only, eg 17:45:32
 
 NOT DONE (gave up — action-buttons xfconf settings didn't take effect on this XFCE version)
 - hide lock screen,switch user,suspend, logout menu items 
