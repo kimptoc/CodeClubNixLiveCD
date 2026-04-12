@@ -378,6 +378,11 @@ HISTEOF
       chmod 644 "$H/.local/share/xfce4/helpers/codeclub-webbrowser.desktop"
 
       chown -R 1000:100 "$H/.local"
+
+      # Belt-and-braces: ensure entire home dir is owned by codeclub.
+      # Other activation scripts/services may create files under .config
+      # as root after our earlier chown — this catches them.
+      chown -R 1000:100 /home/codeclub
     '';
     deps = [ "users" ];
   };
@@ -653,6 +658,17 @@ HISTEOF
         fi
         echo "wallpaper: monitors = [$MONITORS]" >> $MYLOG
 
+        # Wait for network connectivity before trying the Bing API.
+        # School/CC networks can take 2-5+ minutes to get DHCP + DNS.
+        echo "wallpaper: waiting for network..." >> $MYLOG
+        for nw in $(seq 1 60); do
+          if ${pkgs.curl}/bin/curl -s --max-time 5 -o /dev/null https://www.bing.com/ 2>/dev/null; then
+            echo "wallpaper: network ready after ~$((nw * 5))s" >> $MYLOG
+            break
+          fi
+          sleep 5
+        done
+
         for i in 1 2 3 4 5 6 7 8 9 10; do
           WALL_URL=$(${pkgs.curl}/bin/curl -s --max-time 10 \
             'https://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1&mkt=en-GB' \
@@ -701,20 +717,29 @@ HISTEOF
         https://kimptoc.github.io/CodeClubNixLiveCD/ &
       echo "Chrome launched" >> $MYLOG
 
-      # Install kilocode CLI globally via npm (wait for network, up to 5 minutes)
+      # Install kilocode CLI globally via npm.
+      # Wait for network first — on school/CC networks DHCP + DNS can take
+      # several minutes after graphical login.
       export NPM_CONFIG_PREFIX="$HOME/.cache/npm/global"
       export PATH="${pkgs.nodejs}/bin:${pkgs.bash}/bin:$PATH"
       mkdir -p "$HOME/.cache/npm/global"
-      echo "Installing kilocode CLI..." >> $MYLOG
+      echo "Installing kilocode CLI — waiting for network..." >> $MYLOG
+      for nw in $(seq 1 60); do
+        if ${pkgs.curl}/bin/curl -s --max-time 5 -o /dev/null https://registry.npmjs.org/ 2>/dev/null; then
+          echo "kilocode: network ready after ~$((nw * 5))s" >> $MYLOG
+          break
+        fi
+        sleep 5
+      done
       KILO_INSTALLED=false
-      for i in $(seq 1 30); do
+      for i in $(seq 1 10); do
         if ${pkgs.nodejs}/bin/npm install -g @kilocode/cli >> $MYLOG 2>&1; then
           echo "kilocode CLI install done (attempt $i)" >> $MYLOG
           KILO_INSTALLED=true
           break
         fi
-        echo "kilocode CLI install attempt $i failed, retrying in 10s..." >> $MYLOG
-        sleep 10
+        echo "kilocode CLI install attempt $i failed, retrying in 15s..." >> $MYLOG
+        sleep 15
       done
       if [ "$KILO_INSTALLED" = false ]; then
         echo "ERROR: kilocode CLI install failed after 30 attempts" >> $MYLOG
