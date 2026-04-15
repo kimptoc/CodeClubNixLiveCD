@@ -583,7 +583,7 @@ HISTEOF
         # clutter on the live-CD desktop). style=0 means no icons at all.
         $XQ -c xfce4-desktop -p /desktop-icons/style -n -t int -s 0 2>>$MYLOG \
           && echo "desktop-icons/style=0 set" >> $MYLOG
-        xfdesktop --reload >> $MYLOG 2>&1 || true
+        ${pkgs.xfce.xfdesktop}/bin/xfdesktop --reload >> $MYLOG 2>&1 || true
 
         # Apply PRO Dark XFCE theme (GTK + xfwm4 window decorations).
         # xfsettingsd watches these xfconf properties and propagates the
@@ -597,9 +597,9 @@ HISTEOF
 
         echo "xfconf-query panel-2 done, restarting panel..." >> $MYLOG
 
-        pkill -x xfce4-panel 2>/dev/null || true
+        ${pkgs.procps}/bin/pkill -x xfce4-panel 2>/dev/null || true
         sleep 1
-        xfce4-panel &
+        ${pkgs.xfce.xfce4-panel}/bin/xfce4-panel &
         sleep 3
 
         # Clock — show time only in HH:MM:SS, no date line.
@@ -626,7 +626,7 @@ HISTEOF
           $XQ -c xfce4-panel -p /plugins/$CLOCK_PID/digital-format      -n -t string -s "%H:%M:%S" 2>>$MYLOG \
             && echo "clock digital-format set on $CLOCK_PID" >> $MYLOG
           # Nudge the panel to re-read plugin config.
-          xfce4-panel --restart >> $MYLOG 2>&1 || true
+          ${pkgs.xfce.xfce4-panel}/bin/xfce4-panel --restart >> $MYLOG 2>&1 || true
         fi
 
         touch "$PANEL_FLAG"

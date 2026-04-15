@@ -32,6 +32,7 @@ NOT DONE (gave up — action-buttons xfconf settings didn't take effect on this 
 - remove confirm option from shutdown menu item
 
 DONE
+- fix xfce wallpaper: use full Nix store paths for xfdesktop/xfce4-panel in myautostart (bare commands not in systemd service PATH)
 - panel clock shows time only in HH:MM:SS (plugin-6 mode=2 + digital-time-format=%H:%M:%S, empty date)
 - hide all XFCE desktop icons (xfce4-desktop /desktop-icons/style=0 via xfconf-query in myautostart)
 - preloaded zsh history with kilocode/btop/python3/node/nmap (seeded in system.activationScripts.nixosZshrc)
