@@ -26,7 +26,7 @@ Useful links
 * bitly link to it - https://bit.ly/codeclubnxl
 
 TODO
-
+- xfce wallpaper downloads but not set. see log termbin.com/guw5
 - xfce. hide disks from desktop, ideally hide all
 - preloaded zsh history eg kilocode
 - hide lock screen,switch user,suspend, logout menu items 
