@@ -28,12 +28,13 @@ Useful links
 TODO
 - xfce using litterbox after loading a project seems take over machine
 - xfce wallpaper downloads but not set. see log termbin.com/guw5
-- xfce. hide disks from desktop, ideally hide all
-- preloaded zsh history eg kilocode
+- xfce - window controls, can we add ability to resize from any side - only works from top at the moment
 - hide lock screen,switch user,suspend, logout menu items 
 - remove confirm option from shutdown menu item
 
 DONE
+- xfce. hide disks from desktop, ideally hide all
+- preloaded zsh history eg kilocode
 - add an app shortcut to open kilocode  in a console, pin it to the panel
 - disable workspace switcher/not add workspace
 - firefox maximised on start via xulstore.json sizemode (--width/--height flags caused GNOME login loop
