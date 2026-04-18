@@ -17,6 +17,39 @@ let
     installPhase = ''
       mkdir -p $out/share/themes
       cp -r "PRO-dark-XFCE-4.14" "$out/share/themes/PRO-dark-XFCE-4.14"
+
+      # The original theme has tiny/missing border images, so windows can
+      # only be resized from the top (title bar area).  Create 4px borders
+      # on all sides in a matching dark colour so resize handles work
+      # everywhere while keeping the dark look.
+      XFWM="$out/share/themes/PRO-dark-XFCE-4.14/xfwm4"
+      for img in bottom-active bottom-inactive; do
+        cat > "$XFWM/$img.xpm" <<'XPM'
+/* XPM */
+static char *img[] = {
+"1 4 1 1",
+". c #2d2d2d",
+".",".",".","."};
+XPM
+      done
+      for img in left-active left-inactive right-active right-inactive; do
+        cat > "$XFWM/$img.xpm" <<'XPM'
+/* XPM */
+static char *img[] = {
+"4 1 1 1",
+". c #2d2d2d",
+"...."};
+XPM
+      done
+      for img in bottom-left-active bottom-left-inactive bottom-right-active bottom-right-inactive; do
+        cat > "$XFWM/$img.xpm" <<'XPM'
+/* XPM */
+static char *img[] = {
+"4 4 1 1",
+". c #2d2d2d",
+"....","....","....","...."};
+XPM
+      done
     '';
   };
 
