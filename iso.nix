@@ -54,7 +54,7 @@ XPM
   };
 
   # Panel layout:
-  #   Panel 1 (top): app-menu | chrome-launcher | <expand> | systray | clock
+  #   Panel 1 (top): app-menu | chrome-launcher | tasklist(expand) | systray | clock | session-menu
   #   Panel 2 (bottom dock): <expand> | show-desktop | terminal | files | chrome | appfinder | btop | <expand>
   xfcePanelXml = pkgs.writeText "xfce4-panel.xml" ''
     <?xml version="1.0" encoding="UTF-8"?>
@@ -72,9 +72,10 @@ XPM
         <property name="plugin-ids" type="array">
           <value type="sint" value="1"/>
           <value type="sint" value="2"/>
-          <value type="sint" value="3"/>
+          <value type="sint" value="4"/>
           <value type="sint" value="5"/>
           <value type="sint" value="6"/>
+          <value type="sint" value="7"/>
         </property>
       </property>
       <property name="panel-2" type="empty">
@@ -100,12 +101,17 @@ XPM
             <value type="string" value="codeclub-chrome.desktop"/>
           </property>
         </property>
-        <property name="plugin-3" type="string" value="separator">
+        <property name="plugin-4" type="string" value="tasklist">
+          <property name="flat-buttons" type="bool" value="true"/>
+          <property name="show-handle" type="bool" value="false"/>
+          <property name="grouping" type="uint" value="1"/>
           <property name="expand" type="bool" value="true"/>
-          <property name="style" type="uint" value="0"/>
         </property>
         <property name="plugin-5" type="string" value="systray"/>
         <property name="plugin-6" type="string" value="clock"/>
+        <property name="plugin-7" type="string" value="actions">
+          <property name="appearance" type="uint" value="1"/>
+        </property>
         <property name="plugin-10" type="string" value="separator">
           <property name="expand" type="bool" value="true"/>
           <property name="style" type="uint" value="0"/>
