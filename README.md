@@ -26,6 +26,7 @@ Useful links
 * bitly link to it - https://bit.ly/codeclubnxl
 
 TODO
+- window left right placement under xfce?
 - xfce using litterbox after loading a project seems take over machine
 - xfce wallpaper downloads but not set. see log termbin.com/guw5
 - xfce - window controls, can we add ability to resize from any side - only works from top at the moment
