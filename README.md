@@ -26,6 +26,8 @@ Useful links
 * bitly link to it - https://bit.ly/codeclubnxl
 
 TODO
+- window left right placement under xfce?
+- sound under xfce
 - xfce using litterbox after loading a project seems take over machine
 - hide lock screen,switch user,suspend, logout menu items 
 - remove confirm option from shutdown menu item
