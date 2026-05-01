@@ -552,6 +552,13 @@ HISTEOF
       # Windows-style "snap" behaviour kids already expect.
       $XQ -c xfwm4 -p /general/tile_on_move -n -t bool -s true 2>>$MYLOG \
         && echo "xfwm4 tile_on_move set" >> $MYLOG
+      # Edge wrap defaults to true and pre-empts the edge-tile gesture
+      # (the cursor wraps to the opposite side before the tile preview
+      # can trigger). Turn it off so dragging to an edge tiles cleanly.
+      $XQ -c xfwm4 -p /general/wrap_windows -n -t bool -s false 2>>$MYLOG \
+        && echo "xfwm4 wrap_windows=false" >> $MYLOG
+      $XQ -c xfwm4 -p /general/wrap_workspaces -n -t bool -s false 2>>$MYLOG \
+        && echo "xfwm4 wrap_workspaces=false" >> $MYLOG
 
       # Fetch Bing's daily wallpaper and set it as the desktop background.
       # Bing rotates the image at 00:00 UTC so every CodeClub machine booted
