@@ -324,6 +324,14 @@ HISTEOF
     pulse.enable = true;
   };
 
+  # Bluetooth: needed for Chrome's hybrid-transport (caBLE) passkey flow
+  # — without BT-LE, Chrome can't init that path and silently won't show
+  # the QR-scan-with-phone option. Also enables BT headsets / mice if
+  # ever useful. blueman-applet provides a GUI tray for pairing.
+  hardware.bluetooth.enable = true;
+  hardware.bluetooth.powerOnBoot = true;
+  services.blueman.enable = true;
+
   environment.systemPackages = with pkgs; [
     btop
     xfce.xfce4-terminal
