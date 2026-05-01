@@ -329,6 +329,8 @@ HISTEOF
     xfce.xfce4-terminal
     xfce.xfce4-pulseaudio-plugin
     pavucontrol
+    alsa-utils
+    pulseaudio
     nodejs
     terminator
     ghostty
