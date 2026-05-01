@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 let
   # Paul Linux Themer's "PRO Dark XFCE Edition" (4.14 variant), fetched
   # direct from GitHub since it isn't in nixpkgs. The repo contains three
@@ -53,101 +53,39 @@ XPM
     '';
   };
 
-  # Panel layout:
-  #   Panel 1 (top): app-menu | chrome-launcher | tasklist(expand) | systray | clock | session-menu
-  #   Panel 2 (bottom dock): <expand> | show-desktop | terminal | files | chrome | appfinder | btop | <expand>
-  xfcePanelXml = pkgs.writeText "xfce4-panel.xml" ''
-    <?xml version="1.0" encoding="UTF-8"?>
-    <channel name="xfce4-panel" version="1.0">
-      <property name="configver" type="sint" value="2"/>
-      <property name="panels" type="array">
-        <value type="uint" value="1"/>
-        <value type="uint" value="2"/>
-      </property>
-      <property name="panel-1" type="empty">
-        <property name="position" type="string" value="p=6;x=0;y=0"/>
-        <property name="length" type="uint" value="100"/>
-        <property name="position-locked" type="bool" value="true"/>
-        <property name="size" type="uint" value="28"/>
-        <property name="plugin-ids" type="array">
-          <value type="sint" value="1"/>
-          <value type="sint" value="2"/>
-          <value type="sint" value="4"/>
-          <value type="sint" value="5"/>
-          <value type="sint" value="6"/>
-          <value type="sint" value="7"/>
-        </property>
-      </property>
-      <property name="panel-2" type="empty">
-        <property name="position" type="string" value="p=10;x=0;y=0"/>
-        <property name="length" type="uint" value="100"/>
-        <property name="position-locked" type="bool" value="true"/>
-        <property name="size" type="uint" value="40"/>
-        <property name="plugin-ids" type="array">
-          <value type="sint" value="10"/>
-          <value type="sint" value="11"/>
-          <value type="sint" value="12"/>
-          <value type="sint" value="13"/>
-          <value type="sint" value="14"/>
-          <value type="sint" value="15"/>
-          <value type="sint" value="16"/>
-          <value type="sint" value="17"/>
-        </property>
-      </property>
-      <property name="plugins" type="empty">
-        <property name="plugin-1" type="string" value="applicationsmenu"/>
-        <property name="plugin-2" type="string" value="launcher">
-          <property name="items" type="array">
-            <value type="string" value="codeclub-chrome.desktop"/>
-          </property>
-        </property>
-        <property name="plugin-4" type="string" value="tasklist">
-          <property name="flat-buttons" type="bool" value="true"/>
-          <property name="show-handle" type="bool" value="false"/>
-          <property name="grouping" type="uint" value="1"/>
-          <property name="expand" type="bool" value="true"/>
-        </property>
-        <property name="plugin-5" type="string" value="systray"/>
-        <property name="plugin-6" type="string" value="clock"/>
-        <property name="plugin-7" type="string" value="actions">
-          <property name="appearance" type="uint" value="1"/>
-        </property>
-        <property name="plugin-10" type="string" value="separator">
-          <property name="expand" type="bool" value="true"/>
-          <property name="style" type="uint" value="0"/>
-        </property>
-        <property name="plugin-11" type="string" value="showdesktop"/>
-        <property name="plugin-12" type="string" value="launcher">
-          <property name="items" type="array">
-            <value type="string" value="terminal.desktop"/>
-          </property>
-        </property>
-        <property name="plugin-13" type="string" value="launcher">
-          <property name="items" type="array">
-            <value type="string" value="thunar.desktop"/>
-          </property>
-        </property>
-        <property name="plugin-14" type="string" value="launcher">
-          <property name="items" type="array">
-            <value type="string" value="codeclub-chrome.desktop"/>
-          </property>
-        </property>
-        <property name="plugin-15" type="string" value="launcher">
-          <property name="items" type="array">
-            <value type="string" value="appfinder.desktop"/>
-          </property>
-        </property>
-        <property name="plugin-16" type="string" value="launcher">
-          <property name="items" type="array">
-            <value type="string" value="btop.desktop"/>
-          </property>
-        </property>
-        <property name="plugin-17" type="string" value="separator">
-          <property name="expand" type="bool" value="true"/>
-          <property name="style" type="uint" value="0"/>
-        </property>
-      </property>
-    </channel>
+  # We accept xfce4-panel's first-start default layout (apps menu, tasklist,
+  # separators, pager, systray, clock, actions, showdesktop + auto-hide
+  # bottom dock) and tweak only specific plugins at runtime via
+  # xfconf-query (see systemd.user.services.myautostart below). An earlier
+  # iteration wrote a full ~/.config/xfce4/xfconf/xfce-perchannel-xml/
+  # xfce4-panel.xml, but xfconfd on this live-CD never loaded it
+  # (`/panel-1/plugin-ids` stayed absent on the channel even with the file
+  # in place) — root cause unknown, pivoted to "accept defaults, patch
+  # live" instead.
+
+  # Wrapper for every path that launches Chrome (top-bar launcher, Apps
+  # menu's Google Chrome entry, bottom dock's Web Browser button via
+  # exo-open). If a Chrome window already exists, focus it instead of
+  # opening another window — stops kids flooding the screen with Chrome
+  # windows by re-clicking the browser icon.
+  #
+  # Optional argument $1 = URL (used by exo-open's CommandsWithParameter
+  # when the caller is a "%s" invocation — e.g. opening a link from another
+  # app). If given AND Chrome is running, we open that URL as a new tab in
+  # the focused window. If no URL and Chrome is running, we just focus.
+  chromeFocusOrLaunch = pkgs.writeShellScript "chrome-focus-or-launch" ''
+    URL="''${1:-https://kimptoc.github.io/CodeClubNixLiveCD/}"
+    if ${pkgs.wmctrl}/bin/wmctrl -l 2>/dev/null | grep -iq 'google chrome'; then
+      ${pkgs.wmctrl}/bin/wmctrl -a 'Google Chrome' || true
+      if [ -n "$1" ]; then
+        exec ${pkgs.google-chrome}/bin/google-chrome-stable "$URL"
+      fi
+      exit 0
+    fi
+    exec ${pkgs.google-chrome}/bin/google-chrome-stable \
+      --disable-fre --no-default-browser-check --no-first-run \
+      --hide-crash-restore-bubble --password-store=basic \
+      --start-maximized --new-window "$URL"
   '';
 
   # Custom Chrome launcher with CodeClub homepage.
@@ -157,7 +95,7 @@ XPM
     [Desktop Entry]
     Name=Google Chrome
     Comment=Open CodeClub website
-    Exec=${pkgs.google-chrome}/bin/google-chrome-stable --disable-fre --no-default-browser-check --no-first-run --hide-crash-restore-bubble --password-store=basic --start-maximized --new-window https://kimptoc.github.io/CodeClubNixLiveCD/
+    Exec=${chromeFocusOrLaunch}
     Icon=google-chrome
     Type=Application
     StartupNotify=true
@@ -171,39 +109,12 @@ XPM
     [Desktop Entry]
     Name=Google Chrome
     Comment=Open CodeClub website
-    Exec=${pkgs.google-chrome}/bin/google-chrome-stable --disable-fre --no-default-browser-check --no-first-run --hide-crash-restore-bubble --password-store=basic --start-maximized --new-window https://kimptoc.github.io/CodeClubNixLiveCD/
+    Exec=${chromeFocusOrLaunch}
     Icon=google-chrome
     Type=Application
     StartupNotify=true
     Terminal=false
     Categories=Network;WebBrowser;
-  '';
-
-  terminalLauncher = pkgs.writeText "terminal-launcher.desktop" ''
-    [Desktop Entry]
-    Name=Terminal
-    Exec=${pkgs.xfce.xfce4-terminal}/bin/xfce4-terminal
-    Icon=utilities-terminal
-    Type=Application
-    Terminal=false
-  '';
-
-  thunarLauncher = pkgs.writeText "thunar-launcher.desktop" ''
-    [Desktop Entry]
-    Name=Files
-    Exec=${pkgs.xfce.thunar}/bin/thunar
-    Icon=system-file-manager
-    Type=Application
-    Terminal=false
-  '';
-
-  appfinderLauncher = pkgs.writeText "appfinder-launcher.desktop" ''
-    [Desktop Entry]
-    Name=App Finder
-    Exec=${pkgs.xfce.xfce4-appfinder}/bin/xfce4-appfinder
-    Icon=xfce4-appfinder
-    Type=Application
-    Terminal=false
   '';
 
   # XFCE preferred-application helper (for exo-open --launch WebBrowser,
@@ -217,23 +128,14 @@ XPM
     Type=X-XFCE-Helper
     NoDisplay=true
     X-XFCE-Category=WebBrowser
-    X-XFCE-Commands=${pkgs.google-chrome}/bin/google-chrome-stable --disable-fre --no-default-browser-check --no-first-run --hide-crash-restore-bubble --password-store=basic --start-maximized --new-window https://kimptoc.github.io/CodeClubNixLiveCD/
-    X-XFCE-CommandsWithParameter=${pkgs.google-chrome}/bin/google-chrome-stable --disable-fre --no-default-browser-check --no-first-run --hide-crash-restore-bubble --password-store=basic --start-maximized --new-window "%s"
+    X-XFCE-Commands=${chromeFocusOrLaunch}
+    X-XFCE-CommandsWithParameter=${chromeFocusOrLaunch} "%s"
     X-XFCE-Binaries=${pkgs.google-chrome}/bin/google-chrome-stable
     Icon=google-chrome
     Name=Google Chrome (CodeClub)
     Comment=Open CodeClub website
   '';
 
-  btopPanelLauncher = pkgs.writeText "btop-panel-launcher.desktop" ''
-    [Desktop Entry]
-    Name=System Monitor (btop)
-    Comment=Show CPU, memory, disk, network and processes
-    Exec=${pkgs.xfce.xfce4-terminal}/bin/xfce4-terminal --title=System-Monitor --command=${pkgs.btop}/bin/btop
-    Icon=utilities-system-monitor
-    Type=Application
-    Terminal=false
-  '';
 in
 {
   imports = [
@@ -245,7 +147,7 @@ in
   ];
 
   # Set the boot label to "codeclub"
-  isoImage.isoName = "codeclub.iso";
+  image.fileName = "codeclub.iso";
   isoImage.volumeID = "CODECLUB";
   isoImage.appendToMenuLabel = " CodeClub";
 
@@ -288,6 +190,7 @@ in
     name = "codeclub";
     home = "/home/codeclub";
     initialPassword = "codeclub";
+    initialHashedPassword = lib.mkForce null;
   };
 
   # Disable gnome-keyring to prevent wallet prompts (e.g. for wifi passwords).
@@ -338,6 +241,8 @@ btop
 python3
 node
 nmap 192.168.1.0/24
+setxkbmap us
+cat ~/myautostart.log | nc termbin.com 9999
 HISTEOF
     chmod 600 /home/codeclub/.zsh_history
     chown 1000:100 /home/codeclub/.zshrc /home/codeclub/.zsh_history 2>/dev/null || true
@@ -357,39 +262,17 @@ HISTEOF
       chown 1000:100 "$H/.config"
       chmod 755 "$H/.config"
 
-      mkdir -p "$H/.config/xfce4/xfconf/xfce-perchannel-xml"
-      mkdir -p "$H/.config/xfce4/panel/launcher-2"
-      mkdir -p "$H/.config/xfce4/panel/launcher-12"
-      mkdir -p "$H/.config/xfce4/panel/launcher-13"
-      mkdir -p "$H/.config/xfce4/panel/launcher-14"
-      mkdir -p "$H/.config/xfce4/panel/launcher-15"
-      mkdir -p "$H/.config/xfce4/panel/launcher-16"
+      # launcher-4 is the only panel-launcher dir we need — plugin-4 is
+      # retyped from pager → launcher at runtime (see myautostart) with
+      # items pointing at codeclub-chrome.desktop. xfce4-panel looks up the
+      # .desktop file in ~/.config/xfce4/panel/launcher-N/ first, then XDG.
+      mkdir -p "$H/.config/xfce4/panel/launcher-4"
       chmod 755 "$H/.config/xfce4" \
-                "$H/.config/xfce4/xfconf" \
-                "$H/.config/xfce4/xfconf/xfce-perchannel-xml" \
                 "$H/.config/xfce4/panel" \
-                "$H/.config/xfce4/panel/launcher-2" \
-                "$H/.config/xfce4/panel/launcher-12" \
-                "$H/.config/xfce4/panel/launcher-13" \
-                "$H/.config/xfce4/panel/launcher-14" \
-                "$H/.config/xfce4/panel/launcher-15" \
-                "$H/.config/xfce4/panel/launcher-16"
+                "$H/.config/xfce4/panel/launcher-4"
 
-      cp ${xfcePanelXml} "$H/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml"
-      chmod 644 "$H/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml"
-
-      cp ${codeclubChromeLauncher} "$H/.config/xfce4/panel/launcher-2/codeclub-chrome.desktop"
-      cp ${terminalLauncher}       "$H/.config/xfce4/panel/launcher-12/terminal.desktop"
-      cp ${thunarLauncher}         "$H/.config/xfce4/panel/launcher-13/thunar.desktop"
-      cp ${codeclubChromeLauncher} "$H/.config/xfce4/panel/launcher-14/codeclub-chrome.desktop"
-      cp ${appfinderLauncher}      "$H/.config/xfce4/panel/launcher-15/appfinder.desktop"
-      cp ${btopPanelLauncher}      "$H/.config/xfce4/panel/launcher-16/btop.desktop"
-      chmod 644 "$H/.config/xfce4/panel/launcher-2/codeclub-chrome.desktop" \
-                "$H/.config/xfce4/panel/launcher-12/terminal.desktop" \
-                "$H/.config/xfce4/panel/launcher-13/thunar.desktop" \
-                "$H/.config/xfce4/panel/launcher-14/codeclub-chrome.desktop" \
-                "$H/.config/xfce4/panel/launcher-15/appfinder.desktop" \
-                "$H/.config/xfce4/panel/launcher-16/btop.desktop"
+      cp ${codeclubChromeLauncher} "$H/.config/xfce4/panel/launcher-4/codeclub-chrome.desktop"
+      chmod 644 "$H/.config/xfce4/panel/launcher-4/codeclub-chrome.desktop"
 
       # Point XFCE preferred-app Web Browser at our custom helper (defined
       # below) — the "Web Browser" entry in the Applications menu runs
@@ -446,6 +329,7 @@ HISTEOF
     wget
     nmap
     findutils
+    wmctrl
     gnome-mines
     gnome-mahjongg
     iagno
@@ -552,129 +436,102 @@ HISTEOF
         echo 'Categories=Development;'
       } > $HOME/.local/share/applications/kilocode.desktop
 
-      # Panel-2 dock setup via xfconf-query.
-      # We SET properties directly on the running xfconfd, then restart only
-      # the panel (not xfconfd) to pick them up. Guarded by a flag so it
-      # only runs once per boot.
-      PANEL_FLAG=$HOME/.panel-configured
-      if [ ! -f "$PANEL_FLAG" ]; then
-        echo "Panel setup starting..." >> $MYLOG
-        sleep 5  # let xfce4-panel and xfconfd fully start
+      # Panel layout is driven entirely by the static xfce4-panel.xml written
+      # at activation time (see xfcePanelConfig), which xfconfd reads before
+      # xfce4-panel starts. Runtime xfconf-query manipulation on the
+      # xfce4-panel channel was racy against the live panel process (popup
+      # "plugin '(null)' could not be loaded", plugin types silently reverting
+      # to xfce4-panel's first-start defaults) and has been removed.
+      #
+      # The xsettings/xfwm4/xfce4-desktop channels below are a different
+      # matter — those daemons (xfsettingsd, xfwm4, xfdesktop) accept live
+      # xfconf updates without the reload/type-reassertion issues the panel
+      # has, so keeping runtime sets for them is fine.
+      echo "Applying theme + desktop-icons settings..." >> $MYLOG
+      sleep 5  # let xfconfd and xfsettingsd fully start
 
-        XQ="${pkgs.xfce.xfconf}/bin/xfconf-query"
+      XQ="${pkgs.xfce.xfconf}/bin/xfconf-query"
 
-        $XQ -c xfce4-panel -p /panels >> $MYLOG 2>&1 || echo "xfconfd not ready yet, waiting..." >> $MYLOG
-        sleep 2
+      # Accept xfce4-panel's first-start defaults (the xfce4-panel.xml we
+      # drop at activation isn't being loaded by xfconfd on this live CD —
+      # reason TBD; /panel-1/plugin-ids doesn't exist on the channel even
+      # though our XML file is in place). The defaults are:
+      #   1 apps | 2 tasklist | 3 sep | 4 pager | 5 sep | 6 systray |
+      #   7 sep | 8 clock | 9 sep | 10 actions | 11 showdesktop | 12 sep
+      # We tweak only:
+      #   - plugin-4: pager → chrome launcher (pager is useless with a
+      #     single workspace; repurposing the slot keeps plugin-2's tasklist
+      #     intact so kids can still see open apps)
+      #   - plugin-8 clock: time-only HH:MM:SS (default shows date+no seconds)
+      #   - plugin-10 actions: appearance=1 (username dropdown, already
+      #     looks right in the default but set it defensively)
+      # These are value/sub-property writes on existing plugins — no -R -r
+      # deletes, no plugin-ids changes — so no "(null) plugin" popup.
 
-        # Reset plugin-ids first so we can recreate with correct type (int, not sint)
-        $XQ -c xfce4-panel -p /panel-2/plugin-ids -r 2>/dev/null || true
-        $XQ -c xfce4-panel -p /panel-2/plugin-ids \
-          -n -t int -s 10 -t int -s 11 -t int -s 12 -t int -s 13 \
-             -t int -s 14 -t int -s 15 -t int -s 16 -t int -s 17 \
-          2>>$MYLOG && echo "panel-2/plugin-ids set OK" >> $MYLOG \
-                    || echo "panel-2/plugin-ids FAILED" >> $MYLOG
+      $XQ -c xfce4-panel -p /plugins/plugin-4 -s "launcher" 2>>$MYLOG \
+        && echo "plugin-4 pager→launcher" >> $MYLOG
+      $XQ -c xfce4-panel -p /plugins/plugin-4/items \
+        -n --force-array -t string -s "codeclub-chrome.desktop" 2>>$MYLOG \
+        && echo "plugin-4/items set" >> $MYLOG
 
-        # plugin-10: left expand separator
-        $XQ -c xfce4-panel -p /plugins/plugin-10 -n -t string -s "separator" 2>>$MYLOG
-        $XQ -c xfce4-panel -p /plugins/plugin-10/expand -n -t bool -s true 2>>$MYLOG
-        $XQ -c xfce4-panel -p /plugins/plugin-10/style  -n -t uint -s 0    2>>$MYLOG
+      $XQ -c xfce4-panel -p /plugins/plugin-8/mode                -n -t uint   -s 2          2>>$MYLOG
+      $XQ -c xfce4-panel -p /plugins/plugin-8/digital-layout      -n -t uint   -s 3          2>>$MYLOG
+      $XQ -c xfce4-panel -p /plugins/plugin-8/digital-time-format -n -t string -s "%H:%M:%S" 2>>$MYLOG
+      $XQ -c xfce4-panel -p /plugins/plugin-8/digital-date-format -n -t string -s ""         2>>$MYLOG
+      $XQ -c xfce4-panel -p /plugins/plugin-8/digital-format      -n -t string -s "%H:%M:%S" 2>>$MYLOG \
+        && echo "plugin-8 clock HH:MM:SS" >> $MYLOG
 
-        # plugin-11: show desktop
-        $XQ -c xfce4-panel -p /plugins/plugin-11 -n -t string -s "showdesktop" 2>>$MYLOG
+      $XQ -c xfce4-panel -p /plugins/plugin-10/appearance -n -t uint -s 1 2>>$MYLOG \
+        && echo "plugin-10 actions/appearance=1" >> $MYLOG
 
-        # plugin-12: terminal launcher
-        $XQ -c xfce4-panel -p /plugins/plugin-12 -n -t string -s "launcher" 2>>$MYLOG
-        $XQ -c xfce4-panel -p /plugins/plugin-12/items \
-          -n --force-array -t string -s "terminal.desktop" 2>>$MYLOG
+      # Bottom dock (panel-2) auto-hide: 2 = always hidden, shown on
+      # mouse-over. Keeps the desktop uncluttered for kids.
+      $XQ -c xfce4-panel -p /panel-2/autohide-behavior -n -t uint -s 2 2>>$MYLOG \
+        && echo "panel-2 autohide=2" >> $MYLOG
 
-        # plugin-13: file manager launcher
-        $XQ -c xfce4-panel -p /plugins/plugin-13 -n -t string -s "launcher" 2>>$MYLOG
-        $XQ -c xfce4-panel -p /plugins/plugin-13/items \
-          -n --force-array -t string -s "thunar.desktop" 2>>$MYLOG
-
-        # plugin-14: Chrome launcher (uses unique filename so XDG lookup
-        # finds OUR custom .desktop, not the system google-chrome.desktop)
-        $XQ -c xfce4-panel -p /plugins/plugin-14 -n -t string -s "launcher" 2>>$MYLOG
-        $XQ -c xfce4-panel -p /plugins/plugin-14/items \
-          -n --force-array -t string -s "codeclub-chrome.desktop" 2>>$MYLOG
-
-        # plugin-15: app finder launcher
-        $XQ -c xfce4-panel -p /plugins/plugin-15 -n -t string -s "launcher" 2>>$MYLOG
-        $XQ -c xfce4-panel -p /plugins/plugin-15/items \
-          -n --force-array -t string -s "appfinder.desktop" 2>>$MYLOG
-
-        # plugin-16: btop launcher
-        $XQ -c xfce4-panel -p /plugins/plugin-16 -n -t string -s "launcher" 2>>$MYLOG
-        $XQ -c xfce4-panel -p /plugins/plugin-16/items \
-          -n --force-array -t string -s "btop.desktop" 2>>$MYLOG
-
-        # plugin-17: right expand separator
-        $XQ -c xfce4-panel -p /plugins/plugin-17 -n -t string -s "separator" 2>>$MYLOG
-        $XQ -c xfce4-panel -p /plugins/plugin-17/expand -n -t bool -s true 2>>$MYLOG
-        $XQ -c xfce4-panel -p /plugins/plugin-17/style  -n -t uint -s 0    2>>$MYLOG
-
-        # Clock config moved to a later stage — see the clock block below
-        # that runs AFTER the panel restart, because the live panel-1 layout
-        # diverges from our static XML (xfce4-panel auto-inserts tasklist,
-        # pager, and extra separators, reshuffling plugin IDs).
-
-        # Hide all desktop icons (no Home / Filesystem / removable media
-        # clutter on the live-CD desktop). style=0 means no icons at all.
-        $XQ -c xfce4-desktop -p /desktop-icons/style -n -t int -s 0 2>>$MYLOG \
-          && echo "desktop-icons/style=0 set" >> $MYLOG
-        ${pkgs.xfce.xfdesktop}/bin/xfdesktop --reload >> $MYLOG 2>&1 || true
-
-        # Apply PRO Dark XFCE theme (GTK + xfwm4 window decorations).
-        # xfsettingsd watches these xfconf properties and propagates the
-        # change to running GTK apps without needing a logout.
-        $XQ -c xsettings -p /Net/ThemeName -n -t string -s "PRO-dark-XFCE-4.14" 2>>$MYLOG \
-          && echo "xsettings ThemeName set" >> $MYLOG
-        $XQ -c xsettings -p /Gtk/ApplicationPreferDarkTheme -n -t bool -s true 2>>$MYLOG \
-          && echo "Gtk ApplicationPreferDarkTheme=true set" >> $MYLOG
-        $XQ -c xfwm4 -p /general/theme -n -t string -s "PRO-dark-XFCE-4.14" 2>>$MYLOG \
-          && echo "xfwm4 theme set" >> $MYLOG
-
-        echo "xfconf-query panel-2 done, restarting panel..." >> $MYLOG
-
-        ${pkgs.procps}/bin/pkill -x xfce4-panel 2>/dev/null || true
-        sleep 1
-        ${pkgs.xfce.xfce4-panel}/bin/xfce4-panel &
-        sleep 3
-
-        # Clock — show time only in HH:MM:SS, no date line.
-        # Runs AFTER the panel restart so that xfconf-query sees the live
-        # plugin layout. xfce4-panel auto-inserts tasklist/pager/extra
-        # separators into panel-1 regardless of our static XML, which
-        # reshuffles plugin IDs, so we discover the clock plugin at runtime
-        # by iterating all plugin-N entries and matching type == "clock".
-        # mode=2 = digital; digital-layout=3 = time-only layout (XFCE 4.16+).
-        CLOCK_PID=""
-        for i in 1 2 3 4 5 6 7 8 9 18 19 20 21 22 23 24 25; do
-          ptype=$($XQ -c xfce4-panel -p /plugins/plugin-$i 2>/dev/null)
-          if [ "$ptype" = "clock" ]; then
-            CLOCK_PID="plugin-$i"
-            break
-          fi
-        done
-        echo "clock plugin id = $CLOCK_PID" >> $MYLOG
-        if [ -n "$CLOCK_PID" ]; then
-          $XQ -c xfce4-panel -p /plugins/$CLOCK_PID/mode            -n -t uint   -s 2 2>>$MYLOG
-          $XQ -c xfce4-panel -p /plugins/$CLOCK_PID/digital-layout  -n -t uint   -s 3 2>>$MYLOG
-          $XQ -c xfce4-panel -p /plugins/$CLOCK_PID/digital-time-format -n -t string -s "%H:%M:%S" 2>>$MYLOG
-          $XQ -c xfce4-panel -p /plugins/$CLOCK_PID/digital-date-format -n -t string -s ""        2>>$MYLOG
-          $XQ -c xfce4-panel -p /plugins/$CLOCK_PID/digital-format      -n -t string -s "%H:%M:%S" 2>>$MYLOG \
-            && echo "clock digital-format set on $CLOCK_PID" >> $MYLOG
-          # Nudge the panel to re-read plugin config.
-          ${pkgs.xfce.xfce4-panel}/bin/xfce4-panel --restart >> $MYLOG 2>&1 || true
+      # Nudge the panel so plugin-4 picks up its new type and the clock its
+      # new format. xfce4-panel --restart talks to the panel over D-Bus
+      # (bus name "org.xfce.Panel"); on slow USB boots this myautostart
+      # service can run before xfce4-panel has registered that name, and
+      # the --restart pops a GTK error dialog "name org.xfce.Panel was not
+      # provided by any .service files" (D-Bus has no fallback activation
+      # for it — xfce4-session starts the panel, not D-Bus). Wait for the
+      # bus name first, and skip --restart if it never appears (the panel
+      # will read our xfconf changes when it eventually starts).
+      PANEL_READY=0
+      for i in $(seq 1 30); do
+        if ${pkgs.dbus}/bin/dbus-send --session --print-reply \
+             --dest=org.freedesktop.DBus /org/freedesktop/DBus \
+             org.freedesktop.DBus.NameHasOwner string:org.xfce.Panel \
+             2>/dev/null | grep -q 'boolean true'; then
+          PANEL_READY=1
+          echo "xfce4-panel D-Bus ready after ~''${i}s" >> $MYLOG
+          break
         fi
-
-        touch "$PANEL_FLAG"
-        echo "Panel setup done" >> $MYLOG
+        sleep 1
+      done
+      if [ "$PANEL_READY" = 1 ]; then
+        ${pkgs.xfce.xfce4-panel}/bin/xfce4-panel --restart >> $MYLOG 2>&1 || true
+      else
+        echo "xfce4-panel D-Bus not ready after 30s; skipping --restart" >> $MYLOG
       fi
 
+      # Hide all desktop icons (no Home / Filesystem / removable media
+      # clutter on the live-CD desktop). style=0 means no icons at all.
+      $XQ -c xfce4-desktop -p /desktop-icons/style -n -t int -s 0 2>>$MYLOG \
+        && echo "desktop-icons/style=0 set" >> $MYLOG
+      ${pkgs.xfce.xfdesktop}/bin/xfdesktop --reload >> $MYLOG 2>&1 || true
+
+      # Apply PRO Dark XFCE theme (GTK + xfwm4 window decorations).
+      $XQ -c xsettings -p /Net/ThemeName -n -t string -s "PRO-dark-XFCE-4.14" 2>>$MYLOG \
+        && echo "xsettings ThemeName set" >> $MYLOG
+      $XQ -c xsettings -p /Gtk/ApplicationPreferDarkTheme -n -t bool -s true 2>>$MYLOG \
+        && echo "Gtk ApplicationPreferDarkTheme=true set" >> $MYLOG
+      $XQ -c xfwm4 -p /general/theme -n -t string -s "PRO-dark-XFCE-4.14" 2>>$MYLOG \
+        && echo "xfwm4 theme set" >> $MYLOG
+
       # Single workspace
-      ${pkgs.xfce.xfconf}/bin/xfconf-query -c xfwm4 \
-        -p /general/workspace_count -s 1 2>>$MYLOG || true
+      $XQ -c xfwm4 -p /general/workspace_count -s 1 2>>$MYLOG || true
 
       # Fetch Bing's daily wallpaper and set it as the desktop background.
       # Bing rotates the image at 00:00 UTC so every CodeClub machine booted
@@ -685,6 +542,7 @@ HISTEOF
         # fire before xfce4-session has finished wiring up X outputs, so
         # xrandr may briefly return an empty list — retry for up to ~30s.
         MONITORS=""
+        USED_FALLBACK=0
         for w in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
           MONITORS=$(${pkgs.xorg.xrandr}/bin/xrandr --listactivemonitors 2>/dev/null | awk 'NR>1 {print $NF}')
           [ -n "$MONITORS" ] && break
@@ -694,8 +552,11 @@ HISTEOF
         # xfdesktop will just ignore any that don't match a real output.
         if [ -z "$MONITORS" ]; then
           MONITORS="Virtual-1 Virtual1 0 VGA-1 VGA1 HDMI-1 HDMI1 eDP-1 eDP1 DP-1 DP1 LVDS-1 LVDS1"
+          USED_FALLBACK=1
         fi
-        echo "wallpaper: monitors = [$MONITORS]" >> $MYLOG
+        echo "wallpaper: monitors = [$MONITORS] (fallback=$USED_FALLBACK)" >> $MYLOG
+        echo "wallpaper: xrandr --listactivemonitors:" >> $MYLOG
+        ${pkgs.xorg.xrandr}/bin/xrandr --listactivemonitors >> $MYLOG 2>&1 || true
 
         # Wait for network connectivity before trying the Bing API.
         # School/CC networks can take 2-5+ minutes to get DHCP + DNS.
@@ -734,8 +595,24 @@ HISTEOF
               for prop in $(${pkgs.xfce.xfconf}/bin/xfconf-query -c xfce4-desktop -l 2>/dev/null | grep 'last-image$'); do
                 ${pkgs.xfce.xfconf}/bin/xfconf-query -c xfce4-desktop -p "$prop" -s "$WALL_FILE" 2>>$MYLOG
               done
-              ${pkgs.xfce.xfdesktop}/bin/xfdesktop --reload >> $MYLOG 2>&1 || true
+              # --reload doesn't pick up new /backdrop/*/last-image after
+              # xfdesktop has already started with its default (solid colour)
+              # — kill and respawn to force a fresh read of xfconf.
+              ${pkgs.procps}/bin/pkill -x xfdesktop 2>/dev/null || true
+              sleep 2
+              ${pkgs.xfce.xfdesktop}/bin/xfdesktop >> $MYLOG 2>&1 &
               echo "wallpaper: set from $WALL_URL (monitors: $MONITORS)" >> $MYLOG
+              # Dump final xfconf state for diagnostics — if the wallpaper
+              # doesn't show on a real CC PC, this tells us which monitor
+              # name xfdesktop is actually using vs what we wrote to.
+              sleep 3
+              echo "wallpaper: post-restart xrandr:" >> $MYLOG
+              ${pkgs.xorg.xrandr}/bin/xrandr --listactivemonitors >> $MYLOG 2>&1 || true
+              echo "wallpaper: final /backdrop last-image values:" >> $MYLOG
+              for prop in $(${pkgs.xfce.xfconf}/bin/xfconf-query -c xfce4-desktop -l 2>/dev/null | grep 'last-image$'); do
+                val=$(${pkgs.xfce.xfconf}/bin/xfconf-query -c xfce4-desktop -p "$prop" 2>/dev/null)
+                echo "  $prop = $val" >> $MYLOG
+              done
               break
             fi
           fi
