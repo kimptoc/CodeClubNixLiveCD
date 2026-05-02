@@ -573,17 +573,18 @@ HISTEOF
       # Super+Arrow tile shortcuts: xfwm4's defaults only bind the
       # numeric-keypad variants (<Super>KP_Left etc.), so on keyboards
       # without a numpad Super+Arrow does nothing. Add the regular-arrow
-      # bindings via the xfce4-keyboard-shortcuts channel so kids get
-      # the Windows-style tiling shortcuts they expect.
-      $XQ -c xfce4-keyboard-shortcuts -p '/xfwm4/custom/<Super>Left'  -n -t string -s 'tile_left_key'  2>>$MYLOG
-      $XQ -c xfce4-keyboard-shortcuts -p '/xfwm4/custom/<Super>Right' -n -t string -s 'tile_right_key' 2>>$MYLOG
-      $XQ -c xfce4-keyboard-shortcuts -p '/xfwm4/custom/<Super>Up'    -n -t string -s 'tile_up_key'    2>>$MYLOG
-      $XQ -c xfce4-keyboard-shortcuts -p '/xfwm4/custom/<Super>Down'  -n -t string -s 'tile_down_key'  2>>$MYLOG
+      # bindings under /xfwm4/default/ — that's the active keytheme on a
+      # fresh user (writing under /xfwm4/custom/ instead would only fire
+      # if the user had switched their xfwm4 keytheme to "Custom").
+      $XQ -c xfce4-keyboard-shortcuts -p '/xfwm4/default/<Super>Left'  -n -t string -s 'tile_left_key'  2>>$MYLOG
+      $XQ -c xfce4-keyboard-shortcuts -p '/xfwm4/default/<Super>Right' -n -t string -s 'tile_right_key' 2>>$MYLOG
+      $XQ -c xfce4-keyboard-shortcuts -p '/xfwm4/default/<Super>Up'    -n -t string -s 'tile_up_key'    2>>$MYLOG
+      $XQ -c xfce4-keyboard-shortcuts -p '/xfwm4/default/<Super>Down'  -n -t string -s 'tile_down_key'  2>>$MYLOG
       # Corner tiles via Alt/Ctrl modifiers (mirrors the keypad defaults).
-      $XQ -c xfce4-keyboard-shortcuts -p '/xfwm4/custom/<Super><Alt>Left'   -n -t string -s 'tile_up_left_key'    2>>$MYLOG
-      $XQ -c xfce4-keyboard-shortcuts -p '/xfwm4/custom/<Super><Alt>Right'  -n -t string -s 'tile_up_right_key'   2>>$MYLOG
-      $XQ -c xfce4-keyboard-shortcuts -p '/xfwm4/custom/<Super><Ctrl>Left'  -n -t string -s 'tile_down_left_key'  2>>$MYLOG
-      $XQ -c xfce4-keyboard-shortcuts -p '/xfwm4/custom/<Super><Ctrl>Right' -n -t string -s 'tile_down_right_key' 2>>$MYLOG
+      $XQ -c xfce4-keyboard-shortcuts -p '/xfwm4/default/<Super><Alt>Left'   -n -t string -s 'tile_up_left_key'    2>>$MYLOG
+      $XQ -c xfce4-keyboard-shortcuts -p '/xfwm4/default/<Super><Alt>Right'  -n -t string -s 'tile_up_right_key'   2>>$MYLOG
+      $XQ -c xfce4-keyboard-shortcuts -p '/xfwm4/default/<Super><Ctrl>Left'  -n -t string -s 'tile_down_left_key'  2>>$MYLOG
+      $XQ -c xfce4-keyboard-shortcuts -p '/xfwm4/default/<Super><Ctrl>Right' -n -t string -s 'tile_down_right_key' 2>>$MYLOG
       echo "xfwm4 Super+Arrow tile keys bound" >> $MYLOG
 
       # Fetch Bing's daily wallpaper and set it as the desktop background.
