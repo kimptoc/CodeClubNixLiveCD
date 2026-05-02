@@ -312,9 +312,33 @@ HISTEOF
   services.locate.enable = true;
   services.printing.enable = true;
 
+  # Audio: PipeWire with ALSA + PulseAudio compatibility shims so XFCE's
+  # pulseaudio plugin and apps using ALSA both work. Wired headsets
+  # (3.5mm or USB headphone+mic) work out-of-the-box — input devices
+  # show up automatically, no extra packages or groups needed.
+  security.rtkit.enable = true;
+  services.pipewire = {
+    enable = true;
+    alsa.enable = true;
+    alsa.support32Bit = true;
+    pulse.enable = true;
+  };
+
+  # Bluetooth: needed for Chrome's hybrid-transport (caBLE) passkey flow
+  # — without BT-LE, Chrome can't init that path and silently won't show
+  # the QR-scan-with-phone option. Also enables BT headsets / mice if
+  # ever useful. blueman-applet provides a GUI tray for pairing.
+  hardware.bluetooth.enable = true;
+  hardware.bluetooth.powerOnBoot = true;
+  services.blueman.enable = true;
+
   environment.systemPackages = with pkgs; [
     btop
     xfce.xfce4-terminal
+    xfce.xfce4-pulseaudio-plugin
+    pavucontrol
+    alsa-utils
+    pulseaudio
     nodejs
     terminator
     ghostty
@@ -533,6 +557,19 @@ HISTEOF
       # Single workspace
       $XQ -c xfwm4 -p /general/workspace_count -s 1 2>>$MYLOG || true
 
+      # Drag-to-edge window tiling: drop a window on the left/right edge
+      # to fill that half of the screen, top edge to maximise. Familiar
+      # Windows-style "snap" behaviour kids already expect.
+      $XQ -c xfwm4 -p /general/tile_on_move -n -t bool -s true 2>>$MYLOG \
+        && echo "xfwm4 tile_on_move set" >> $MYLOG
+      # Edge wrap defaults to true and pre-empts the edge-tile gesture
+      # (the cursor wraps to the opposite side before the tile preview
+      # can trigger). Turn it off so dragging to an edge tiles cleanly.
+      $XQ -c xfwm4 -p /general/wrap_windows -n -t bool -s false 2>>$MYLOG \
+        && echo "xfwm4 wrap_windows=false" >> $MYLOG
+      $XQ -c xfwm4 -p /general/wrap_workspaces -n -t bool -s false 2>>$MYLOG \
+        && echo "xfwm4 wrap_workspaces=false" >> $MYLOG
+
       # Fetch Bing's daily wallpaper and set it as the desktop background.
       # Bing rotates the image at 00:00 UTC so every CodeClub machine booted
       # on the same day ends up with the same picture. Runs in a background
@@ -551,7 +588,17 @@ HISTEOF
         # Fall back to a list of common names if xrandr never came up —
         # xfdesktop will just ignore any that don't match a real output.
         if [ -z "$MONITORS" ]; then
-          MONITORS="Virtual-1 Virtual1 0 VGA-1 VGA1 HDMI-1 HDMI1 eDP-1 eDP1 DP-1 DP1 LVDS-1 LVDS1"
+          # Cover common output names for VMs and physical kit.
+          # Includes HDMI-2/DP-2 because at least one CC PC has its only
+          # display on HDMI-2 and was being skipped here.
+          # xfdesktop ignores last-image keys for outputs that don't exist,
+          # so over-listing is safe.
+          MONITORS="Virtual-1 Virtual1 0 \
+            VGA-1 VGA1 \
+            HDMI-1 HDMI1 HDMI-2 HDMI2 HDMI-A-1 HDMI-A-2 \
+            eDP-1 eDP1 \
+            DP-1 DP1 DP-2 DP2 DisplayPort-1 DisplayPort-2 \
+            LVDS-1 LVDS1"
           USED_FALLBACK=1
         fi
         echo "wallpaper: monitors = [$MONITORS] (fallback=$USED_FALLBACK)" >> $MYLOG
