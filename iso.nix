@@ -576,10 +576,15 @@ HISTEOF
       # bindings under /xfwm4/default/ — that's the active keytheme on a
       # fresh user (writing under /xfwm4/custom/ instead would only fire
       # if the user had switched their xfwm4 keytheme to "Custom").
-      $XQ -c xfce4-keyboard-shortcuts -p '/xfwm4/default/<Super>Left'  -n -t string -s 'tile_left_key'  2>>$MYLOG
-      $XQ -c xfce4-keyboard-shortcuts -p '/xfwm4/default/<Super>Right' -n -t string -s 'tile_right_key' 2>>$MYLOG
-      $XQ -c xfce4-keyboard-shortcuts -p '/xfwm4/default/<Super>Up'    -n -t string -s 'tile_up_key'    2>>$MYLOG
-      $XQ -c xfce4-keyboard-shortcuts -p '/xfwm4/default/<Super>Down'  -n -t string -s 'tile_down_key'  2>>$MYLOG
+      $XQ -c xfce4-keyboard-shortcuts -p '/xfwm4/default/<Super>Left'  -n -t string -s 'tile_left_key'        2>>$MYLOG
+      $XQ -c xfce4-keyboard-shortcuts -p '/xfwm4/default/<Super>Right' -n -t string -s 'tile_right_key'       2>>$MYLOG
+      # Super+Up = maximise (Windows parity), not tile_up which would
+      # only fill the top half. Reset any pre-existing binding on this
+      # key first so the value definitely takes (-r removes; -n then
+      # re-creates with the action we want).
+      $XQ -c xfce4-keyboard-shortcuts -p '/xfwm4/default/<Super>Up'    -r 2>/dev/null || true
+      $XQ -c xfce4-keyboard-shortcuts -p '/xfwm4/default/<Super>Up'    -n -t string -s 'maximize_window_key' 2>>$MYLOG
+      $XQ -c xfce4-keyboard-shortcuts -p '/xfwm4/default/<Super>Down'  -n -t string -s 'tile_down_key'        2>>$MYLOG
       # Corner tiles via Alt/Ctrl modifiers (mirrors the keypad defaults).
       $XQ -c xfce4-keyboard-shortcuts -p '/xfwm4/default/<Super><Alt>Left'   -n -t string -s 'tile_up_left_key'    2>>$MYLOG
       $XQ -c xfce4-keyboard-shortcuts -p '/xfwm4/default/<Super><Alt>Right'  -n -t string -s 'tile_up_right_key'   2>>$MYLOG
