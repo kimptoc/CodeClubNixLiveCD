@@ -589,8 +589,35 @@ HISTEOF
       # "bindings don't fire" debug session shows in one log line which
       # took and which didn't, instead of having to drag it out test by
       # test from a running system.
+      #
+      # Two extra defensive steps learned from a debugging round on the
+      # previous ISO (where 4 of 8 bindings silently failed to grab even
+      # though xfconf had the right values):
+      #
+      # 1. Remove the four stock <Super>KP_* numpad siblings of the
+      #    actions we bind. xfwm4 4.20 stores ONE binding per action
+      #    enum (one slot in screen_info->params->keys[KEY_*]) — when
+      #    two custom-tree paths share a tile_*_key action, its runtime
+      #    cb_shortcut_added installs only one grab, and not necessarily
+      #    ours. With both <Super>Right and <Super>KP_Right pointing at
+      #    tile_right_key, Super+Right ended up not grabbed at all.
+      #    Code Club kit has no numpads, so removing
+      #    KP_Right/KP_Down/KP_End/KP_Next is a non-regression.
+      #
+      # 2. Reset (-r) each target path before -n create. -n is no-op
+      #    when the property already exists with ANY type — and we hit a
+      #    case where /xfwm4/custom/<Super>Down had been promoted to an
+      #    array [tile_down_key,tile_down_left_key] (origin unclear,
+      #    likely from xfwm4-settings GUI fiddling on a previous live-CD
+      #    test). xfwm4 silently can't parse arrays as bindings → no
+      #    grab. -r before -n guarantees a clean string property.
+      for kp in '<Super>KP_Right' '<Super>KP_Down' '<Super>KP_End' '<Super>KP_Next'; do
+        $XQ -c xfce4-keyboard-shortcuts -p "/xfwm4/custom/$kp" -r 2>>$MYLOG || true
+      done
+
       bind_xfwm4 () {
         path=$1; action=$2
+        $XQ -c xfce4-keyboard-shortcuts -p "$path" -r 2>/dev/null || true
         $XQ -c xfce4-keyboard-shortcuts -p "$path" -n -t string -s "$action" 2>>$MYLOG
         echo "  $path = $($XQ -c xfce4-keyboard-shortcuts -p "$path" 2>&1)" >> $MYLOG
       }
