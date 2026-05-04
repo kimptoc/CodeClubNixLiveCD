@@ -570,42 +570,69 @@ HISTEOF
       $XQ -c xfwm4 -p /general/wrap_workspaces -n -t bool -s false 2>>$MYLOG \
         && echo "xfwm4 wrap_workspaces=false" >> $MYLOG
 
-      # Super+Arrow tile shortcuts: xfwm4's defaults only bind the
-      # numeric-keypad variants (<Super>KP_Left etc.), so on keyboards
-      # without a numpad Super+Arrow does nothing. Add the regular-arrow
-      # bindings under /xfwm4/default/ — that's the active keytheme on a
-      # fresh user (writing under /xfwm4/custom/ instead would only fire
-      # if the user had switched their xfwm4 keytheme to "Custom").
+      # Super+regular-arrow tile shortcuts: stock xfwm4 only ships the
+      # numeric-keypad variants (<Super>KP_Left etc.). On a laptop
+      # without a numpad kids need the regular-arrow form for the
+      # Windows-style snap they expect.
       #
-      # Reset (-r) before create (-n) so each property starts unset and
-      # then takes the action we want. -n alone is create-only and fails
-      # silently when the property already exists (e.g. <Super>Left has
-      # a default workspace-switch binding on stock xfwm4 that would
-      # block our create). The two flags MUST be issued as separate
-      # invocations: xfconf-query 4.20 refuses "-r -n" together with
-      # "--create and --reset options can not be used together" (myautostart
-      # log on the first ISO that tried the combined form: 8× that error
-      # and zero bindings actually set).
-      $XQ -c xfce4-keyboard-shortcuts -p '/xfwm4/default/<Super>Left'        -r 2>/dev/null || true
-      $XQ -c xfce4-keyboard-shortcuts -p '/xfwm4/default/<Super>Left'        -n -t string -s 'tile_left_key'        2>>$MYLOG
-      $XQ -c xfce4-keyboard-shortcuts -p '/xfwm4/default/<Super>Right'       -r 2>/dev/null || true
-      $XQ -c xfce4-keyboard-shortcuts -p '/xfwm4/default/<Super>Right'       -n -t string -s 'tile_right_key'       2>>$MYLOG
+      # Write to /xfwm4/custom/, NOT /xfwm4/default/. On this NixOS
+      # xfwm4 image /xfwm4/custom/override is true at first login, which
+      # makes "Custom" the live key theme — xfwm4 reads bindings from
+      # /xfwm4/custom/ and silently ignores anything under
+      # /xfwm4/default/. Earlier ISOs wrote to default; xfconf accepted
+      # the writes but xfwm4 never grabbed the keys (verified with xev:
+      # Super+Left flowed through to applications untouched). The stock
+      # numpad <Super>KP_* tile bindings ship in /xfwm4/custom/ already,
+      # which is why those always worked while ours didn't.
+      #
+      # We read each binding back into the log after writing so the next
+      # "bindings don't fire" debug session shows in one log line which
+      # took and which didn't, instead of having to drag it out test by
+      # test from a running system.
+      #
+      # Two extra defensive steps learned from a debugging round on the
+      # previous ISO (where 4 of 8 bindings silently failed to grab even
+      # though xfconf had the right values):
+      #
+      # 1. Remove the four stock <Super>KP_* numpad siblings of the
+      #    actions we bind. xfwm4 4.20 stores ONE binding per action
+      #    enum (one slot in screen_info->params->keys[KEY_*]) — when
+      #    two custom-tree paths share a tile_*_key action, its runtime
+      #    cb_shortcut_added installs only one grab, and not necessarily
+      #    ours. With both <Super>Right and <Super>KP_Right pointing at
+      #    tile_right_key, Super+Right ended up not grabbed at all.
+      #    Code Club kit has no numpads, so removing
+      #    KP_Right/KP_Down/KP_End/KP_Next is a non-regression.
+      #
+      # 2. Reset (-r) each target path before -n create. -n is no-op
+      #    when the property already exists with ANY type — and we hit a
+      #    case where /xfwm4/custom/<Super>Down had been promoted to an
+      #    array [tile_down_key,tile_down_left_key] (origin unclear,
+      #    likely from xfwm4-settings GUI fiddling on a previous live-CD
+      #    test). xfwm4 silently can't parse arrays as bindings → no
+      #    grab. -r before -n guarantees a clean string property.
+      for kp in '<Super>KP_Right' '<Super>KP_Down' '<Super>KP_End' '<Super>KP_Next'; do
+        $XQ -c xfce4-keyboard-shortcuts -p "/xfwm4/custom/$kp" -r 2>>$MYLOG || true
+      done
+
+      bind_xfwm4 () {
+        path=$1; action=$2
+        $XQ -c xfce4-keyboard-shortcuts -p "$path" -r 2>/dev/null || true
+        $XQ -c xfce4-keyboard-shortcuts -p "$path" -n -t string -s "$action" 2>>$MYLOG
+        echo "  $path = $($XQ -c xfce4-keyboard-shortcuts -p "$path" 2>&1)" >> $MYLOG
+      }
+      echo "xfwm4 Super+Arrow bindings:" >> $MYLOG
+      bind_xfwm4 '/xfwm4/custom/<Super>Left'         tile_left_key
+      bind_xfwm4 '/xfwm4/custom/<Super>Right'        tile_right_key
       # Super+Up = maximise (Windows parity), not tile_up which would
       # only fill the top half.
-      $XQ -c xfce4-keyboard-shortcuts -p '/xfwm4/default/<Super>Up'          -r 2>/dev/null || true
-      $XQ -c xfce4-keyboard-shortcuts -p '/xfwm4/default/<Super>Up'          -n -t string -s 'maximize_window_key' 2>>$MYLOG
-      $XQ -c xfce4-keyboard-shortcuts -p '/xfwm4/default/<Super>Down'        -r 2>/dev/null || true
-      $XQ -c xfce4-keyboard-shortcuts -p '/xfwm4/default/<Super>Down'        -n -t string -s 'tile_down_key'        2>>$MYLOG
+      bind_xfwm4 '/xfwm4/custom/<Super>Up'           maximize_window_key
+      bind_xfwm4 '/xfwm4/custom/<Super>Down'         tile_down_key
       # Corner tiles via Alt/Ctrl modifiers (mirrors the keypad defaults).
-      $XQ -c xfce4-keyboard-shortcuts -p '/xfwm4/default/<Super><Alt>Left'   -r 2>/dev/null || true
-      $XQ -c xfce4-keyboard-shortcuts -p '/xfwm4/default/<Super><Alt>Left'   -n -t string -s 'tile_up_left_key'    2>>$MYLOG
-      $XQ -c xfce4-keyboard-shortcuts -p '/xfwm4/default/<Super><Alt>Right'  -r 2>/dev/null || true
-      $XQ -c xfce4-keyboard-shortcuts -p '/xfwm4/default/<Super><Alt>Right'  -n -t string -s 'tile_up_right_key'   2>>$MYLOG
-      $XQ -c xfce4-keyboard-shortcuts -p '/xfwm4/default/<Super><Ctrl>Left'  -r 2>/dev/null || true
-      $XQ -c xfce4-keyboard-shortcuts -p '/xfwm4/default/<Super><Ctrl>Left'  -n -t string -s 'tile_down_left_key'  2>>$MYLOG
-      $XQ -c xfce4-keyboard-shortcuts -p '/xfwm4/default/<Super><Ctrl>Right' -r 2>/dev/null || true
-      $XQ -c xfce4-keyboard-shortcuts -p '/xfwm4/default/<Super><Ctrl>Right' -n -t string -s 'tile_down_right_key' 2>>$MYLOG
-      echo "xfwm4 Super+Arrow tile keys bound" >> $MYLOG
+      bind_xfwm4 '/xfwm4/custom/<Super><Alt>Left'    tile_up_left_key
+      bind_xfwm4 '/xfwm4/custom/<Super><Alt>Right'   tile_up_right_key
+      bind_xfwm4 '/xfwm4/custom/<Super><Ctrl>Left'   tile_down_left_key
+      bind_xfwm4 '/xfwm4/custom/<Super><Ctrl>Right'  tile_down_right_key
 
       # Fetch Bing's daily wallpaper and set it as the desktop background.
       # Bing rotates the image at 00:00 UTC so every CodeClub machine booted
