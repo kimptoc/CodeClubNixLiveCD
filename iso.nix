@@ -577,23 +577,34 @@ HISTEOF
       # fresh user (writing under /xfwm4/custom/ instead would only fire
       # if the user had switched their xfwm4 keytheme to "Custom").
       #
-      # Use -r -n together so each property is reset first and then
-      # re-created with the action we want. -n alone is create-only and
-      # fails silently when the property already exists (e.g. <Super>Left
-      # may default to workspace switching, or a persisted /home from a
-      # previous boot left a stale value), which would leave our binding
-      # unset.
-      $XQ -c xfce4-keyboard-shortcuts -p '/xfwm4/default/<Super>Left'        -r -n -t string -s 'tile_left_key'        2>>$MYLOG
-      $XQ -c xfce4-keyboard-shortcuts -p '/xfwm4/default/<Super>Right'       -r -n -t string -s 'tile_right_key'       2>>$MYLOG
+      # Reset (-r) before create (-n) so each property starts unset and
+      # then takes the action we want. -n alone is create-only and fails
+      # silently when the property already exists (e.g. <Super>Left has
+      # a default workspace-switch binding on stock xfwm4 that would
+      # block our create). The two flags MUST be issued as separate
+      # invocations: xfconf-query 4.20 refuses "-r -n" together with
+      # "--create and --reset options can not be used together" (myautostart
+      # log on the first ISO that tried the combined form: 8× that error
+      # and zero bindings actually set).
+      $XQ -c xfce4-keyboard-shortcuts -p '/xfwm4/default/<Super>Left'        -r 2>/dev/null || true
+      $XQ -c xfce4-keyboard-shortcuts -p '/xfwm4/default/<Super>Left'        -n -t string -s 'tile_left_key'        2>>$MYLOG
+      $XQ -c xfce4-keyboard-shortcuts -p '/xfwm4/default/<Super>Right'       -r 2>/dev/null || true
+      $XQ -c xfce4-keyboard-shortcuts -p '/xfwm4/default/<Super>Right'       -n -t string -s 'tile_right_key'       2>>$MYLOG
       # Super+Up = maximise (Windows parity), not tile_up which would
       # only fill the top half.
-      $XQ -c xfce4-keyboard-shortcuts -p '/xfwm4/default/<Super>Up'          -r -n -t string -s 'maximize_window_key' 2>>$MYLOG
-      $XQ -c xfce4-keyboard-shortcuts -p '/xfwm4/default/<Super>Down'        -r -n -t string -s 'tile_down_key'        2>>$MYLOG
+      $XQ -c xfce4-keyboard-shortcuts -p '/xfwm4/default/<Super>Up'          -r 2>/dev/null || true
+      $XQ -c xfce4-keyboard-shortcuts -p '/xfwm4/default/<Super>Up'          -n -t string -s 'maximize_window_key' 2>>$MYLOG
+      $XQ -c xfce4-keyboard-shortcuts -p '/xfwm4/default/<Super>Down'        -r 2>/dev/null || true
+      $XQ -c xfce4-keyboard-shortcuts -p '/xfwm4/default/<Super>Down'        -n -t string -s 'tile_down_key'        2>>$MYLOG
       # Corner tiles via Alt/Ctrl modifiers (mirrors the keypad defaults).
-      $XQ -c xfce4-keyboard-shortcuts -p '/xfwm4/default/<Super><Alt>Left'   -r -n -t string -s 'tile_up_left_key'    2>>$MYLOG
-      $XQ -c xfce4-keyboard-shortcuts -p '/xfwm4/default/<Super><Alt>Right'  -r -n -t string -s 'tile_up_right_key'   2>>$MYLOG
-      $XQ -c xfce4-keyboard-shortcuts -p '/xfwm4/default/<Super><Ctrl>Left'  -r -n -t string -s 'tile_down_left_key'  2>>$MYLOG
-      $XQ -c xfce4-keyboard-shortcuts -p '/xfwm4/default/<Super><Ctrl>Right' -r -n -t string -s 'tile_down_right_key' 2>>$MYLOG
+      $XQ -c xfce4-keyboard-shortcuts -p '/xfwm4/default/<Super><Alt>Left'   -r 2>/dev/null || true
+      $XQ -c xfce4-keyboard-shortcuts -p '/xfwm4/default/<Super><Alt>Left'   -n -t string -s 'tile_up_left_key'    2>>$MYLOG
+      $XQ -c xfce4-keyboard-shortcuts -p '/xfwm4/default/<Super><Alt>Right'  -r 2>/dev/null || true
+      $XQ -c xfce4-keyboard-shortcuts -p '/xfwm4/default/<Super><Alt>Right'  -n -t string -s 'tile_up_right_key'   2>>$MYLOG
+      $XQ -c xfce4-keyboard-shortcuts -p '/xfwm4/default/<Super><Ctrl>Left'  -r 2>/dev/null || true
+      $XQ -c xfce4-keyboard-shortcuts -p '/xfwm4/default/<Super><Ctrl>Left'  -n -t string -s 'tile_down_left_key'  2>>$MYLOG
+      $XQ -c xfce4-keyboard-shortcuts -p '/xfwm4/default/<Super><Ctrl>Right' -r 2>/dev/null || true
+      $XQ -c xfce4-keyboard-shortcuts -p '/xfwm4/default/<Super><Ctrl>Right' -n -t string -s 'tile_down_right_key' 2>>$MYLOG
       echo "xfwm4 Super+Arrow tile keys bound" >> $MYLOG
 
       # Fetch Bing's daily wallpaper and set it as the desktop background.
