@@ -102,6 +102,18 @@ XPM
     Terminal=false
   '';
 
+  codeclubScreenshotLauncher = pkgs.writeText "codeclub-screenshot.desktop" ''
+    [Desktop Entry]
+    Name=Screenshot
+    Comment=Capture part of the screen
+    Exec=${pkgs.xfce.xfce4-screenshooter}/bin/xfce4-screenshooter -r
+    Icon=org.xfce.screenshooter
+    Type=Application
+    StartupNotify=true
+    Terminal=false
+    Categories=Utility;
+  '';
+
   # Override for the system google-chrome.desktop (in ~/.local/share/applications,
   # which takes precedence over /nix/store). This makes the Applications menu's
   # "Google Chrome" entry also open the CodeClub homepage.
@@ -262,17 +274,23 @@ HISTEOF
       chown 1000:100 "$H/.config"
       chmod 755 "$H/.config"
 
-      # launcher-4 is the only panel-launcher dir we need — plugin-4 is
+      # launcher-4 is Chrome: plugin-4 is
       # retyped from pager → launcher at runtime (see myautostart) with
-      # items pointing at codeclub-chrome.desktop. xfce4-panel looks up the
+      # an item pointing at the Chrome launcher. launcher-5 is Screenshot:
+      # plugin-5 is the separator at the left edge of the right-side
+      # plugin group, before systray/clock/actions. xfce4-panel looks up the
       # .desktop file in ~/.config/xfce4/panel/launcher-N/ first, then XDG.
-      mkdir -p "$H/.config/xfce4/panel/launcher-4"
+      mkdir -p "$H/.config/xfce4/panel/launcher-4" \
+               "$H/.config/xfce4/panel/launcher-5"
       chmod 755 "$H/.config/xfce4" \
                 "$H/.config/xfce4/panel" \
-                "$H/.config/xfce4/panel/launcher-4"
+                "$H/.config/xfce4/panel/launcher-4" \
+                "$H/.config/xfce4/panel/launcher-5"
 
       cp ${codeclubChromeLauncher} "$H/.config/xfce4/panel/launcher-4/codeclub-chrome.desktop"
-      chmod 644 "$H/.config/xfce4/panel/launcher-4/codeclub-chrome.desktop"
+      cp ${codeclubScreenshotLauncher} "$H/.config/xfce4/panel/launcher-5/codeclub-screenshot.desktop"
+      chmod 644 "$H/.config/xfce4/panel/launcher-4/codeclub-chrome.desktop" \
+                "$H/.config/xfce4/panel/launcher-5/codeclub-screenshot.desktop"
 
       # Point XFCE preferred-app Web Browser at our custom helper (defined
       # below) — the "Web Browser" entry in the Applications menu runs
@@ -288,8 +306,10 @@ HISTEOF
       mkdir -p "$H/.local/share/applications"
       cp ${chromeXdgOverride}      "$H/.local/share/applications/google-chrome.desktop"
       cp ${codeclubChromeLauncher} "$H/.local/share/applications/codeclub-chrome.desktop"
+      cp ${codeclubScreenshotLauncher} "$H/.local/share/applications/codeclub-screenshot.desktop"
       chmod 644 "$H/.local/share/applications/google-chrome.desktop" \
-                "$H/.local/share/applications/codeclub-chrome.desktop"
+                "$H/.local/share/applications/codeclub-chrome.desktop" \
+                "$H/.local/share/applications/codeclub-screenshot.desktop"
 
       # Custom XFCE helper for the Web Browser preferred-app launcher.
       # exo-open looks up helper files in ~/.local/share/xfce4/helpers/ (user)
@@ -336,6 +356,7 @@ HISTEOF
     btop
     xfce.xfce4-terminal
     xfce.xfce4-pulseaudio-plugin
+    xfce.xfce4-screenshooter
     pavucontrol
     alsa-utils
     pulseaudio
@@ -483,20 +504,47 @@ HISTEOF
       #   1 apps | 2 tasklist | 3 sep | 4 pager | 5 sep | 6 systray |
       #   7 sep | 8 clock | 9 sep | 10 actions | 11 showdesktop | 12 sep
       # We tweak only:
-      #   - plugin-4: pager → chrome launcher (pager is useless with a
-      #     single workspace; repurposing the slot keeps plugin-2's tasklist
-      #     intact so kids can still see open apps)
+      #   - plugin-4: pager → Chrome launcher (pager is useless
+      #     with a single workspace; repurposing the slot keeps plugin-2's
+      #     tasklist intact so kids can still see open apps)
       #   - plugin-8 clock: time-only HH:MM:SS (default shows date+no seconds)
+      #   - plugin-5: left edge of right-side plugins → Screenshot launcher,
+      #     before systray/clock/actions
       #   - plugin-10 actions: appearance=1 (username dropdown, already
       #     looks right in the default but set it defensively)
       # These are value/sub-property writes on existing plugins — no -R -r
       # deletes, no plugin-ids changes — so no "(null) plugin" popup.
 
-      $XQ -c xfce4-panel -p /plugins/plugin-4 -s "launcher" 2>>$MYLOG \
-        && echo "plugin-4 pager→launcher" >> $MYLOG
+      # Wait for xfce4-panel to publish its first-start default plugin
+      # properties before editing them. Writing too early can be overwritten
+      # by the default-layout creation pass.
+      PANEL_READY=0
+      for i in $(seq 1 30); do
+        if ${pkgs.dbus}/bin/dbus-send --session --print-reply \
+             --dest=org.freedesktop.DBus /org/freedesktop/DBus \
+             org.freedesktop.DBus.NameHasOwner string:org.xfce.Panel \
+             2>/dev/null | grep -q 'boolean true' \
+           && $XQ -c xfce4-panel -p /plugins/plugin-5 >/dev/null 2>&1; then
+          PANEL_READY=1
+          echo "xfce4-panel defaults ready after ~''${i}s" >> $MYLOG
+          break
+        fi
+        sleep 1
+      done
+
+      ($XQ -c xfce4-panel -p /plugins/plugin-4 -s "launcher" 2>>$MYLOG \
+        || $XQ -c xfce4-panel -p /plugins/plugin-4 -n -t string -s "launcher" 2>>$MYLOG) \
+        && echo "plugin-4 pager->launcher" >> $MYLOG
       $XQ -c xfce4-panel -p /plugins/plugin-4/items \
         -n --force-array -t string -s "codeclub-chrome.desktop" 2>>$MYLOG \
         && echo "plugin-4/items set" >> $MYLOG
+
+      ($XQ -c xfce4-panel -p /plugins/plugin-5 -s "launcher" 2>>$MYLOG \
+        || $XQ -c xfce4-panel -p /plugins/plugin-5 -n -t string -s "launcher" 2>>$MYLOG) \
+        && echo "plugin-5 separator->screenshot launcher" >> $MYLOG
+      $XQ -c xfce4-panel -p /plugins/plugin-5/items \
+        -n --force-array -t string -s "codeclub-screenshot.desktop" 2>>$MYLOG \
+        && echo "plugin-5/items set" >> $MYLOG
 
       $XQ -c xfce4-panel -p /plugins/plugin-8/mode                -n -t uint   -s 2          2>>$MYLOG
       $XQ -c xfce4-panel -p /plugins/plugin-8/digital-layout      -n -t uint   -s 3          2>>$MYLOG
@@ -513,31 +561,17 @@ HISTEOF
       $XQ -c xfce4-panel -p /panel-2/autohide-behavior -n -t uint -s 2 2>>$MYLOG \
         && echo "panel-2 autohide=2" >> $MYLOG
 
-      # Nudge the panel so plugin-4 picks up its new type and the clock its
+      # Nudge the panel so plugin-4/5 pick up their new type and the clock its
       # new format. xfce4-panel --restart talks to the panel over D-Bus
       # (bus name "org.xfce.Panel"); on slow USB boots this myautostart
       # service can run before xfce4-panel has registered that name, and
       # the --restart pops a GTK error dialog "name org.xfce.Panel was not
       # provided by any .service files" (D-Bus has no fallback activation
-      # for it — xfce4-session starts the panel, not D-Bus). Wait for the
-      # bus name first, and skip --restart if it never appears (the panel
-      # will read our xfconf changes when it eventually starts).
-      PANEL_READY=0
-      for i in $(seq 1 30); do
-        if ${pkgs.dbus}/bin/dbus-send --session --print-reply \
-             --dest=org.freedesktop.DBus /org/freedesktop/DBus \
-             org.freedesktop.DBus.NameHasOwner string:org.xfce.Panel \
-             2>/dev/null | grep -q 'boolean true'; then
-          PANEL_READY=1
-          echo "xfce4-panel D-Bus ready after ~''${i}s" >> $MYLOG
-          break
-        fi
-        sleep 1
-      done
+      # for it — xfce4-session starts the panel, not D-Bus).
       if [ "$PANEL_READY" = 1 ]; then
         ${pkgs.xfce.xfce4-panel}/bin/xfce4-panel --restart >> $MYLOG 2>&1 || true
       else
-        echo "xfce4-panel D-Bus not ready after 30s; skipping --restart" >> $MYLOG
+        echo "xfce4-panel defaults not ready after 30s; skipping --restart" >> $MYLOG
       fi
 
       # Hide all desktop icons (no Home / Filesystem / removable media
