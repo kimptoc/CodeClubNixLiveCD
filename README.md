@@ -26,15 +26,16 @@ Useful links
 * bitly link to it - https://bit.ly/codeclubnxl
 
 TODO
-- window left right placement under xfce?
-- sound under xfce
 - xfce using litterbox after loading a project seems take over machine
-- xfce wallpaper downloads but not set. see log termbin.com/guw5
-- xfce - window controls, can we add ability to resize from any side - only works from top at the moment
-- hide lock screen,switch user,suspend, logout menu items 
-- remove confirm option from shutdown menu item
+- add tool to unzip archives
 
 DONE
+- remove confirm option from shutdown menu item - no
+- hide lock screen,switch user,suspend, logout menu items - no
+- xfce - window controls, can we add ability to resize from any side - only works from top at the moment
+- xfce wallpaper downloads but not set. see log termbin.com/guw5
+- window left right placement under xfce?
+- sound under xfce
 - xfce. hide disks from desktop, ideally hide all
 - preloaded zsh history eg kilocode
 - add an app shortcut to open kilocode  in a console, pin it to the panel
