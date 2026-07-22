@@ -26,11 +26,10 @@ Useful links
 * bitly link to it - https://bit.ly/codeclubnxl
 
 TODO
-- window left right placement under xfce?
-- sound under xfce
 - xfce using litterbox after loading a project seems take over machine
 - hide lock screen,switch user,suspend, logout menu items 
 - remove confirm option from shutdown menu item
+- add tool to unzip archives
 
 DONE
 - fix xfce wallpaper: use full Nix store paths for xfdesktop/xfce4-panel in myautostart (bare commands not in systemd service PATH)
@@ -39,6 +38,11 @@ DONE
 - preloaded zsh history with kilocode/btop/python3/node/nmap (seeded in system.activationScripts.nixosZshrc)
 - disable screen locking on the live CD (services.xserver.desktopManager.xfce.enableScreensaver = false)
 - xfce - window controls, can we add ability to resize from any side - fixed via 4px resize borders in PRO-dark theme
+- remove confirm option from shutdown menu item - no
+- hide lock screen,switch user,suspend, logout menu items - no
+- window left right placement under xfce?
+- sound under xfce
+- xfce. hide disks from desktop, ideally hide all
 - add an app shortcut to open kilocode  in a console, pin it to the panel
 - disable workspace switcher/not add workspace
 - firefox maximised on start via xulstore.json sizemode (--width/--height flags caused GNOME login loop
