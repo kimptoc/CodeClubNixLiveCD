@@ -357,6 +357,7 @@ HISTEOF
     xfce.xfce4-terminal
     xfce.xfce4-pulseaudio-plugin
     xfce.xfce4-screenshooter
+    xfce.xfce4-systemload-plugin
     pavucontrol
     alsa-utils
     pulseaudio
@@ -510,6 +511,9 @@ HISTEOF
       #   - plugin-8 clock: time-only HH:MM:SS (default shows date+no seconds)
       #   - plugin-5: left edge of right-side plugins → Screenshot launcher,
       #     before systray/clock/actions
+      #   - plugin-7: separator between systray and clock → System Load
+      #     monitor (CPU/memory/swap/network bars), text labels turned off
+      #     to keep it compact
       #   - plugin-10 actions: appearance=1 (username dropdown, already
       #     looks right in the default but set it defensively)
       # These are value/sub-property writes on existing plugins — no -R -r
@@ -545,6 +549,15 @@ HISTEOF
       $XQ -c xfce4-panel -p /plugins/plugin-5/items \
         -n --force-array -t string -s "codeclub-screenshot.desktop" 2>>$MYLOG \
         && echo "plugin-5/items set" >> $MYLOG
+
+      ($XQ -c xfce4-panel -p /plugins/plugin-7 -s "systemload" 2>>$MYLOG \
+        || $XQ -c xfce4-panel -p /plugins/plugin-7 -n -t string -s "systemload" 2>>$MYLOG) \
+        && echo "plugin-7 separator->systemload" >> $MYLOG
+      # Drop the "CPU"/"Mem"/"Swap"/"Net" text prefixes — bars only.
+      for mon in cpu memory network swap; do
+        $XQ -c xfce4-panel -p /plugins/plugin-7/$mon/use-label -n -t bool -s false 2>>$MYLOG
+      done
+      echo "plugin-7 labels disabled" >> $MYLOG
 
       $XQ -c xfce4-panel -p /plugins/plugin-8/mode                -n -t uint   -s 2          2>>$MYLOG
       $XQ -c xfce4-panel -p /plugins/plugin-8/digital-layout      -n -t uint   -s 3          2>>$MYLOG
