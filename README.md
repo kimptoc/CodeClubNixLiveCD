@@ -5,10 +5,10 @@ The windows installs on the PCs are locked down - no headphone support. Also on 
 The live CD means that those things are working.
 
 Steps
-* follow NixOS Live CD link below to create the ISO
-* remember to switch to using the graphical gnome template.
+* Build the ISO:
+* $ nix-build '<nixpkgs/nixos>' -A config.system.build.isoImage -I nixos-config=./iso.nix
 * copy generated ISO to your USB using this command:
-* $ sudo dd bs=4M if={path to generated ISO} of=/dev/sd{flash drive} status=progress oflag=sync
+* $ sudo dd bs=4M if=result/iso/*.iso of=/dev/sd{flash drive} status=progress oflag=sync
 
 Test locally in a VM
 * $ nixos-rebuild build-vm -I nixos-config=./iso.nix
@@ -27,17 +27,22 @@ Useful links
 
 TODO
 - xfce using litterbox after loading a project seems take over machine
+- hide lock screen,switch user,suspend, logout menu items 
+- remove confirm option from shutdown menu item
 - add tool to unzip archives
 
 DONE
+- fix xfce wallpaper: use full Nix store paths for xfdesktop/xfce4-panel in myautostart (bare commands not in systemd service PATH)
+- panel clock shows time only in HH:MM:SS (plugin-6 mode=2 + digital-time-format=%H:%M:%S, empty date)
+- hide all XFCE desktop icons (xfce4-desktop /desktop-icons/style=0 via xfconf-query in myautostart)
+- preloaded zsh history with kilocode/btop/python3/node/nmap (seeded in system.activationScripts.nixosZshrc)
+- disable screen locking on the live CD (services.xserver.desktopManager.xfce.enableScreensaver = false)
+- xfce - window controls, can we add ability to resize from any side - fixed via 4px resize borders in PRO-dark theme
 - remove confirm option from shutdown menu item - no
 - hide lock screen,switch user,suspend, logout menu items - no
-- xfce - window controls, can we add ability to resize from any side - only works from top at the moment
-- xfce wallpaper downloads but not set. see log termbin.com/guw5
 - window left right placement under xfce?
 - sound under xfce
 - xfce. hide disks from desktop, ideally hide all
-- preloaded zsh history eg kilocode
 - add an app shortcut to open kilocode  in a console, pin it to the panel
 - disable workspace switcher/not add workspace
 - firefox maximised on start via xulstore.json sizemode (--width/--height flags caused GNOME login loop
