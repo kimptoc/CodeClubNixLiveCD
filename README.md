@@ -32,7 +32,7 @@ TODO
 - add tool to unzip archives
 
 DONE
-- add xfce4-systemload-plugin to the panel (plugin-7, CPU/memory/swap/network bars, text labels disabled)
+- add xfce4-systemload-plugin to the panel (plugin-8, CPU/memory/swap/network bars, text labels disabled); clock moved to plugin-7 with bold time (systray | clock | system-load)
 - fix xfce wallpaper: use full Nix store paths for xfdesktop/xfce4-panel in myautostart (bare commands not in systemd service PATH)
 - panel clock shows time only in HH:MM:SS (plugin-6 mode=2 + digital-time-format=%H:%M:%S, empty date)
 - hide all XFCE desktop icons (xfce4-desktop /desktop-icons/style=0 via xfconf-query in myautostart)
