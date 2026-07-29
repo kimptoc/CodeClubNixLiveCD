@@ -357,6 +357,7 @@ HISTEOF
     xfce.xfce4-terminal
     xfce.xfce4-pulseaudio-plugin
     xfce.xfce4-screenshooter
+    xfce.xfce4-systemload-plugin
     pavucontrol
     alsa-utils
     pulseaudio
@@ -507,9 +508,14 @@ HISTEOF
       #   - plugin-4: pager → Chrome launcher (pager is useless
       #     with a single workspace; repurposing the slot keeps plugin-2's
       #     tasklist intact so kids can still see open apps)
-      #   - plugin-8 clock: time-only HH:MM:SS (default shows date+no seconds)
+      #   - plugin-7 clock: time-only HH:MM:SS in bold (default shows
+      #     date+no seconds, not bold)
       #   - plugin-5: left edge of right-side plugins → Screenshot launcher,
       #     before systray/clock/actions
+      #   - plugin-8: separator (was clock's slot) → System Load monitor
+      #     (CPU/memory/swap/network bars), text labels turned off to keep
+      #     it compact. Swapped with the clock so the panel reads
+      #     systray | clock | system-load left to right.
       #   - plugin-10 actions: appearance=1 (username dropdown, already
       #     looks right in the default but set it defensively)
       # These are value/sub-property writes on existing plugins — no -R -r
@@ -546,12 +552,28 @@ HISTEOF
         -n --force-array -t string -s "codeclub-screenshot.desktop" 2>>$MYLOG \
         && echo "plugin-5/items set" >> $MYLOG
 
-      $XQ -c xfce4-panel -p /plugins/plugin-8/mode                -n -t uint   -s 2          2>>$MYLOG
-      $XQ -c xfce4-panel -p /plugins/plugin-8/digital-layout      -n -t uint   -s 3          2>>$MYLOG
-      $XQ -c xfce4-panel -p /plugins/plugin-8/digital-time-format -n -t string -s "%H:%M:%S" 2>>$MYLOG
-      $XQ -c xfce4-panel -p /plugins/plugin-8/digital-date-format -n -t string -s ""         2>>$MYLOG
-      $XQ -c xfce4-panel -p /plugins/plugin-8/digital-format      -n -t string -s "%H:%M:%S" 2>>$MYLOG \
-        && echo "plugin-8 clock HH:MM:SS" >> $MYLOG
+      ($XQ -c xfce4-panel -p /plugins/plugin-7 -s "clock" 2>>$MYLOG \
+        || $XQ -c xfce4-panel -p /plugins/plugin-7 -n -t string -s "clock" 2>>$MYLOG) \
+        && echo "plugin-7 separator->clock" >> $MYLOG
+      # Clock's digital-time-format is parsed with pango_parse_markup, so
+      # <b>...</b> renders bold (tags are stripped from the displayed text,
+      # only the bold attribute remains) — see xfce_clock_digital_update in
+      # xfce4-panel's clock-digital.c.
+      $XQ -c xfce4-panel -p /plugins/plugin-7/mode                -n -t uint   -s 2                  2>>$MYLOG
+      $XQ -c xfce4-panel -p /plugins/plugin-7/digital-layout      -n -t uint   -s 3                  2>>$MYLOG
+      $XQ -c xfce4-panel -p /plugins/plugin-7/digital-time-format -n -t string -s "<b>%H:%M:%S</b>"   2>>$MYLOG
+      $XQ -c xfce4-panel -p /plugins/plugin-7/digital-date-format -n -t string -s ""                  2>>$MYLOG
+      $XQ -c xfce4-panel -p /plugins/plugin-7/digital-format      -n -t string -s "<b>%H:%M:%S</b>"   2>>$MYLOG \
+        && echo "plugin-7 clock HH:MM:SS bold" >> $MYLOG
+
+      ($XQ -c xfce4-panel -p /plugins/plugin-8 -s "systemload" 2>>$MYLOG \
+        || $XQ -c xfce4-panel -p /plugins/plugin-8 -n -t string -s "systemload" 2>>$MYLOG) \
+        && echo "plugin-8 separator->systemload" >> $MYLOG
+      # Drop the "CPU"/"Mem"/"Swap"/"Net" text prefixes — bars only.
+      for mon in cpu memory network swap; do
+        $XQ -c xfce4-panel -p /plugins/plugin-8/$mon/use-label -n -t bool -s false 2>>$MYLOG
+      done
+      echo "plugin-8 labels disabled" >> $MYLOG
 
       $XQ -c xfce4-panel -p /plugins/plugin-10/appearance -n -t uint -s 1 2>>$MYLOG \
         && echo "plugin-10 actions/appearance=1" >> $MYLOG
