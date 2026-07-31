@@ -1,5 +1,9 @@
 { config, pkgs, lib, ... }:
 let
+  codeclubUser = config.users.users.nixos;
+  codeclubGroup = config.users.groups.${codeclubUser.group};
+  codeclubOwner = "${toString codeclubUser.uid}:${toString codeclubGroup.gid}";
+
   # Paul Linux Themer's "PRO Dark XFCE Edition" (4.14 variant), fetched
   # direct from GitHub since it isn't in nixpkgs. The repo contains three
   # variants in subdirectories; we install only the XFCE 4.14 one as a
@@ -200,6 +204,7 @@ in
   # Rename the live CD user from nixos to codeclub.
   users.users.nixos = {
     name = "codeclub";
+    uid = 1000;
     home = "/home/codeclub";
     initialPassword = "codeclub";
     initialHashedPassword = lib.mkForce null;
@@ -257,7 +262,7 @@ setxkbmap us
 cat ~/myautostart.log | nc termbin.com 9999
 HISTEOF
     chmod 600 /home/codeclub/.zsh_history
-    chown 1000:100 /home/codeclub/.zshrc /home/codeclub/.zsh_history 2>/dev/null || true
+    chown ${codeclubOwner} /home/codeclub/.zshrc /home/codeclub/.zsh_history 2>/dev/null || true
   '';
 
   # Write XFCE panel config and launcher desktop files before any session starts.
@@ -265,13 +270,13 @@ HISTEOF
     text = ''
       H=/home/codeclub
 
-      # Ensure $H/.config is owned by codeclub (uid 1000, gid 100 "users").
-      # We use numeric IDs because name resolution for "codeclub" fails
-      # during activation even with deps=["users"] — chown by name leaves
+      # Ensure $H/.config is owned by codeclub. We use configured numeric
+      # IDs because name resolution for "codeclub" fails during activation
+      # even with deps=["users"] — chown by name leaves
       # the dir root-owned, then Chrome can't create ~/.config/google-chrome
       # and crashpad dies with "--database is required".
       mkdir -p "$H/.config"
-      chown 1000:100 "$H/.config"
+      chown ${codeclubOwner} "$H/.config"
       chmod 755 "$H/.config"
 
       # launcher-4 is Chrome: plugin-4 is
@@ -299,7 +304,7 @@ HISTEOF
       echo "WebBrowser=codeclub-webbrowser" > "$H/.config/xfce4/helpers.rc"
       chmod 644 "$H/.config/xfce4/helpers.rc"
 
-      chown -R 1000:100 "$H/.config/xfce4"
+      chown -R ${codeclubOwner} "$H/.config/xfce4"
 
       # ~/.local/share/applications overrides so Applications menu + XDG lookup
       # find our custom Chrome launcher (with CodeClub URL) first.
@@ -319,12 +324,12 @@ HISTEOF
       cp ${codeclubWebBrowserHelper} "$H/.local/share/xfce4/helpers/codeclub-webbrowser.desktop"
       chmod 644 "$H/.local/share/xfce4/helpers/codeclub-webbrowser.desktop"
 
-      chown -R 1000:100 "$H/.local"
+      chown -R ${codeclubOwner} "$H/.local"
 
       # Belt-and-braces: ensure entire home dir is owned by codeclub.
       # Other activation scripts/services may create files under .config
       # as root after our earlier chown — this catches them.
-      chown -R 1000:100 /home/codeclub
+      chown -R ${codeclubOwner} /home/codeclub
     '';
     deps = [ "users" ];
   };
