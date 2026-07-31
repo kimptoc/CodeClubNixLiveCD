@@ -363,6 +363,10 @@ HISTEOF
     xfce.xfce4-pulseaudio-plugin
     xfce.xfce4-screenshooter
     xfce.xfce4-systemload-plugin
+    xfce.thunar-archive-plugin
+    xarchiver
+    zip
+    unzip
     pavucontrol
     alsa-utils
     pulseaudio
@@ -409,6 +413,9 @@ HISTEOF
     "x-scheme-handler/https" = "google-chrome.desktop";
     "x-scheme-handler/about" = "google-chrome.desktop";
     "x-scheme-handler/unknown" = "google-chrome.desktop";
+    "application/zip" = "xarchiver.desktop";
+    "application/x-zip" = "xarchiver.desktop";
+    "application/x-zip-compressed" = "xarchiver.desktop";
   };
 
   # PATH additions for npm globals (both login and non-login shells).
