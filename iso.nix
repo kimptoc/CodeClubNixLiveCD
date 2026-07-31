@@ -186,6 +186,12 @@ in
   services.xserver.desktopManager.xfce.enable = true;
   # No screensaver/lock on a live CD — kids shouldn't be locked out.
   services.xserver.desktopManager.xfce.enableScreensaver = false;
+  # thunar-archive-plugin has to be wired in via programs.thunar.plugins —
+  # the xfce module builds Thunar itself (programs.thunar.enable = true)
+  # wrapped with only the plugins listed here; installing the plugin
+  # package via environment.systemPackages alone puts it outside Thunar's
+  # plugin search path and it never loads.
+  programs.thunar.plugins = with pkgs; [ thunar-archive-plugin ];
   services.displayManager.defaultSession = "xfce";
   services.xserver.displayManager.lightdm.enable = true;
   services.displayManager.autoLogin = {
@@ -363,7 +369,6 @@ HISTEOF
     xfce.xfce4-pulseaudio-plugin
     xfce.xfce4-screenshooter
     xfce.xfce4-systemload-plugin
-    xfce.thunar-archive-plugin
     xarchiver
     zip
     unzip
