@@ -186,6 +186,18 @@ in
   services.xserver.desktopManager.xfce.enable = true;
   # No screensaver/lock on a live CD — kids shouldn't be locked out.
   services.xserver.desktopManager.xfce.enableScreensaver = false;
+  # thunar-archive-plugin has to be wired in via programs.thunar.plugins —
+  # the xfce module builds Thunar itself (programs.thunar.enable = true)
+  # wrapped with only the plugins listed here; installing the plugin
+  # package via environment.systemPackages alone puts it outside Thunar's
+  # plugin search path and it never loads.
+  #
+  # The plugin's "Create Archive"/"Extract" context menu only knows how to
+  # drive ark, file-roller or engrampa (see its libexec/*.tap wrapper
+  # scripts) — it has no xarchiver backend, so file-roller is installed
+  # below rather than xarchiver even though xarchiver alone is enough for
+  # opening an archive via double-click.
+  programs.thunar.plugins = with pkgs; [ thunar-archive-plugin ];
   services.displayManager.defaultSession = "xfce";
   services.xserver.displayManager.lightdm.enable = true;
   services.displayManager.autoLogin = {
@@ -363,6 +375,9 @@ HISTEOF
     xfce.xfce4-pulseaudio-plugin
     xfce.xfce4-screenshooter
     xfce.xfce4-systemload-plugin
+    file-roller
+    zip
+    unzip
     pavucontrol
     alsa-utils
     pulseaudio
@@ -409,6 +424,17 @@ HISTEOF
     "x-scheme-handler/https" = "google-chrome.desktop";
     "x-scheme-handler/about" = "google-chrome.desktop";
     "x-scheme-handler/unknown" = "google-chrome.desktop";
+    "application/zip" = "org.gnome.FileRoller.desktop";
+    "application/x-zip" = "org.gnome.FileRoller.desktop";
+    "application/x-zip-compressed" = "org.gnome.FileRoller.desktop";
+    "application/x-7z-compressed" = "org.gnome.FileRoller.desktop";
+    "application/vnd.rar" = "org.gnome.FileRoller.desktop";
+    "application/x-rar" = "org.gnome.FileRoller.desktop";
+    "application/x-tar" = "org.gnome.FileRoller.desktop";
+    "application/gzip" = "org.gnome.FileRoller.desktop";
+    "application/x-bzip2" = "org.gnome.FileRoller.desktop";
+    "application/x-compressed-tar" = "org.gnome.FileRoller.desktop";
+    "application/x-bzip-compressed-tar" = "org.gnome.FileRoller.desktop";
   };
 
   # PATH additions for npm globals (both login and non-login shells).
