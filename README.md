@@ -31,7 +31,7 @@ TODO
 - remove confirm option from shutdown menu item
 
 DONE
-- add tool to open/extract archives via UI: thunar-archive-plugin + xarchiver, covers zip/7z/rar/tar/gzip/bzip2 (Extract Here/To in Thunar right-click menu, double-click opens xarchiver)
+- add tool to open/extract archives via UI: thunar-archive-plugin + file-roller, covers zip/7z/rar/tar/gzip/bzip2 (Extract Here/To/Create Archive in Thunar right-click menu, double-click opens file-roller)
 - add xfce4-systemload-plugin to the panel (plugin-8, CPU/memory/swap/network bars, text labels disabled); clock moved to plugin-7 with bold time (systray | clock | system-load)
 - fix xfce wallpaper: use full Nix store paths for xfdesktop/xfce4-panel in myautostart (bare commands not in systemd service PATH)
 - panel clock shows time only in HH:MM:SS (plugin-6 mode=2 + digital-time-format=%H:%M:%S, empty date)
