@@ -371,9 +371,14 @@ HISTEOF
 
   environment.systemPackages = with pkgs; [
     btop
-    # xfce4-terminal, xfce4-pulseaudio-plugin (since pipewire.pulse is
-    # enabled below) and xfce4-screenshooter are already installed by
-    # services.xserver.desktopManager.xfce — see nixos/modules/services/x11/desktop-managers/xfce.nix.
+    # xfce4-pulseaudio-plugin (since pipewire.pulse is enabled below) and
+    # xfce4-screenshooter are already installed by
+    # services.xserver.desktopManager.xfce — see
+    # nixos/modules/services/x11/desktop-managers/xfce.nix. xfce4-terminal
+    # is also installed there, but the btop/kilocode launcher .desktop
+    # files below invoke it by bare command name (not a Nix store path),
+    # so it's kept explicit here rather than relying on that transitively.
+    xfce.xfce4-terminal
     xfce.xfce4-systemload-plugin
     file-roller
     zip
