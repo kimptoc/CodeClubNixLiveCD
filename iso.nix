@@ -353,6 +353,12 @@ HISTEOF
   # pulseaudio plugin and apps using ALSA both work. Wired headsets
   # (3.5mm or USB headphone+mic) work out-of-the-box — input devices
   # show up automatically, no extra packages or groups needed.
+  #
+  # No standalone pulseaudio package needed: pulse.enable below runs
+  # pipewire-pulse, a protocol-compatible server that pavucontrol and
+  # xfce4-pulseaudio-plugin talk to directly via libpulse; nothing here
+  # shells out to pactl/pacmd/paplay, the pulseaudio package's own CLI
+  # tools.
   security.rtkit.enable = true;
   services.pipewire = {
     enable = true;
@@ -385,7 +391,6 @@ HISTEOF
     unzip
     pavucontrol
     alsa-utils
-    pulseaudio
     nodejs
     terminator
     ghostty
