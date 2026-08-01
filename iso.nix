@@ -559,6 +559,9 @@ HISTEOF
       #     systray | clock | system-load left to right.
       #   - plugin-10 actions: appearance=1 (username dropdown, already
       #     looks right in the default but set it defensively)
+      #   - plugin-9: separator (between system-load and actions) → volume
+      #     control (xfce4-pulseaudio-plugin), so kids have a quick
+      #     up/down/mute icon instead of needing pavucontrol
       # These are value/sub-property writes on existing plugins — no -R -r
       # deletes, no plugin-ids changes — so no "(null) plugin" popup.
 
@@ -615,6 +618,10 @@ HISTEOF
         $XQ -c xfce4-panel -p /plugins/plugin-8/$mon/use-label -n -t bool -s false 2>>$MYLOG
       done
       echo "plugin-8 labels disabled" >> $MYLOG
+
+      ($XQ -c xfce4-panel -p /plugins/plugin-9 -s "pulseaudio" 2>>$MYLOG \
+        || $XQ -c xfce4-panel -p /plugins/plugin-9 -n -t string -s "pulseaudio" 2>>$MYLOG) \
+        && echo "plugin-9 separator->pulseaudio volume control" >> $MYLOG
 
       $XQ -c xfce4-panel -p /plugins/plugin-10/appearance -n -t uint -s 1 2>>$MYLOG \
         && echo "plugin-10 actions/appearance=1" >> $MYLOG

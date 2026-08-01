@@ -31,6 +31,7 @@ TODO
 - remove confirm option from shutdown menu item
 
 DONE
+- add pulseaudio volume plugin to the panel (plugin-9, quick up/down/mute without opening pavucontrol)
 - remove pulseaudio package from systemPackages — pipewire's pulse.enable already provides the protocol-compatible server; nothing here uses pulseaudio's own pactl/pacmd/paplay CLI tools
 - remove xfce4-pulseaudio-plugin/xfce4-screenshooter from systemPackages — already installed by services.xserver.desktopManager.xfce (kept xfce4-terminal explicit since launcher .desktop files invoke it by bare command name)
 - add tool to open/extract archives via UI: thunar-archive-plugin + file-roller, covers zip/7z/rar/tar/gzip/bzip2 (Extract Here/To/Create Archive in Thunar right-click menu, double-click opens file-roller)
