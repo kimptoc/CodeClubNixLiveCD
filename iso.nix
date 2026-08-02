@@ -557,16 +557,11 @@ HISTEOF
       #     (CPU/memory/swap/network bars), text labels turned off to keep
       #     it compact. Swapped with the clock so the panel reads
       #     systray | clock | system-load left to right.
+      #   - plugin-10 actions: appearance=1 (username dropdown, already
+      #     looks right in the default but set it defensively)
       #   - plugin-9: separator (between system-load and actions) → volume
       #     control (xfce4-pulseaudio-plugin), so kids have a quick
       #     up/down/mute icon instead of needing pavucontrol
-      #   - plugin-10 ↔ plugin-11: actions and showdesktop swap types, so
-      #     the user/logout menu ends up rightmost (before the trailing
-      #     empty separator) instead of showdesktop pushing it off the
-      #     edge. appearance=1 (username dropdown) moves with it to
-      #     plugin-11.
-      # Final order: apps | tasklist | Chrome | Screenshot | systray |
-      # clock | system-load | volume | showdesktop | actions
       # These are value/sub-property writes on existing plugins — no -R -r
       # deletes, no plugin-ids changes — so no "(null) plugin" popup.
 
@@ -628,16 +623,8 @@ HISTEOF
         || $XQ -c xfce4-panel -p /plugins/plugin-9 -n -t string -s "pulseaudio" 2>>$MYLOG) \
         && echo "plugin-9 separator->pulseaudio volume control" >> $MYLOG
 
-      # Swap actions <-> showdesktop so the user/logout menu is rightmost
-      # (before the trailing empty separator) rather than showdesktop.
-      ($XQ -c xfce4-panel -p /plugins/plugin-10 -s "showdesktop" 2>>$MYLOG \
-        || $XQ -c xfce4-panel -p /plugins/plugin-10 -n -t string -s "showdesktop" 2>>$MYLOG) \
-        && echo "plugin-10 actions->showdesktop" >> $MYLOG
-      ($XQ -c xfce4-panel -p /plugins/plugin-11 -s "actions" 2>>$MYLOG \
-        || $XQ -c xfce4-panel -p /plugins/plugin-11 -n -t string -s "actions" 2>>$MYLOG) \
-        && echo "plugin-11 showdesktop->actions" >> $MYLOG
-      $XQ -c xfce4-panel -p /plugins/plugin-11/appearance -n -t uint -s 1 2>>$MYLOG \
-        && echo "plugin-11 actions/appearance=1" >> $MYLOG
+      $XQ -c xfce4-panel -p /plugins/plugin-10/appearance -n -t uint -s 1 2>>$MYLOG \
+        && echo "plugin-10 actions/appearance=1" >> $MYLOG
 
       # Bottom dock (panel-2) auto-hide: 2 = always hidden, shown on
       # mouse-over. Keeps the desktop uncluttered for kids.
