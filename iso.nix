@@ -543,9 +543,16 @@ HISTEOF
       # drop at activation isn't being loaded by xfconfd on this live CD —
       # reason TBD; /panel-1/plugin-ids doesn't exist on the channel even
       # though our XML file is in place). The defaults are:
-      #   1 apps | 2 tasklist | 3 sep | 4 pager | 5 sep | 6 systray |
-      #   7 sep | 8 clock | 9 sep | 10 actions | 11 showdesktop | 12 sep
-      # We tweak only:
+      #   panel-1 (top, always visible):
+      #     1 apps | 2 tasklist | 3 sep | 4 pager | 5 sep | 6 systray |
+      #     7 sep | 8 clock | 9 sep | 10 actions
+      #   panel-2 (bottom dock, auto-hide):
+      #     11 showdesktop | 12 sep | 13-17 launchers | 18 directorymenu
+      # Plugin IDs are numbered globally across all panels, not restarted
+      # per panel — panel-1 stops at 10 and panel-2 picks up at 11, so
+      # showdesktop is the leftmost icon on the bottom dock, not part of
+      # the top panel (see issue #42).
+      # We tweak only plugins on panel-1:
       #   - plugin-4: pager → Chrome launcher (pager is useless
       #     with a single workspace; repurposing the slot keeps plugin-2's
       #     tasklist intact so kids can still see open apps)
@@ -571,9 +578,11 @@ HISTEOF
       # and showdesktop to reorder them) was tried and broke on real
       # hardware — the actions/logout menu failed to render even though
       # every xfconf write succeeded and the panel restart ran cleanly (see
-      # PR #41). Don't repeat that; if reordering a non-separator plugin is
-      # ever needed, repurpose the trailing plugin-12 separator instead of
-      # retyping an already-constructed plugin.
+      # PR #41). Don't repeat that; if reordering a non-separator plugin on
+      # panel-1 is ever needed, repurpose plugin-3 (the separator between
+      # tasklist and the launcher slot) instead of retyping an
+      # already-constructed plugin — plugin-12 is a separator too, but it
+      # belongs to panel-2 (the bottom dock), not panel-1.
 
       # Wait for xfce4-panel to publish its first-start default plugin
       # properties before editing them. Writing too early can be overwritten
@@ -635,11 +644,6 @@ HISTEOF
 
       $XQ -c xfce4-panel -p /plugins/plugin-10/appearance -n -t uint -s 1 2>>$MYLOG \
         && echo "plugin-10 actions/appearance=1" >> $MYLOG
-
-      # Bottom dock (panel-2) auto-hide: 2 = always hidden, shown on
-      # mouse-over. Keeps the desktop uncluttered for kids.
-      $XQ -c xfce4-panel -p /panel-2/autohide-behavior -n -t uint -s 2 2>>$MYLOG \
-        && echo "panel-2 autohide=2" >> $MYLOG
 
       # Nudge the panel so plugin-4/5 pick up their new type and the clock its
       # new format. xfce4-panel --restart talks to the panel over D-Bus
