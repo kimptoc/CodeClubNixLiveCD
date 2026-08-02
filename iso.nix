@@ -564,6 +564,16 @@ HISTEOF
       #     up/down/mute icon instead of needing pavucontrol
       # These are value/sub-property writes on existing plugins — no -R -r
       # deletes, no plugin-ids changes — so no "(null) plugin" popup.
+      #
+      # Only ever repurpose FROM a separator: a separator has no module and
+      # no persisted xfconf subtree, so retyping it is safe. Retyping two
+      # already-live non-separator plugins at once (e.g. swapping actions
+      # and showdesktop to reorder them) was tried and broke on real
+      # hardware — the actions/logout menu failed to render even though
+      # every xfconf write succeeded and the panel restart ran cleanly (see
+      # PR #41). Don't repeat that; if reordering a non-separator plugin is
+      # ever needed, repurpose the trailing plugin-12 separator instead of
+      # retyping an already-constructed plugin.
 
       # Wait for xfce4-panel to publish its first-start default plugin
       # properties before editing them. Writing too early can be overwritten
