@@ -162,6 +162,15 @@ in
     <nixpkgs/nixos/modules/installer/cd-dvd/channel.nix>
   ];
 
+  # installation-cd-graphical-base.nix enables the Xen guest-utilities
+  # daemon on any x86 host (services.xe-guest-utilities.enable =
+  # pkgs.stdenv.hostPlatform.isx86), regardless of whether we're actually
+  # running under Xen. On CodeClub PCs (and QEMU/KVM test VMs) we aren't,
+  # so xe-daemon.service fails on every boot (/proc/xen doesn't exist) —
+  # harmless (all other services still start fine) but shows up as a
+  # failed unit. Turn it back off.
+  services.xe-guest-utilities.enable = lib.mkForce false;
+
   # Set the boot label to "codeclub"
   image.fileName = "codeclub.iso";
   isoImage.volumeID = "CODECLUB";
