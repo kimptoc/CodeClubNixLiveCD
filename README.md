@@ -31,6 +31,7 @@ TODO
 - remove confirm option from shutdown menu item
 
 DONE
+- disable xe-guest-utilities (Xen guest daemon) — installation-cd-graphical-base.nix enables it on any x86 host, but we're not running under Xen, so xe-daemon.service failed on every boot
 - add pulseaudio volume plugin to the panel (plugin-9, quick up/down/mute without opening pavucontrol)
 - remove pulseaudio package from systemPackages — pipewire's pulse.enable already provides the protocol-compatible server; nothing here uses pulseaudio's own pactl/pacmd/paplay CLI tools
 - remove xfce4-pulseaudio-plugin/xfce4-screenshooter from systemPackages — already installed by services.xserver.desktopManager.xfce (kept xfce4-terminal explicit since launcher .desktop files invoke it by bare command name)
