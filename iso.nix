@@ -4,6 +4,21 @@ let
   codeclubGroup = config.users.groups.${codeclubUser.group};
   codeclubOwner = "${toString codeclubUser.uid}:${toString codeclubGroup.gid}";
 
+  # wezterm moves fast enough that the channel this config normally builds
+  # against lags noticeably behind (e.g. 2026-03-31 vs nixos-unstable's
+  # 2026-07-16 at time of pinning). Pull just that one package from a
+  # pinned nixos-unstable revision instead of switching the whole config
+  # to unstable — everything else keeps using the regular `pkgs` above.
+  # Bump the rev/sha256 pair (via nixos-unstable's HEAD +
+  # `nix-prefetch-url --unpack`) when a newer wezterm is wanted.
+  pkgsUnstable = import (builtins.fetchTarball {
+    url = "https://github.com/NixOS/nixpkgs/archive/643809054d65fdd466a63e3155b8c498cb483c04.tar.gz";
+    sha256 = "0yb23r5k59xm5miqa2azwl2qgdwk324q1qwwcwgv198z25wchixx";
+  }) {
+    system = pkgs.system;
+    config.allowUnfree = true;
+  };
+
   # Paul Linux Themer's "PRO Dark XFCE Edition" (4.14 variant), fetched
   # direct from GitHub since it isn't in nixpkgs. The repo contains three
   # variants in subdirectories; we install only the XFCE 4.14 one as a
@@ -403,7 +418,7 @@ HISTEOF
     nodejs
     terminator
     ghostty
-    wezterm
+    pkgsUnstable.wezterm
     nettools
     python3
     temurin-bin
