@@ -403,6 +403,7 @@ HISTEOF
     nodejs
     terminator
     ghostty
+    wezterm
     nettools
     python3
     temurin-bin
