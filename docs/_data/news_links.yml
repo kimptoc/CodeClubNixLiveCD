@@ -1,3 +1,7 @@
+- name: Scratch/Dino Jump
+  url: https://projects.raspberrypi.org/en/projects/dino-jump
+- name: Scratch/Icing on the Cake
+  url: https://projects.raspberrypi.org/en/projects/icing-on-the-cake
 - name: Scratch+MicroBit/World Cup related
   url: https://codeclub.org/2026/06/15/kick-off-a-world-cup-coding-challenge-at-your-code-club/
 - name: Scratch/Environment Day - Green Goals
