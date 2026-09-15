@@ -275,6 +275,14 @@ in
 
   nixpkgs.config.allowUnfree = true;
 
+  # Steam client (issue #50). Steam is unfree (allowed above) and the
+  # module also enables 32-bit OpenGL via hardware.graphics.enable32Bit,
+  # which many Steam games need. Only the client ships in the image —
+  # games are downloaded on demand and can't be persisted on a plain
+  # live CD/USB, so this is for sessions where games are installed to a
+  # writable setup / club accounts.
+  programs.steam.enable = true;
+
   programs.nix-ld.enable = true;
 
   programs.zsh.enable = true;
