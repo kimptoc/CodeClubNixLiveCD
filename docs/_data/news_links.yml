@@ -1,3 +1,7 @@
+- name: Scratch/Dino Jump with Editor (BETA)
+  url: https://projects.raspberrypi.org/en/projects/editor-dino-jump/editor
+- name: Scratch/Boat Race with Editor (BETA)
+  url: https://projects.raspberrypi.org/en/projects/editor-boat-race/editor
 - name: Scratch/Dino Jump
   url: https://projects.raspberrypi.org/en/projects/dino-jump
 - name: Scratch/Icing on the Cake
