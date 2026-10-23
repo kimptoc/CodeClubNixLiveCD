@@ -12,8 +12,9 @@ Steps
 
 Booting on a laptop - Secure Boot
 * This ISO's bootloader isn't signed for Secure Boot, so most Windows laptops (Secure Boot is on by default since Windows 8) will show an error like "Selected boot image did not Authenticate. Press <Enter> to Continue." and refuse to boot it.
-* Fix: go into the BIOS/UEFI setup (often F10 at boot), find Secure Boot (commonly under a Security or System Configuration > Boot Options menu, wording varies by manufacturer), and disable it. Then boot from the USB again.
+* Fix: go into the BIOS/UEFI setup and disable Secure Boot, then boot from the USB again. The key to enter setup varies by manufacturer - commonly F10 (HP), F2 or Del (Dell/most others), or F12/Esc for a one-off boot menu; check the manufacturer logo/boot splash screen for the actual prompt. Once in, Secure Boot is usually under a Security or System Configuration > Boot Options menu, wording varies.
 * This is a one-time per-laptop setting, not a problem with the USB itself.
+* If the BIOS is locked with an admin password (common on managed/locked-down school PCs) and you don't have it, you won't be able to make this change yourself - try a personal/unlocked laptop instead, or get IT to disable Secure Boot on the fleet.
 
 Test locally in a VM
 * $ nixos-rebuild build-vm -I nixos-config=./iso.nix
