@@ -10,6 +10,11 @@ Steps
 * copy generated ISO to your USB using this command:
 * $ sudo dd bs=4M if=result/iso/*.iso of=/dev/sd{flash drive} status=progress oflag=sync
 
+Booting on a laptop - Secure Boot
+* This ISO's bootloader isn't signed for Secure Boot, so most Windows laptops (Secure Boot is on by default since Windows 8) will show an error like "Selected boot image did not Authenticate. Press <Enter> to Continue." and refuse to boot it.
+* Fix: go into the BIOS/UEFI setup (often F10 at boot), find Secure Boot (commonly under a Security or System Configuration > Boot Options menu, wording varies by manufacturer), and disable it. Then boot from the USB again.
+* This is a one-time per-laptop setting, not a problem with the USB itself.
+
 Test locally in a VM
 * $ nixos-rebuild build-vm -I nixos-config=./iso.nix
 * $ ./result/bin/run-nixos-vm
