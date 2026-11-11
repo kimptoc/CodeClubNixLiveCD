@@ -1,3 +1,5 @@
+- name: Scratch/Face Sensing filter
+  url: https://scratch.mit.edu/projects/1208621527
 - name: Scratch/Selfie filter
   url: https://projects.raspberrypi.org/en/projects/make-a-selfie-filter/1
 - name: Bebras Challenge!
